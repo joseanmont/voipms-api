@@ -27,8 +27,6 @@ voipms-api
 │       ├── lnp.py
 │       ├── sms.py
 │       └── voipms_client.py
-│   └── tests/
-|       └── test_voipms_client.py
 │── tests/
 │   └── test_voipms_client.py
 ```
