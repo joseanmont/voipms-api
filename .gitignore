@@ -1,0 +1,14 @@
+# Ignore enviroment variables
+.env
+
+# Ignore tests on the work
+.vscode/
+
+# Ignore packages in progess
+
+
+# Ignore pycache
+**/__pycache__/
+
+# Ignore builder files
+dist/

@@ -1,0 +1,16 @@
+[project]
+name = "voipms-api"
+version = "0.0.1"
+authors = [{ name = "Jose Pineda", email = "hello@joseanmont.com" }]
+description = "A python package to use the VoIP.ms API"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/joseanmont/voipms-api"
+Issues = "https://github.com/joseanmont/voipms-api/issues"
