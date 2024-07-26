@@ -13,8 +13,10 @@ class VoipMsClient:
         IMPORTANT: The VoIP.ms API must be enabled and the IP address that will consume the API must be allowed in the VoIP.ms Customer Portal.
 
     Methods:
-        make_request():
+        make_request:
             Establishes the connection with VoIP.ms API and takes care of sending the request.
+        test_connection():
+            Used to verify the connection to the VoIP.ms API, confirming the credentials and IP address are correct.
     """
 
 
@@ -51,8 +53,10 @@ class VoipMsClient:
             'method': method
         })
         
+        print(params)
+
         response = requests.get(self.voipms_url, params=params)
-        # print(f"Request URL: {response.request.url}\n") # Uncomment to print the full URL
+        print(f"Request URL: {response.request.url}\n") # Uncomment to print the full URL
         response.raise_for_status()  # Raises an HTTPError for bad responses
         response = response.json()
         return response
