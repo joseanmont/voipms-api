@@ -21,7 +21,6 @@ voipms-api
 ├── src/
 │   └── voipms-api/
 │       ├── __init__.py
-│       ├── voipms_client.py
 │       ├── dids.py
 │       ├── general.py
 │       ├── lnp.py
@@ -43,7 +42,7 @@ VOIPMS_API_PASSWORD = "Your VoIP.ms API password"
 However, you can also add your credentials or add custom credentials by using the class VoipMsClient from the module "voipms_client". Here is an example:
 
 ```
-voipms-client = VoipMsClient(username="me@email.com", password="your VoIP.ms API password")
+vms_client = VoipMsClient(username="me@email.com", password="your VoIP.ms API password")
 ```
 
 Or, you can do it when calling a single instance. For example:
@@ -71,4 +70,4 @@ For any issues or questions, please raise an issue on GitHub or contact us direc
 
 ## Special Thanks
 
-Kudos to the VoIP.ms development team. They have a developed an understandable, simple but still powerful API that lets users take their VoIP system beyond limit.
+Kudos to the VoIP.ms development team. They have a developed an understandable, simple but still powerful API that lets users take their VoIP system beyond limits.

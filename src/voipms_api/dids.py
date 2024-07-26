@@ -12,7 +12,9 @@ class DIDs():
     A class to call the DID functions of the VoIP.ms API.
 
     Methods:
-        get_dids_info():
+        cancel_did:
+            Cancels a specific DID number and returns the result of the request.
+        get_dids_info:
             Returns the current balance of the VoIP.ms account.
     '''
 
@@ -181,7 +183,7 @@ class DIDs():
         Calls the VoIP.ms orderTollFree function.
 
         Args:
-            did (str or int, required): Specific DID number to be ordered (Example: 8771234567).
+            did (str or int, required): Specific Toll-free DID number to be ordered (Example: 8771234567).
             routing (str, optional): Routing of the DID. Default is sys:hangup.
             pop (str or int, optional): POP server of the DID. Default is 22 (sanjose1.voip.ms). Data from get_severs.
             dial time (str or int, optional): Ring time of the DID. Default is 60 (seconds).
