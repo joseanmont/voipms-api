@@ -87,3 +87,74 @@ class Accounts():
         except Exception as err:
             print(f'Other error occurred: {err}')
             return None
+        
+
+    def delete_subaccount(self, 
+            id:Union[str, int],
+        ) -> dict:
+        """
+        Calls the VoIP.ms delSubAccount function.
+
+        Args:
+            id (str or int, required): ID of the Sub Account that will be deleted(Example: '99785' or 99785). Value from get_subaccounts.
+
+        Returns:
+            dict: A dictionary containing the status of the request and the Sub Account that was canceled.
+        """
+        
+        mtd = "delSubAccount"
+
+        try:
+            params = {
+                "id": id,
+            }
+            
+            data = self.vms_client.make_request(mtd, params)
+            data["result"] = "Sub Account deleted"
+            data["id"] = id
+            return data
+        
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error ocurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'Other error occurred: {err}')
+            return None
+        
+
+    def get_subaccounts(self, 
+            subaccount:Optional[Union[str, int]]=None
+        ) -> dict:
+        """
+        Calls the VoIP.ms getSubAccounts function.
+
+        Args:
+            subaccount str or int, optional): Sub Account ID or username (Example: '100000_SubAccount' or 99785).
+
+        Returns:
+            dict: A dictionary containing the status of the request and the Sub Accounts and their data, or a specific Sub Account data if an ID or username is provided.
+        """
+        
+        mtd = "getSubAccounts"
+
+        try:
+            params = {}
+
+            if subaccount:
+                params["account"] = subaccount
+            
+            data = self.vms_client.make_request(mtd, params)
+            return data
+        
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error ocurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'Other error occurred: {err}')
+            return None
