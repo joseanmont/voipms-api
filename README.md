@@ -14,6 +14,8 @@ Add the package to your project to be able to import its modules, classes and me
 
 Check requirements.txt to see the packages that need to be installed.
 
+**Note:** The plan is to make this package available on PyPI in the near future. Stay tuned for updates!
+
 ## Package structure
 
 ```plaintext
@@ -41,9 +43,10 @@ VOIPMS_API_USER = "Your VoIP.ms account email"
 VOIPMS_API_PASSWORD = "Your VoIP.ms API password"
 ```
 
-However, you can also add your credentials or add custom credentials by using the class VoipMsClient from the module "voipms_client". Here is an example:
+However, you can also add your credentials or use different credentials by using the class VoipMsClient. Here is an example:
 
 ```
+from voipms_api import VoipMsClient
 vms_client = VoipMsClient(username="me@email.com", password="your VoIP.ms API password")
 ```
 
@@ -52,11 +55,12 @@ Or, you can do it when calling a single instance. For example:
 ```
 from voipms_api import General
 balance = General(username="me@email.com", password="api_password")
+print(balance.get_balance())
 ```
 
 ## Examples of scripts
 
-You can find more example scripts in the examples directory. These scripts demonstrate how to use the some features of the voipms_api package.
+You can find more example scripts in the examples directory. These scripts demonstrate how to use the some features of the voipms-api package.
 
 ## Contributing
 
@@ -72,4 +76,4 @@ For any issues or questions, please raise an issue on GitHub or contact us direc
 
 ## Special Thanks
 
-Kudos to the VoIP.ms development team. They have a developed an understandable, simple but still powerful API that lets users take their VoIP system beyond limits.
+Kudos to the VoIP.ms development team. They have developed an understandable, simple but still powerful API that lets users take their VoIP system beyond limits.
