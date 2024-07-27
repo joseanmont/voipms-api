@@ -51,8 +51,12 @@ class Accounts():
 
         try:
             params = {
+
+                # Required by this package.
                 "username": username,
                 "password": password,
+
+                # Required by the VoIP.ms API but set with default values in this package.
                 "lock_international": 1,
                 "international_route": 1,
                 "music_on_hold": "default",
@@ -61,6 +65,7 @@ class Accounts():
                 "nat": "yes",
             }
 
+            # Optional parameters in this package.
             if protocol:
                 params["protocol"] = protocol
             if auth_type:
