@@ -14,8 +14,6 @@ class Forwarding():
             Deletes a specific forwarding and returns the result of the request.
         get_forwardings:
             Returns all the existing forwardings, or a specific forwarding if a forwarding ID or Client ID is provided.
-        update_forwarding:
-            Deletes a specific forwarding and returns the result of the request.
     '''
 
     def __init__(self, username=None, password=None) -> None:
