@@ -4,10 +4,13 @@
 # Ignore tests on the work
 .vscode/
 
-# Ignore packages in progess
+# Ignore packages in progress
+forwarding.py
+
+# Ignore examples in progess
 example_client.py
-example_accounts.py
 example_voicemail.py
+example_forwarding.py
 
 
 # Ignore pycache
