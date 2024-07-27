@@ -82,6 +82,44 @@ class Forwarding():
             print(f'Other error occurred: {err}')
             return None
         
+
+    def delete_forwarding(self, 
+            forwarding:Optional[Union[str, int]]=None,
+        ) -> dict:
+        """
+        Calls the VoIP.ms delForwarding function.
+
+        Args:
+            forwarding (str or int, optional): ID of the forwarding that will be deleted (Example: 18635). Value from get_forwardings.
+
+        Returns:
+            dict: A dictionary containing the status of the request and the ID of the forwarding that was deleted.
+        """
+        
+        mtd = "delForwarding"
+
+        try:
+            params = {
+                "forwarding": forwarding,
+            }
+
+            fwd_info = self.get_forwardings(forwarding)
+            fwd_pn = fwd_info["forwardings"][0]["phone_number"]
+
+            data = self.vms_client.make_request(mtd, params)
+            data["phone_number"] = fwd_pn
+            return data
+        
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error ocurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'Other error occurred: {err}')
+            return None
+        
     
     def get_forwardings(self, 
             forwarding:Optional[Union[str, int]]=None,
