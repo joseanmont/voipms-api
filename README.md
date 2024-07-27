@@ -59,6 +59,14 @@ balance = General(username="me@email.com", password="api_password")
 print(balance.get_balance())
 ```
 
+## Module Capabilities
+
+Currently, the modules of accounts and voice features within the voipms-api package provide basic functionalities for creating, retrieving, and deleting items. 
+
+You will find the current available functions in the description of each class.
+
+Additional functionalities will be added over time.
+
 ## Examples of scripts
 
 You can find more example scripts in the examples directory. These scripts demonstrate how to use the some features of the voipms-api package.
