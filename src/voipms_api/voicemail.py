@@ -12,6 +12,8 @@ class Voicemail():
             Creates a new voicemail and returns the result of the request.
         delete_voicemail:
             Deletes a specific voicemail and returns the result of the request.
+        get_voicemails:
+            Returns all the existing Voicemails, or a specific Voicemail if a Voicemail ID or Client ID is provided.
     '''
 
     def __init__(self, username=None, password=None) -> None:
