@@ -132,7 +132,7 @@ class Accounts():
         Calls the VoIP.ms getSubAccounts function.
 
         Args:
-            subaccount str or int, optional): Sub Account ID or username (Example: '100000_SubAccount' or 99785).
+            subaccount (str or int, optional): Sub Account ID or username (Example: '100000_SubAccount' or 99785).
 
         Returns:
             dict: A dictionary containing the status of the request and the Sub Accounts and their data, or a specific Sub Account data if an ID or username is provided.

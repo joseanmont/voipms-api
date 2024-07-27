@@ -138,3 +138,42 @@ class Voicemail():
         except Exception as err:
             print(f'Other error occurred: {err}')
             return None
+        
+
+    def get_voicemails(self, 
+            voicemail:Optional[Union[str, int]]=None,
+            client:Optional[Union[str, int]]=None
+        ) -> dict:
+        """
+        Calls the VoIP.ms getVoicemails function.
+
+        Args:
+            voicemail (str or int, optional): ID number of a specific Voicemail (Example: '1001' or 1001).
+            client (str or int, optional): ID of a specific Reseller client (Example: '561115' or 561115).
+
+        Returns:
+            dict: A dictionary containing the status of the request and the Sub Accounts and their data, or a specific Sub Account data if an ID or username is provided.
+        """
+        
+        mtd = "getVoicemails"
+
+        try:
+            params = {}
+            
+            if voicemail:
+                params["mailbox"] = voicemail
+            if client:
+                params["client"] = client
+            
+            data = self.vms_client.make_request(mtd, params)
+            return data
+        
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error ocurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'Other error occurred: {err}')
+            return None
