@@ -14,7 +14,7 @@ Add the package to your project to be able to import its modules, classes and me
 
 Check requirements.txt to see the packages that need to be installed.
 
-**Note:** The plan is to make this package available on PyPI in the near future. Stay tuned for updates!
+**Note:** If you have problems importing the modules, add the path to the directory and subdirectories in PYTHONPATH.
 
 ## Package structure
 
