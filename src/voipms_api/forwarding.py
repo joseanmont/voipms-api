@@ -81,3 +81,39 @@ class Forwarding():
         except Exception as err:
             print(f'Other error occurred: {err}')
             return None
+        
+    
+    def get_forwardings(self, 
+            forwarding:Optional[Union[str, int]]=None,
+        ) -> dict:
+        """
+        Calls the VoIP.ms getForwardings function.
+
+        Args:
+            forwarding (str or int, optional): ID of a specific forwarding (Example: 18635).
+
+        Returns:
+            dict: A dictionary containing the status of the request and the data of all the forwardings, or the data of a specific forwarding an ID is provided.
+        """
+        
+        mtd = "getForwardings"
+
+        try:
+            params = {}
+
+            # Optional in this package.
+            if forwarding:
+                params["forwarding"] = forwarding
+            
+            data = self.vms_client.make_request(mtd, params)
+            return data
+        
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error ocurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'Other error occurred: {err}')
+            return None
