@@ -5,8 +5,8 @@
 .vscode/
 
 # Ignore packages in progess
-accounts.py
 example_client.py
+example_accounts.py
 
 # Ignore pycache
 **/__pycache__/

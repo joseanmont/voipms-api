@@ -32,8 +32,12 @@ class VoipMsClient:
         # Create a .env file to load your credentials using the enviroment variables below.
         # Otherwise the credentials must be provided when creating the VoipMsClient object.
         self.voipms_url = "https://voip.ms/api/v1/rest.php"
-        self.username = username if username else os.environ.get("VOIPMS_API_USER")
-        self.password = password if password else os.environ.get("VOIPMS_API_PASSWORD")
+        
+        if (username and not password) or (password and not username):
+            raise ValueError("Both username and password must be provided together")
+
+        self.username = username if username or username != None else os.environ.get("VOIPMS_API_USER")
+        self.password = password if password or password != None else os.environ.get("VOIPMS_API_PASSWORD")
 
     
     def make_request(self, method:str, params:Optional[dict]=None) -> dict:
@@ -53,10 +57,10 @@ class VoipMsClient:
             'method': method
         })
         
-        print(params)
+        # print(f"{params}/n") # Uncomment this to see username, password and method
 
         response = requests.get(self.voipms_url, params=params)
-        print(f"Request URL: {response.request.url}\n") # Uncomment to print the full URL
+        # print(f"Request URL: {response.request.url}\n") # Uncomment to print the full URL
         response.raise_for_status()  # Raises an HTTPError for bad responses
         response = response.json()
         return response
