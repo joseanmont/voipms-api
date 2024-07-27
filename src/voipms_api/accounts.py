@@ -5,11 +5,11 @@ from typing import Optional, Union
 
 class Accounts():
     '''
-    A class to call the Accounts functions of the VoIP.ms API.
+    A class to call the Sub Accounts functions of the VoIP.ms API.
 
     Methods:
         create_subaccount:
-            Cancels a specific DID number and returns the result of the request.
+            Creates a Sub Account and returns the result of the request.
     '''
 
     def __init__(self, username=None, password=None) -> None:
