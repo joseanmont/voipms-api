@@ -91,7 +91,7 @@ class Forwarding():
             forwarding (str or int, required): ID of the forwarding that will be deleted (Example: 18635). Value from get_forwardings.
 
         Returns:
-            dict: A dictionary containing the status of the request and the ID of the forwarding that was deleted.
+            dict: A dictionary containing the status of the request and the the forwarding phone number that was deleted.
         """
         
         mtd = "delForwarding"
