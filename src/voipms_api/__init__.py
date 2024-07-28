@@ -1,4 +1,5 @@
 from .accounts import Accounts
+from .call_hunting import CallHunting
 from .dids import DIDs
 from .forwarding import Forwarding
 from .general import General
@@ -9,7 +10,8 @@ from .voicemail import Voicemail
 from .voipms_client import VoipMsClient
 
 __all__ = [
-    "Accounts", 
+    "Accounts",
+    "CallHunting",
     "DIDs", 
     "Forwarding", 
     "General", 

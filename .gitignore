@@ -5,7 +5,6 @@
 .vscode/
 
 # Ignore packages in progress
-call_hunting.py
 
 
 # Ignore examples in progess
