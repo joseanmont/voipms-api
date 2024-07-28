@@ -46,7 +46,7 @@ class RingGroups():
         Args:
             name (str, required): A name for the new Ring Group.
             voicemail (str or int, required): ID of the Voicemail to assign. Value from get_voicemails.
-            members (srt, ooptional): A string of members separated by semicolons. Default is Main Account. (Example: 'account:100001;fwd:16006'). See VoIP.ms API documentation for more details.
+            members (srt, ooptional): A string of members separated by semicolons. Default is Main Account as only member. (Example: 'account:100001;fwd:16006'). See VoIP.ms API documentation for more details.
 
         Returns:
             dict: A dictionary containing the status of the request and the name of the Ring Group that was created.
