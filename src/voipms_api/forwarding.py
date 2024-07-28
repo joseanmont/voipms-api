@@ -82,13 +82,13 @@ class Forwarding():
         
 
     def delete_forwarding(self, 
-            forwarding:Optional[Union[str, int]]=None,
+            forwarding:Optional[Union[str, int]],
         ) -> dict:
         """
         Calls the VoIP.ms delForwarding function.
 
         Args:
-            forwarding (str or int, optional): ID of the forwarding that will be deleted (Example: 18635). Value from get_forwardings.
+            forwarding (str or int, required): ID of the forwarding that will be deleted (Example: 18635). Value from get_forwardings.
 
         Returns:
             dict: A dictionary containing the status of the request and the ID of the forwarding that was deleted.

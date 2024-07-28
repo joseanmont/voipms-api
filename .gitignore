@@ -5,13 +5,14 @@
 .vscode/
 
 # Ignore packages in progress
-
+ring_groups.py
 
 
 # Ignore examples in progess
 example_client.py
 example_voicemail.py
 example_forwarding.py
+example_ring_groups.py
 
 
 # Ignore pycache
