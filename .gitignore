@@ -5,10 +5,11 @@
 .vscode/
 
 # Ignore packages in progress
-
+call_hunting.py
 
 
 # Ignore examples in progess
+example_call_hunting.py
 example_client.py
 example_voicemail.py
 example_forwarding.py

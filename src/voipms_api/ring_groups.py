@@ -38,7 +38,7 @@ class RingGroups():
     def create_ring_group(self, 
             name:str,
             voicemail:Union[str, int],
-            members:str=None,
+            members:Optional[str]=None,
         ) -> dict:
         """
         Calls the VoIP.ms setRingGroup function to create a new Ring Group.
@@ -46,7 +46,7 @@ class RingGroups():
         Args:
             name (str, required): A name for the new Ring Group.
             voicemail (str or int, required): ID of the Voicemail to assign. Value from get_voicemails.
-            members (srt, ooptional): A string of members separated by semicolons. Default is Main Account as only member. (Example: 'account:100001;fwd:16006'). See VoIP.ms API documentation for more details.
+            members (srt, optional): A string of members separated by semicolons. Default is Main Account as only member. (Example: 'account:100001;fwd:16006'). See VoIP.ms API documentation for more details.
 
         Returns:
             dict: A dictionary containing the status of the request and the name of the Ring Group that was created.
@@ -70,6 +70,7 @@ class RingGroups():
                 params["members"] = members
             
             data = self.vms_client.make_request(mtd, params)
+            data["name"] = name
             return data
         
         except requests.exceptions.HTTPError as http_err:
