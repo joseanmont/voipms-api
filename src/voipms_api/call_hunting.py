@@ -97,3 +97,78 @@ class CallHunting():
         except Exception as err:
             print(f'An error occurred: {err}')
             return None
+        
+
+    def delete_call_hunting(self, 
+            call_hunting:Union[str, int],
+        ) -> dict:
+        """
+        Calls the VoIP.ms delCallHunting function.
+
+        Args:
+            call_hunting (str or int, required): ID of the call hunting that will be deleted (Example: 18635). Value from get_call_huntings.
+
+        Returns:
+            dict: A dictionary containing the status of the request and the ID of the call hunting that was deleted.
+        """
+        
+        mtd = "delCallHunting"
+
+        try:
+            params = {
+                "callhunting": call_hunting,
+            }
+
+            # Code to get the name of the call hunting that is deleted.
+            ch_info = self.get_call_huntings(call_hunting)
+            ch_name = ch_info["call_hunting"][0]["description"]
+
+            data = self.vms_client.make_request(mtd, params)
+            data["call_hunting"] = ch_name
+            return data
+        
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error ocurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'An error occurred: {err}')
+            return None
+        
+
+    def get_call_huntings(self, 
+            call_hunting:Optional[Union[str, int]]=None,
+        ) -> dict:
+        """
+        Calls the VoIP.ms getCallHuntings function.
+
+        Args:
+            call_hunting (str or int, optional): ID of a specific call hunting (Example: 323).
+
+        Returns:
+            dict: A dictionary containing the status of the request and the data of all the call huntings, or the data of a specific call hunting if an ID is provided.
+        """
+        
+        mtd = "getCallHuntings"
+
+        try:
+            params = {}
+
+            # Optional in this package.
+            if call_hunting:
+                params["callhunting"] = call_hunting
+            
+            data = self.vms_client.make_request(mtd, params)
+            return data
+        
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error ocurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'An error occurred: {err}')
+            return None
