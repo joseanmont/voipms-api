@@ -99,3 +99,78 @@ class IVR():
         except Exception as err:
             print(f'An error occurred: {err}')
             return None
+        
+
+    def delete_ivr(self, 
+            ivr:Union[str, int],
+        ) -> dict:
+        """
+        Calls the VoIP.ms delIVR function.
+
+        Args:
+            ivr (str or int, required): ID of the IVR that will be deleted (Example: 18635). Value from get_ivrs.
+
+        Returns:
+            dict: A dictionary containing the status of the request and the ID of the IVR that was deleted.
+        """
+        
+        mtd = "delIVR"
+
+        try:
+            params = {
+                "ivr": ivr,
+            }
+
+            # Code to get the name of the IVR that is deleted.
+            ivr_info = self.get_ivrs(ivr)
+            ivr_name = ivr_info["ivrs"][0]["name"]
+
+            data = self.vms_client.make_request(mtd, params)
+            data["ivr"] = ivr_name
+            return data
+        
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error ocurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'An error occurred: {err}')
+            return None
+        
+
+    def get_ivrs(self, 
+            ivr:Optional[Union[str, int]]=None,
+        ) -> dict:
+        """
+        Calls the VoIP.ms getIVRs function.
+
+        Args:
+            ivr (str or int, optional): ID of a specific IVR (Example: 323).
+
+        Returns:
+            dict: A dictionary containing the status of the request and the data of all the IVRs, or the data of a specific IVR if an ID is provided.
+        """
+        
+        mtd = "getIVRs"
+
+        try:
+            params = {}
+
+            # Optional in this package.
+            if ivr:
+                params["ivr"] = ivr
+            
+            data = self.vms_client.make_request(mtd, params)
+            return data
+        
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error ocurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'An error occurred: {err}')
+            return None
