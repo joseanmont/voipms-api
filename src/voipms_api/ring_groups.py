@@ -79,7 +79,7 @@ class RingGroups():
             print(f"Key error: {key_err}")
             return None
         except Exception as err:
-            print(f'Other error occurred: {err}')
+            print(f'An error occurred: {err}')
             return None
         
 
@@ -118,7 +118,7 @@ class RingGroups():
             print(f"Key error: {key_err}")
             return None
         except Exception as err:
-            print(f'Other error occurred: {err}')
+            print(f'An error occurred: {err}')
             return None
         
 
@@ -154,5 +154,5 @@ class RingGroups():
             print(f"Key error: {key_err}")
             return None
         except Exception as err:
-            print(f'Other error occurred: {err}')
+            print(f'An error occurred: {err}')
             return None

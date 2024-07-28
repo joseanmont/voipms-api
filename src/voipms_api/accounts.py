@@ -85,7 +85,7 @@ class Accounts():
             print(f"Key error: {key_err}")
             return None
         except Exception as err:
-            print(f'Other error occurred: {err}')
+            print(f'An error occurred: {err}')
             return None
         
 
@@ -121,7 +121,7 @@ class Accounts():
             print(f"Key error: {key_err}")
             return None
         except Exception as err:
-            print(f'Other error occurred: {err}')
+            print(f'An error occurred: {err}')
             return None
         
 
@@ -156,5 +156,5 @@ class Accounts():
             print(f"Key error: {key_err}")
             return None
         except Exception as err:
-            print(f'Other error occurred: {err}')
+            print(f'An error occurred: {err}')
             return None
