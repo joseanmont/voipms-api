@@ -101,6 +101,7 @@ class Forwarding():
                 "forwarding": forwarding,
             }
 
+            # Code to get the phone number of the forwarding that is deleted.
             fwd_info = self.get_forwardings(forwarding)
             fwd_pn = fwd_info["forwardings"][0]["phone_number"]
 
@@ -129,7 +130,7 @@ class Forwarding():
             forwarding (str or int, optional): ID of a specific forwarding (Example: 18635).
 
         Returns:
-            dict: A dictionary containing the status of the request and the data of all the forwardings, or the data of a specific forwarding an ID is provided.
+            dict: A dictionary containing the status of the request and the data of all the forwardings, or the data of a specific forwarding if an ID is provided.
         """
         
         mtd = "getForwardings"

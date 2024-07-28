@@ -5,7 +5,7 @@
 .vscode/
 
 # Ignore packages in progress
-ring_groups.py
+
 
 
 # Ignore examples in progess
