@@ -1,8 +1,5 @@
 import requests
-from voipms_client import VoipMsClient
 from typing import Optional, Union
-from accounts import Accounts
-
 
 class CallHunting():
     '''
@@ -18,6 +15,8 @@ class CallHunting():
     '''
 
     def __init__(self, username=None, password=None) -> None:
+
+        from voipms_api import Accounts, VoipMsClient
         
         if (username and not password) or (password and not username):
             raise ValueError("Both username and password must be provided together")

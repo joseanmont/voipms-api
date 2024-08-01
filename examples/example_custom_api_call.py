@@ -4,7 +4,7 @@ In this example you will see how to call functions from the VoIP.ms API.
 This could be used for any function that has not been added to this package.
 '''
 
-from voipms_api.voipms_client import VoipMsClient
+from voipms_api import VoipMsClient
 
 func = "getMusicOnHold" # Function of the VoIP.ms API.
 

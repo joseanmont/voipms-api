@@ -21,3 +21,4 @@ example_ring_groups.py
 
 # Ignore builder files
 dist/
+voipms_api.egg-info/

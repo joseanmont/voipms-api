@@ -1,5 +1,4 @@
 import requests
-from voipms_client import VoipMsClient
 from typing import Optional, Union
 
 
@@ -13,6 +12,8 @@ class Accounts():
     '''
 
     def __init__(self, username=None, password=None) -> None:
+
+        from voipms_api import VoipMsClient
         
         if (username and not password) or (password and not username):
             raise ValueError("Both username and password must be provided together")

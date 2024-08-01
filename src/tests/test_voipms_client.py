@@ -1,5 +1,5 @@
 import unittest
-from src.voipms_api import VoipMsClient
+from voipms_api import VoipMsClient
 
 class TestVoIPmsClient(unittest.TestCase):
 

@@ -21,7 +21,7 @@ Check requirements.txt to see the packages that need to be installed.
 ```plaintext
 voipms-api
 ├── src/
-│   └── voipms-api/
+│   └── voipms_api/
 │       ├── __init__.py
 │       ├── accounts.py
 │       ├── call_hunting.py

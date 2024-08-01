@@ -1,8 +1,12 @@
+[build-system]
+requires = ["setuptools>=71.1.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "voipms-api"
-version = "0.0.1"
+version = "1.0.0b9"
 authors = [{ name = "Jose Pineda", email = "hello@joseanmont.com" }]
-description = "A python package to use the VoIP.ms API"
+description = "A python package to simplify the use of the VoIP.ms API"
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [
@@ -10,6 +14,8 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+dependencies = ["requests>=2.32.3"]
+
 
 [project.urls]
 Homepage = "https://github.com/joseanmont/voipms-api"
