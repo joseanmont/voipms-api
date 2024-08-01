@@ -32,6 +32,7 @@ class Accounts():
     def create_subaccount(self, 
             username:str,
             password:str,
+            description:Optional[str]=None,
             extension:Optional[Union[str, int]]=None,
             protocol:Optional[Union[str, int]]=1,
             auth_type:Optional[Union[str, int]]=1,
@@ -43,6 +44,7 @@ class Accounts():
         Args:
             username (str, required): Username to set to the sub account (Example: 'VoIP').
             password (str, required): Password to set for the authentication.
+            description (str, optional): A description or name for the Sub Account.
             extension str or int, optional): Sub Account Internal Extension (Example: 1 -> Creates 101).
             protocol (str or int, optional): The protocol the sub account will use. Default is '1' for SIP (value from get_Protocols).
             auth_type (str or int, optional): The authentication type the sub account will use. Default is '1' for User/Password (value from get_auth_types).
@@ -71,6 +73,8 @@ class Accounts():
             }
 
             # Optional parameters in this package.
+            if description:
+                params["description"] = description
             if protocol:
                 params["protocol"] = protocol
             if auth_type:

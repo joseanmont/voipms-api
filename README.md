@@ -10,6 +10,7 @@ This package is developed to streamline the process of integrating with the VoIP
 
 ## Updates
 
+- **1.0.2b11: The method create_sub_account now accepts description as an optional argument.
 - **1.0.1b11: Fixed bug that causes importing errors when using the module Voicemail.
 - **1.0.0b11: All modules were refactored to improve imports.
 
