@@ -53,10 +53,20 @@ VOIPMS_API_USER = "Your VoIP.ms account email"
 VOIPMS_API_PASSWORD = "Your VoIP.ms API password"
 ```
 
-However, you can also add your credentials or use different credentials by using the class VoipMsClient. Here is an example:
+After this, you can start importing the classes and use their functions. Here is an example:
+
+```
+from voipms_api import DIDs
+
+dids = DIDs()
+print(dids.get_dids_info())
+```
+
+Additionally, you can also add your credentials or use different credentials by using the class VoipMsClient. Here is an example:
 
 ```
 from voipms_api import VoipMsClient
+
 vms_client = VoipMsClient(username="me@email.com", password="your VoIP.ms API password")
 ```
 
@@ -64,6 +74,7 @@ Or, you can do it when calling a single instance. For example:
 
 ```
 from voipms_api import General
+
 balance = General(username="me@email.com", password="api_password")
 print(balance.get_balance())
 ```
@@ -78,7 +89,7 @@ Additional functionalities will be added over time.
 
 ## Examples of scripts
 
-You can find more example scripts in the examples directory. These scripts demonstrate how to use the some features of the voipms-api package.
+You can find more examples of scripts in the examples directory in the [Github](https://github.com/joseanmont/voipms-api) repository. These scripts demonstrate how to use the some features of the voipms-api package.
 
 ## Contributing
 

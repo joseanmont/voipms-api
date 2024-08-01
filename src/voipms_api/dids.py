@@ -15,6 +15,10 @@ class DIDs():
             Cancels a specific DID number and returns the result of the request.
         get_dids_info:
             Returns the current balance of the VoIP.ms account.
+        order_did:
+            Orders a new local US or Canadian DID number.
+        order_toll_free:
+            Orders a new Toll Free US or Canadian DID number.
     '''
 
     def __init__(self, username=None, password=None) -> None:

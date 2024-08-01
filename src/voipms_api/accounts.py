@@ -9,6 +9,10 @@ class Accounts():
     Methods:
         create_subaccount:
             Creates a Sub Account and returns the result of the request.
+        delete_subaccount:
+            Deletes a specific Sub Account and returns the result of the request.
+        get_subaccounts:
+            Returns all the Sub Accounts or a specific Sub Account if an ID is provided.
     '''
 
     def __init__(self, username=None, password=None) -> None:
