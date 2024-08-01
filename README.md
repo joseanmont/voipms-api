@@ -8,6 +8,11 @@ This package is developed to streamline the process of integrating with the VoIP
 - **Modular Design**: Organized into separate modules for different functionalities, allowing targeted imports and reduced overhead.
 - **Ongoing Development**: New functions will continue to be added.
 
+## Updates
+
+- **1.0.1b11: Fixed bug that causes importing errors when using the module Voicemail.
+- **1.0.0b11: All modules were refactored to improve imports.
+
 ## Installation
 
 The package is now available at PyPi and can be installed in your virtual environment running this command:
@@ -16,9 +21,7 @@ The package is now available at PyPi and can be installed in your virtual enviro
 pip install voipms-api
 ```
 
-You can also clone the repository in your project from Github.
-
-[Github](https://github.com/joseanmont/voipms-api)
+You can also clone the repository in your project from [Github](https://github.com/joseanmont/voipms-api).
 
 **Note:** If you clone it and have problems importing the modules, add the path to the directory and subdirectories in PYTHONPATH.
 
@@ -62,21 +65,26 @@ dids = DIDs()
 print(dids.get_dids_info())
 ```
 
-Additionally, you can also add your credentials or use different credentials by using the class VoipMsClient. Here is an example:
-
-```
-from voipms_api import VoipMsClient
-
-vms_client = VoipMsClient(username="me@email.com", password="your VoIP.ms API password")
-```
-
-Or, you can do it when calling a single instance. For example:
+Or, you can do also add the credentials when calling a single instance. For example:
 
 ```
 from voipms_api import General
 
 balance = General(username="me@email.com", password="api_password")
 print(balance.get_balance())
+```
+
+Additionally, you can also add your credentials or use different credentials by using the class VoipMsClient.
+
+This class also allows you use the method "make_request" to call a VoIP.ms function that might not be available in this package yet.
+
+Here is an example:
+
+```
+from voipms_api import VoipMsClient
+
+vms_client = VoipMsClient(username="me@email.com", password="your VoIP.ms API password")
+vms_client.make_request("sendFax")
 ```
 
 ## Module Capabilities

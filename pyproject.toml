@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "voipms-api"
-version = "1.0.0b11"
+version = "1.0.1b11"
 authors = [{ name = "Jose Pineda", email = "hello@joseanmont.com" }]
 description = "A python package to simplify the use of the VoIP.ms API"
 readme = "README.md"
