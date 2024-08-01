@@ -10,11 +10,17 @@ This package is developed to streamline the process of integrating with the VoIP
 
 ## Installation
 
-Add the package to your project to be able to import its modules, classes and methods.
+The package is now available at PyPi and can be installed in your virtual environment running this command:
 
-Check requirements.txt to see the packages that need to be installed.
+```
+pip install voipms-api
+```
 
-**Note:** If you have problems importing the modules, add the path to the directory and subdirectories in PYTHONPATH.
+You can also clone the repository in your project from Github.
+
+[Github](https://github.com/joseanmont/voipms-api)
+
+**Note:** If you clone it and have problems importing the modules, add the path to the directory and subdirectories in PYTHONPATH.
 
 ## Package structure
 
