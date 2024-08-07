@@ -12,6 +12,8 @@ class CallHunting():
             Deletes a specific Call Hunting and returns the result of the request.
         get_call_hunting:
             Returns all the existing Call Huntings, or a specific Call Hunting if a Call Hunting ID is provided.
+        update_call_hunting:
+            Updates the configuration of a Call Hunting and returns the result of the request.
     '''
 
     def __init__(self, username=None, password=None) -> None:
@@ -46,8 +48,8 @@ class CallHunting():
 
         Args:
             name (str, required): A name for the new Call Hunting.
-            recording (str or int, optional): ID of the recording to set to the Call Hunting. Values from get_recordings.
-            language (str, optional): Language of the Call Hunting. Default  is 'en' for English. Values from get_languages.
+            recording (str or int, optional): ID of the recording to set to the Call Hunting (values from get_recordings).
+            language (str, optional): Language of the Call Hunting. Default  is 'en' for English (values from get_languages).
             order (str, optional): Ring order of the Call Hunting. Default  is 'follow' to follow member's order. Alternative is 'random'.
             members (srt, optional): A string of members separated by semicolons. Default is Main Account as only member. (Example: 'account:100001;fwd:16006'). See VoIP.ms API documentation for more details.
 
@@ -56,7 +58,7 @@ class CallHunting():
         """
         
         mtd = "setCallHunting"
-        main_account = "account:" + self.acc_number
+        default_member = "account:" + self.acc_number
 
         try:
             params = {
@@ -68,7 +70,7 @@ class CallHunting():
                 "recording": "default",
                 "language": "en",
                 "order": "follow",
-                "members": main_account,
+                "members": default_member,
                 "ring_time": 25,
                 "press": 0
             }
@@ -160,6 +162,72 @@ class CallHunting():
                 params["callhunting"] = call_hunting
             
             data = self.vms_client.make_request(mtd, params)
+            return data
+        
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error ocurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'An error occurred: {err}')
+            return None
+        
+
+    def update_call_hunting(self,
+            id:Union[str, int],
+            name:Optional[str]=None,
+            recording:Optional[Union[str, int]]=None,
+            language:Optional[str]=None,
+            order:Optional[str]=None,
+            members:Optional[str]=None,
+            ring_time:Optional[Union[str, int]]=None,
+            press_one:Optional[Union[str, int]]=None,
+        ) -> dict:
+        """
+        Calls the VoIP.ms setCallHunting function to update an existing call hunting.
+
+        Args:
+            id (str or int, required): The ID of the Call Hunting that will be updated.
+            name (str, optional): The name of the Call Hunting.
+            recording (str or int, optional): ID of the recording to set to the Call Hunting (values from get_recordings).
+            language (str, optional): Language of the Call Hunting (values from get_languages).
+            order (str, optional): Ring order of the Call Hunting (options are 'follow' or 'random').
+            members (srt, optional): A string of members separated by semicolons. (Example: 'account:100001;fwd:16006'). See VoIP.ms API documentation for more details.
+            ring_time (str or int, optional): The ring time of the members (seconds in 5 increments).
+
+        Returns:
+            dict: A dictionary containing the status of the request.
+        """
+        
+        mtd = "setCallHunting"
+        # main_account = "account:" + self.acc_number
+
+        try:
+            # Code to get the settings of the call hunting that will be edited.
+            ch_config = self.get_call_huntings(id)
+            # Saving the current settings in the parameters.
+            params = ch_config["call_hunting"][0]
+
+            # Optional in this package.
+            if name:
+                params["description"] = name
+            if recording:
+                params["recording"] = recording
+            if language:
+                params["language"] = language
+            if order:
+                params["order"] = order
+            if members:
+                params["members"] = members
+            if ring_time:
+                params["ring_time"] = ring_time
+            if press_one is not None:
+                params["press"] = press_one
+            
+            data = self.vms_client.make_request(mtd, params)
+            data["name"] = name
             return data
         
         except requests.exceptions.HTTPError as http_err:

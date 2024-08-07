@@ -13,6 +13,8 @@ class RingGroups():
             Deletes a specific Ring Group and returns the result of the request.
         get_ring_groups:
             Returns all the existing Ring Groups, or a specific Ring Group if a Ring Group ID is provided.
+        update_ring_group:
+            Updates the configuration of a Ring Group and returns the result of the request.
     '''
 
     def __init__(self, username=None, password=None) -> None:
@@ -39,13 +41,16 @@ class RingGroups():
             name:str,
             voicemail:Union[str, int],
             members:Optional[str]=None,
+            announcement:Optional[str]=None,
+            music_on_hold:Optional[str]=None,
+            language:Optional[str]=None
         ) -> dict:
         """
         Calls the VoIP.ms setRingGroup function to create a new Ring Group.
 
         Args:
             name (str, required): A name for the new Ring Group.
-            voicemail (str or int, required): ID of the Voicemail to assign. Value from get_voicemails.
+            voicemail (str or int, required): ID of the Voicemail to assign (value from get_voicemails).
             members (srt, optional): A string of members separated by semicolons. Default is Main Account as only member. (Example: 'account:100001;fwd:16006'). See VoIP.ms API documentation for more details.
 
         Returns:
@@ -53,7 +58,7 @@ class RingGroups():
         """
         
         mtd = "setRingGroup"
-        main_account = "account:" + self.acc_number
+        default_member = "account:" + self.acc_number
 
         try:
             params = {
@@ -61,13 +66,19 @@ class RingGroups():
                 "name": name,
                 "voicemail": voicemail,
 
-                # Required by VoIP.ms API
-                "members": main_account,
+                # Required by VoIP.ms API but set with a default value so it is not required.
+                "members": default_member,
             }
 
             # Optional in this package.
             if members:
                 params["members"] = members
+            if announcement:
+                params["caller_announcement"] = announcement
+            if music_on_hold:
+                params["music_on_hold"] = music_on_hold
+            if language:
+                params["language"] = language
             
             data = self.vms_client.make_request(mtd, params)
             data["name"] = name
@@ -91,7 +102,7 @@ class RingGroups():
         Calls the VoIP.ms delRingGroup function.
 
         Args:
-            ring_group (str or int, required): ID of the ring group that will be deleted (Example: 18635). Value from get_ring_groups.
+            ring_group (str or int, required): ID of the ring group that will be deleted (value from get_ring_groups. Example: 18635).
 
         Returns:
             dict: A dictionary containing the status of the request and the ID of the ring group that was deleted.
@@ -146,6 +157,65 @@ class RingGroups():
                 params["ring_group"] = ring_group
             
             data = self.vms_client.make_request(mtd, params)
+            return data
+        
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error ocurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'An error occurred: {err}')
+            return None
+        
+
+    def update_ring_group(self,
+            id:Union[str, int],
+            name:Optional[str]=None,
+            voicemail:Optional[Union[str, int]]=None,
+            members:Optional[str]=None,
+            announcement:Optional[str]=None,
+            music_on_hold:Optional[str]=None,
+            language:Optional[str]=None
+        ) -> dict:
+        """
+        Calls the VoIP.ms setRingGroup function to update an existing Ring Group.
+
+        Args:
+            id (str or int, optional): ID of the Ring Group that will be updated (value from get_ring_groups).
+            name (str, optional): A name for the Ring Group.
+            voicemail (str or int, optional): ID of the Voicemail to assign (value from get_voicemails).
+            members (srt, optional): A string of members separated by semicolons (Example: 'account:100001;fwd:16006'). See VoIP.ms API documentation for more details.
+
+        Returns:
+            dict: A dictionary containing the status of the request and the name of the Ring Group that was updated.
+        """
+        
+        mtd = "setRingGroup"
+
+        try:
+            # Code to get the settings of the ring group that will be updated.
+            rg_config = self.get_ring_groups(id)
+            # Saving the current settings in the parameters.
+            params = rg_config["ring_groups"][0]
+
+            # Optional in this package.
+            if name:
+                params["name"] = name
+            if voicemail:
+                params["voicemail"] = voicemail
+            if members:
+                params["members"] = members
+            if announcement:
+                params["caller_announcement"] = announcement
+            if music_on_hold:
+                params["music_on_hold"] = music_on_hold
+            if language:
+                params["language"] = language
+            
+            data = self.vms_client.make_request(mtd, params)
+            data["name"] = name
             return data
         
         except requests.exceptions.HTTPError as http_err:

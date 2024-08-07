@@ -12,6 +12,8 @@ class IVR():
             Deletes a specific IVR and returns the result of the request.
         get_ivr:
             Returns all the existing IVRs, or a specific IVR if an IVR ID is provided.
+        update_ivr:
+            Updates the configuration of an IVR and returns the result of the request.
     '''
 
     def __init__(self, username=None, password=None) -> None:
@@ -46,19 +48,19 @@ class IVR():
         Calls the VoIP.ms setIVR function to create a new IVR.
 
         Args:
-            name (str, required): A name for the new IVR.
-            recording (str or int, required): ID of the recording to set to the IVR. Values from get_recordings.
-            time_out (str or int, optional): Maximum time to dial in an option after recording. Values from 1 to 10. Default is 5.
-            language (str, optional): Language of the IVR. Default  is 'en' for English. Values from get_languages.
-            voicemail (str, optional): Voicemail Setup for the IVR. Default  is '1' for use Default DID voicemail. Alternative is '2' for account voicemail.
-            options (srt, optional): A string of options separated by semicolons. Default is Main Account for 1 as only choice. (Example: '1=account:100001;2=fwd:16006'). See VoIP.ms API documentation for more details.
+            name (str, optional): A name for the IVR.
+            recording (str or int, optional): ID of the recording to set to the IVR (values from get_recordings).
+            time_out (str or int, optional): Maximum time to dial in an option after recording (values from 1 to 10. Default is 5).
+            language (str, optional): Language of the IVR. Default  is 'en' for English (values from get_languages).
+            voicemail (str, optional): Voicemail Setup for the IVR (Default  is '1' for use 'Default DID voicemail'. Alternative is '2' for 'Account voicemail').
+            options (srt, optional): A string of options separated by semicolons (Default is Main Account for 1 as only choice. Example: '1=account:100001;2=fwd:16006').
 
         Returns:
             dict: A dictionary containing the status of the request and the name of the IVR that was created.
         """
         
         mtd = "setIVR"
-        main_account = "1=account:" + self.acc_number
+        default_opt = "1=account:" + self.acc_number
 
         try:
             params = {
@@ -70,7 +72,7 @@ class IVR():
                 "timeout": 5,
                 "language": "en",
                 "voicemailsetup": 1,
-                "choices": main_account
+                "choices": default_opt
             }
 
             # Optional in this package.
@@ -162,6 +164,67 @@ class IVR():
                 params["ivr"] = ivr
             
             data = self.vms_client.make_request(mtd, params)
+            return data
+        
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error ocurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'An error occurred: {err}')
+            return None
+        
+
+    def update_ivr(self,
+            id:Union[str, int],
+            name:Optional[str]=None,
+            recording:Union[str, int]=None,
+            time_out:Optional[Union[str, int]]=None,
+            language:Optional[str]=None,
+            voicemail:Optional[str]=None,
+            options:Optional[str]=None,
+        ) -> dict:
+        """
+        Calls the VoIP.ms setIVR function to update an existing IVR.
+
+        Args:
+            id (str or int, required): ID of the IVR that will be updated (values from get_ivrs).
+            name (str, optional): A name for the IVR.
+            recording (str or int, optional): ID of the recording to set to the IVR (values from get_recordings).
+            time_out (str or int, optional): Maximum time to dial in an option after recording (values from 1 to 10).
+            language (str, optional): Language of the IVR. Default  is 'en' for English (values from get_languages).
+            voicemail (str, optional): Voicemail Setup for the IVR ('1' to use 'Default DID voicemail' - '2' to use 'Account voicemail').
+            options (srt, optional): A string of options separated by semicolons (Example: '1=account:100001;2=fwd:16006').
+
+        Returns:
+            dict: A dictionary containing the status of the request and the name of the IVR that was updated.
+        """
+        
+        mtd = "setIVR"
+
+
+        try:
+            # Code to get the settings of the IVR that will be edited.
+            ivr_config = self.get_ivrs(id)
+            # Saving the current settings in the parameters.
+            params = ivr_config["ivrs"][0]
+
+            # Optional in this package.
+            if recording:
+                params["recording"] = recording
+            if time_out:
+                params["timeout"] = time_out
+            if language:
+                params["language"] = language
+            if voicemail:
+                params["voicemailsetup"] = voicemail
+            if options:
+                params["choices"] = options
+            
+            data = self.vms_client.make_request(mtd, params)
+            data["name"] = name
             return data
         
         except requests.exceptions.HTTPError as http_err:

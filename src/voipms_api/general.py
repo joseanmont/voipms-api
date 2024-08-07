@@ -477,13 +477,13 @@ class General():
         try:
             df = datetime.strptime(date_from, '%Y-%m-%d')
             dt = datetime.strptime(date_to, '%Y-%m-%d')
-            if df <= dt:
-                params = {
+            if df > dt:
+                raise ValueError("The TO date cannot be prior the FROM date")
+            
+            params = {
                     "date_from": date_from,
                     "date_to": date_to
                 }
-            else:
-                raise TypeError("The TO date cannot be prior the FROM date")
             
             data = self.vms_client.make_request(mtd, params)
             return data

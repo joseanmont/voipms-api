@@ -10,6 +10,34 @@ This package is developed to streamline the process of integrating with the VoIP
 
 ## Updates
 
+- **1.1.2b11:
+    - Accounts
+        - Method updated: 'create_sub_account'
+            - arg 'password' set as optional so Sub Accounts can be created using IP authentication.
+            - added optional arg 'ip' for sub accounts created with 'auth_type' IP authentication.
+            - added optional arg 'codecs' to specify the codec the sub account will use.
+ 	        - added optional arg 'lock_international' to enable/disable Interntional calls.
+ 	        - added optional arg 'callerid_number' to set a caller ID number for the sub account.
+        - Added method 'update_subaccounts'
+    - CallHunting
+        - Added method 'update_call_hunting'
+    - Forwarding
+        - Added method 'update_forwarding'
+    - General
+        - Bug fixed on 'get_transactions' that did not allow get records from one single day. 
+    - IVR
+        - Added method 'update_ivr'
+    - RingGroup
+        - Method updated: 'create_ring_group'
+            - added optional arg 'announcement' to set an announcement recording.
+            - added optional arg 'music_on_hold' to set music on hold.
+            - added optional arg 'language' to set the language.
+        - Added method 'update_ring_group'
+    - SMS
+        - Added method 'get_sms'
+    - Voicemail
+        - Added method 'update_voicemail'
+
 - **1.0.2b11: The method create_sub_account now accepts description as an optional argument.
 - **1.0.1b11: Fixed bug that causes importing errors when using the module Voicemail.
 - **1.0.0b11: All modules were refactored to improve imports.
@@ -66,7 +94,7 @@ dids = DIDs()
 print(dids.get_dids_info())
 ```
 
-Or, you can do also add the credentials when calling a single instance. For example:
+Or, you can add the credentials when calling a single instance. For example:
 
 ```
 from voipms_api import General
@@ -75,7 +103,7 @@ balance = General(username="me@email.com", password="api_password")
 print(balance.get_balance())
 ```
 
-Additionally, you can also add your credentials or use different credentials by using the class VoipMsClient.
+Additionally, you can add your credentials or use different credentials by using the class VoipMsClient.
 
 This class also allows you use the method "make_request" to call a VoIP.ms function that might not be available in this package yet.
 

@@ -14,7 +14,7 @@ example_voicemail.py
 example_forwarding.py
 example_ivr.py
 example_ring_groups.py
-
+my_tests*
 
 # Ignore pycache
 **/__pycache__/

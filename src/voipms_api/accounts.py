@@ -13,6 +13,8 @@ class Accounts():
             Deletes a specific Sub Account and returns the result of the request.
         get_subaccounts:
             Returns all the Sub Accounts or a specific Sub Account if an ID is provided.
+        update_subaccount:
+            Updates the configuration of a Sub Account and returns the result of the request.
     '''
 
     def __init__(self, username=None, password=None) -> None:
@@ -31,58 +33,83 @@ class Accounts():
     
     def create_subaccount(self, 
             username:str,
-            password:str,
-            description:Optional[str]=None,
-            extension:Optional[Union[str, int]]=None,
-            protocol:Optional[Union[str, int]]=1,
             auth_type:Optional[Union[str, int]]=1,
+            password:Optional[str]=None,
+            ip:Optional[str]=None,
+            protocol:Optional[Union[str, int]]=1,
             device_type:Optional[Union[str, int]]=2,
+            callerid_number:Optional[Union[str, int]]=None,
+            extension:Optional[Union[str, int]]=None,
+            description:Optional[str]=None,
+            lock_international:Optional[Union[str, int]]=1,
+            codecs:Optional[str]="g722"
         ) -> dict:
         """
         Calls the VoIP.ms createSubAccount function.
 
         Args:
             username (str, required): Username to set to the sub account (Example: 'VoIP').
-            password (str, required): Password to set for the authentication.
-            description (str, optional): A description or name for the Sub Account.
-            extension str or int, optional): Sub Account Internal Extension (Example: 1 -> Creates 101).
-            protocol (str or int, optional): The protocol the sub account will use. Default is '1' for SIP (value from get_Protocols).
             auth_type (str or int, optional): The authentication type the sub account will use. Default is '1' for User/Password (value from get_auth_types).
+            password (str, optional): Password to set for password authentication.
+            ip (str, optional): IP address or Fully Qualified Domain Name for IP authentication.
+            protocol (str or int, optional): The protocol the sub account will use. Default is '1' for SIP (value from get_Protocols).
             device_type (str or int, optional): Device type that will be used. Default is '2' for ATA device, IP Phone or Softphone (value from get_device_types).
+            callerid_number (str or int, optional): Caller ID number of the sub account (Example: 4052550000).
+            extension (str or int, optional): Sub Account Internal Extension (Example: 1 -> Creates 101).
+            description (str, optional): A description or name for the Sub Account.
+            lock_international (str or int, optional): Enables/Disables International calls. Default is '1' for disabled. (values from get_lock_international).
+            codecs (str, optional): Audio codecs for calls. Default is g722. Values from get_allowed_codecs.
 
         Returns:
             dict: A dictionary containing the status of the request and the Sub Account that was created.
+
+        Raises:
+                ValueError: If auth_type is 1 and password is not provided.
+                            If auth_type is 2 and ip is not provided.
         """
         
         mtd = "createSubAccount"
 
         try:
+            
+            if (auth_type == 1 or auth_type == '1') and not password:
+                raise ValueError("Password must be provided for User/Password authentication.")
+            if (auth_type == 2 or auth_type == '2') and not ip:
+                raise ValueError("IP address must be provided for IP authentication.")
+
             params = {
 
                 # Required by this package.
                 "username": username,
-                "password": password,
 
-                # Required by the VoIP.ms API but set with default values in this package.
-                "lock_international": 1,
+                # Required by the VoIP.ms API but set with default values in this package so they are optional.
                 "international_route": 1,
                 "music_on_hold": "default",
-                "allowed_codecs": "g722",
                 "dtmf_mode": "auto",
                 "nat": "yes",
             }
 
             # Optional parameters in this package.
-            if description:
-                params["description"] = description
-            if protocol:
-                params["protocol"] = protocol
             if auth_type:
                 params["auth_type"] = auth_type
-            if device_type:
+            if password:
+                params["password"] =  password
+            if ip:
+                params["ip"] = ip
+            if protocol:
+                params["protocol"] = protocol
+            if device_type is not None:
                 params["device_type"] = device_type
-            if extension:
+            if callerid_number:
+                params["callerid_number"] = callerid_number
+            if extension is not None:
                 params["internal_extension"] = extension
+            if description:
+                params["description"] = description
+            if lock_international is not None:
+                params["lock_international"] = lock_international
+            if codecs:
+                params["allowed_codecs"] = codecs
             
             data = self.vms_client.make_request(mtd, params)
             return data
@@ -156,6 +183,123 @@ class Accounts():
                 params["account"] = subaccount
             
             data = self.vms_client.make_request(mtd, params)
+            return data
+        
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error ocurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'An error occurred: {err}')
+            return None
+        
+
+    def update_subaccount(self, 
+            subaccount:Union[str, int],
+            auth_type:Optional[Union[str, int]]=None,
+            password:Optional[str]=None,
+            ip:Optional[str]=None,
+            protocol:Optional[Union[str, int]]=None,
+            device_type:Optional[Union[str, int]]=None,
+            callerid_number:Optional[Union[str, int]]=None,
+            extension:Optional[Union[str, int]]=None,
+            description:Optional[str]=None,
+            canada_route:Optional[Union[str, int]]=None,
+            lock_international:Optional[Union[str, int]]=None,
+            international_route:Optional[Union[str, int]]=None,
+            record_calls:Optional[Union[str, int]]=None,
+            music_on_hold:Optional[str]=None,
+            codecs:Optional[str]=None,
+            dtmf_mode:Optional[str]=None
+        ) -> dict:
+        """
+        Calls the VoIP.ms setSubAccount function.
+
+        Args:
+            subaccount (str, required): Full mame of the sub account that will be updated (Example: '100000_SubAccount').
+            auth_type (str or int, optional): The authentication type the sub account will use (value from get_auth_types).
+            password (str, optional): Password to set for password authentication.
+            ip (str, optional): IP address or Fully Qualified Domain Name for IP authentication.
+            protocol (str or int, optional): The protocol the sub account will use. (value from get_Protocols).
+            device_type (str or int, optional): Device type that will be used (value from get_device_types).
+            callerid_number (str or int, optional): Caller ID number of the sub account.
+            extension (str or int, optional): Sub Account Internal Extension (Example: 1 -> Creates 101).
+            description (str, optional): Description or name of the Sub Account.
+            canada_route (str or int, optional): Defines the route for calls to Canada (values from get_routes).
+            lock_international (str or int, optional): Enables/Disables International calls (values from get_lock_international).
+            international_route (str or int, optional): Defines the route for International calls (values from get_routes).
+            music_on_hold (str, optional): Music on hold for the sub account (values from get_music_on_hold).
+            record_calls (str or int, optional): Enables/Disables call recording (values 1/0).
+            codecs (str, optional): Audio codecs for calls (values from get_allowed_codecs).
+            dtmf_mode (str, optional): DTMF mode for the sub account (values from get_dtmf_modes).
+
+        Returns:
+            dict: A dictionary containing the status of the request.
+
+        Raises:
+                ValueError: If auth_type is 1 and password is not provided.
+                            If auth_type is 2 and ip is not provided.
+        """
+        
+        mtd = "setSubAccount"
+
+        try:
+            if "_" not in subaccount:
+                raise ValueError("This method expects a sub account name.")
+
+            # Code to get the settings of the sub account that will be edited.
+            sa_config = self.get_subaccounts(subaccount)
+            # Saving the current settings in the parameters
+            params = sa_config["accounts"][0]
+
+            # Validation to ensure there's no missing parameters based on the authentication type.
+            if (auth_type == 1 or auth_type == '1') and not password:
+                raise ValueError("Password must be provided for User/Password authentication.")
+            if (auth_type == 2 or auth_type == '2') and not ip:
+                raise ValueError("IP address must be provided for IP authentication.")
+            
+            # If the authentication type is changed this validation ensures the password or ip is removed from the parameters to avoid error responses from the VoIP.ms API.
+            if params["auth_type"] == '1' and (auth_type == 2 or auth_type == '2'):
+                params.pop('password', None)
+            if params["auth_type"] == '2' and (auth_type == 1 or auth_type == '1'):
+                params.pop('ip', None)
+
+            # Optional parameters in this method.
+            if auth_type is not None:
+                params["auth_type"] = auth_type
+            if password:
+                params["password"] =  password
+            if ip:
+                params["ip"] = ip
+            if protocol:
+                params["protocol"] = protocol
+            if device_type is not None:
+                params["device_type"] = device_type
+            if callerid_number:
+                params["callerid_number"] = callerid_number
+            if description:
+                params["description"] = description
+            if canada_route:
+                params["canada_routing"] = canada_route
+            if lock_international is not None:
+                params["lock_international"] = lock_international
+            if international_route:
+                params["international_route"] = international_route
+            if record_calls is not None:
+                params["record_calls"] = record_calls
+            if music_on_hold:
+                params["music_on_hold"] = music_on_hold
+            if extension:
+                params["internal_extension"] = extension
+            if codecs:
+                params["allowed_codecs"] = codecs
+            if dtmf_mode:
+                params["dtmf_mode"] = dtmf_mode
+            
+            data = self.vms_client.make_request(mtd, params)
+            data["subacc"] = subaccount
             return data
         
         except requests.exceptions.HTTPError as http_err:
