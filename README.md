@@ -10,6 +10,8 @@ This package is developed to streamline the process of integrating with the VoIP
 
 ## Updates
 
+- **1.1.3b11:
+    - Fixed bug on 'create_call_hunting' and 'update_call_hunting' that did not allow adding multiple members.
 - **1.1.2b11:
     - Accounts
         - Method updated: 'create_sub_account'

@@ -38,20 +38,26 @@ class CallHunting():
 
     def create_call_hunting(self, 
             name:str,
+            music:Optional[Union[str, int]]=None,
             recording:Optional[Union[str, int]]=None,
             language:Optional[str]=None,
             order:Optional[str]=None,
             members:Optional[str]=None,
+            ring_time:Optional[Union[str, int]]=None,
+            press_one:Optional[Union[str, int]]=None
         ) -> dict:
         """
         Calls the VoIP.ms setCallHunting function to create a new Call Hunting.
 
         Args:
             name (str, required): A name for the new Call Hunting.
+            music (str or int, optional): Music to be played while the caller waits (values from get_music_on_hold).
             recording (str or int, optional): ID of the recording to set to the Call Hunting (values from get_recordings).
             language (str, optional): Language of the Call Hunting. Default  is 'en' for English (values from get_languages).
             order (str, optional): Ring order of the Call Hunting. Default  is 'follow' to follow member's order. Alternative is 'random'.
             members (srt, optional): A string of members separated by semicolons. Default is Main Account as only member. (Example: 'account:100001;fwd:16006'). See VoIP.ms API documentation for more details.
+            ring_time (str or int, optional): The ring time of the members (seconds in 5 increments).
+            press_one (srt or int, optional): Defines if the member must press 1 to take the call or not (value '1' for enabled and '2' for disabled).
 
         Returns:
             dict: A dictionary containing the status of the request and the name of the Call Hunting that was created.
@@ -67,7 +73,7 @@ class CallHunting():
 
                 # Required by VoIP.ms API but set with default values so it is not required in this package.
                 "music": "default",
-                "recording": "default",
+                "recording": "none:",
                 "language": "en",
                 "order": "follow",
                 "members": default_member,
@@ -76,6 +82,8 @@ class CallHunting():
             }
 
             # Optional in this package.
+            if music:
+                params["music"] = music
             if recording:
                 params["recording"] = recording
             if language:
@@ -84,6 +92,10 @@ class CallHunting():
                 params["order"] = order
             if members:
                 params["members"] = members
+            if ring_time is not None:
+                params["ring_time"] = ring_time
+            if press_one is not None:
+                params["press"] = press_one
             
             data = self.vms_client.make_request(mtd, params)
             data["name"] = name
@@ -178,12 +190,13 @@ class CallHunting():
     def update_call_hunting(self,
             id:Union[str, int],
             name:Optional[str]=None,
+            music:Optional[Union[str, int]]=None,
             recording:Optional[Union[str, int]]=None,
             language:Optional[str]=None,
             order:Optional[str]=None,
             members:Optional[str]=None,
             ring_time:Optional[Union[str, int]]=None,
-            press_one:Optional[Union[str, int]]=None,
+            press_one:Optional[Union[str, int]]=None
         ) -> dict:
         """
         Calls the VoIP.ms setCallHunting function to update an existing call hunting.
@@ -191,11 +204,13 @@ class CallHunting():
         Args:
             id (str or int, required): The ID of the Call Hunting that will be updated.
             name (str, optional): The name of the Call Hunting.
+            music (str or int, optional): Music to be played while the caller waits (values from get_music_on_hold).
             recording (str or int, optional): ID of the recording to set to the Call Hunting (values from get_recordings).
             language (str, optional): Language of the Call Hunting (values from get_languages).
             order (str, optional): Ring order of the Call Hunting (options are 'follow' or 'random').
             members (srt, optional): A string of members separated by semicolons. (Example: 'account:100001;fwd:16006'). See VoIP.ms API documentation for more details.
-            ring_time (str or int, optional): The ring time of the members (seconds in 5 increments).
+            ring_time (str or int, optional): The ring time of the members (seconds in 5 increments | For multiple members use '20;20;20').
+            press_one (srt or int, optional): Defines if the member must press 1 to take the call or not (value '1' for enabled and '2' for disabled | For multiple members use '0;0;0').
 
         Returns:
             dict: A dictionary containing the status of the request.
@@ -213,6 +228,8 @@ class CallHunting():
             # Optional in this package.
             if name:
                 params["description"] = name
+            if music:
+                params["music"] = music
             if recording:
                 params["recording"] = recording
             if language:

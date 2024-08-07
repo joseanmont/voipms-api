@@ -218,7 +218,7 @@ class Voicemail():
         mtd = "setVoicemail"
 
         try:
-            # Code to get the settings of the ring group that will be updated.
+            # Code to get the settings of the voicemail that will be updated.
             vm_config = self.get_voicemails(id)
             # Saving the current settings in the parameters.
             params = vm_config["voicemails"][0]
