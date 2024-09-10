@@ -39,7 +39,10 @@ class Accounts():
             protocol:Optional[Union[str, int]]=1,
             device_type:Optional[Union[str, int]]=2,
             callerid_number:Optional[Union[str, int]]=None,
-            extension:Optional[Union[str, int]]=None,
+            internal_extension:Optional[Union[str, int]]=None,
+            internal_voicemail:Optional[Union[str, int]]=None,
+            internal_cnam:Optional[str]=None,
+            enable_internal_cnam:Optional[Union[str, int]]=0,
             description:Optional[str]=None,
             lock_international:Optional[Union[str, int]]=1,
             codecs:Optional[str]="g722"
@@ -56,9 +59,13 @@ class Accounts():
             device_type (str or int, optional): Device type that will be used. Default is '2' for ATA device, IP Phone or Softphone (value from get_device_types).
             callerid_number (str or int, optional): Caller ID number of the sub account (Example: 4052550000).
             extension (str or int, optional): Sub Account Internal Extension (Example: 1 -> Creates 101).
+            internal_extension (str or int, optional): Sub Account Internal Extension (Example: 1 -> Creates 101).
+            internal_voicemail (str or int, optional): ID of a voicemail to set as the Sub Account Internal Voicemail (Example: 101).
+            internal_cnam (str, optional): Caller ID name for internal calls.
+            enable_internal_cnam (str, optional): Enables/Disables the internal caller ID name for internal calls. Default is '0' for disabled (send '1' to enable it).
             description (str, optional): A description or name for the Sub Account.
             lock_international (str or int, optional): Enables/Disables International calls. Default is '1' for disabled. (values from get_lock_international).
-            codecs (str, optional): Audio codecs for calls. Default is g722. Values from get_allowed_codecs.
+            codecs (str, optional): Audio codecs for calls. Default is 'g722' (values from get_allowed_codecs).
 
         Returns:
             dict: A dictionary containing the status of the request and the Sub Account that was created.
@@ -71,11 +78,14 @@ class Accounts():
         mtd = "createSubAccount"
 
         try:
-            
+            if len(username) > 12:
+                raise ValueError("Username characters exceeded.")
             if (auth_type == 1 or auth_type == '1') and not password:
                 raise ValueError("Password must be provided for User/Password authentication.")
             if (auth_type == 2 or auth_type == '2') and not ip:
                 raise ValueError("IP address must be provided for IP authentication.")
+            if (enable_internal_cnam == 0 or auth_type == '0') and internal_cnam:
+                raise ValueError("The cnam cannot be set because you did not enable the internal cnam. To fix this error send 'enable_internal_cnam = 1'")
 
             params = {
 
@@ -102,8 +112,14 @@ class Accounts():
                 params["device_type"] = device_type
             if callerid_number:
                 params["callerid_number"] = callerid_number
-            if extension is not None:
-                params["internal_extension"] = extension
+            if internal_extension:
+                params["internal_extension"] = internal_extension
+            if internal_voicemail:
+                params["internal_voicemail"] = internal_voicemail
+            if internal_cnam:
+                params["internal_cnam"] = internal_cnam
+            if enable_internal_cnam:
+                params["enable_internal_cnam"] = enable_internal_cnam
             if description:
                 params["description"] = description
             if lock_international is not None:
@@ -204,7 +220,10 @@ class Accounts():
             protocol:Optional[Union[str, int]]=None,
             device_type:Optional[Union[str, int]]=None,
             callerid_number:Optional[Union[str, int]]=None,
-            extension:Optional[Union[str, int]]=None,
+            internal_extension:Optional[Union[str, int]]=None,
+            internal_voicemail:Optional[Union[str, int]]=None,
+            internal_cnam:Optional[str]=None,
+            enable_internal_cnam:Optional[str]=None,
             description:Optional[str]=None,
             canada_route:Optional[Union[str, int]]=None,
             lock_international:Optional[Union[str, int]]=None,
@@ -225,7 +244,10 @@ class Accounts():
             protocol (str or int, optional): The protocol the sub account will use. (value from get_Protocols).
             device_type (str or int, optional): Device type that will be used (value from get_device_types).
             callerid_number (str or int, optional): Caller ID number of the sub account.
-            extension (str or int, optional): Sub Account Internal Extension (Example: 1 -> Creates 101).
+            internal_extension (str or int, optional): Sub Account Internal Extension (Example: 1 -> Creates 101).
+            internal_voicemail (str or int, optional): ID of a voicemail to set as the Sub Account Internal Voicemail (Example: 101).
+            internal_cnam (str, optional): Caller ID name for internal calls.
+            enable_internal_cnam (str, optional): Enables/Disables the internal caller ID name for internal calls (values '0' for disabled,'1' for enabled).
             description (str, optional): Description or name of the Sub Account.
             canada_route (str or int, optional): Defines the route for calls to Canada (values from get_routes).
             lock_international (str or int, optional): Enables/Disables International calls (values from get_lock_international).
@@ -247,10 +269,14 @@ class Accounts():
 
         try:
             if "_" not in subaccount:
-                raise ValueError("This method expects a sub account name.")
+                raise ValueError("This method expects the full sub account name.")
 
             # Code to get the settings of the sub account that will be edited.
             sa_config = self.get_subaccounts(subaccount)
+
+            if sa_config['status'] == "no_subaccount":
+                raise ValueError("Sub Account not found.")
+            
             # Saving the current settings in the parameters
             params = sa_config["accounts"][0]
 
@@ -259,6 +285,8 @@ class Accounts():
                 raise ValueError("Password must be provided for User/Password authentication.")
             if (auth_type == 2 or auth_type == '2') and not ip:
                 raise ValueError("IP address must be provided for IP authentication.")
+            if (enable_internal_cnam == 0 or auth_type == '0') and internal_cnam:
+                raise ValueError("The cnam cannot be set because you did not enable the internal cnam. To fix this error send 'enable_internal_cnam = 1'")
             
             # If the authentication type is changed this validation ensures the password or ip is removed from the parameters to avoid error responses from the VoIP.ms API.
             if params["auth_type"] == '1' and (auth_type == 2 or auth_type == '2'):
@@ -291,8 +319,14 @@ class Accounts():
                 params["record_calls"] = record_calls
             if music_on_hold:
                 params["music_on_hold"] = music_on_hold
-            if extension:
-                params["internal_extension"] = extension
+            if internal_extension:
+                params["internal_extension"] = internal_extension
+            if internal_voicemail:
+                params["internal_voicemail"] = internal_voicemail
+            if internal_cnam:
+                params["internal_cnam"] = internal_cnam
+            if enable_internal_cnam:
+                params["enable_internal_cnam"] = enable_internal_cnam
             if codecs:
                 params["allowed_codecs"] = codecs
             if dtmf_mode:
