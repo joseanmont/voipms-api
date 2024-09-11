@@ -10,6 +10,9 @@ This package is developed to streamline the process of integrating with the VoIP
 
 ## Updates
 
+- \*\*1.1.5b11:
+  - DIDs
+    - Added method 'set_did_routing'.
 - \*\*1.1.4b11:
   - Accounts
     - Methods updated: 'create_sub_account', 'update_subaccount'

@@ -224,3 +224,42 @@ class DIDs():
         except Exception as err:
             print(f'An error occurred: {err}')
             return None
+        
+
+    def set_did_routing(self,
+        did: Union[str, int],
+        routing:str,
+        )-> dict:
+        """
+        Calls the VoIP.ms setDIDRouting function.
+
+        Args:
+            did (str or int, required): Specific DID number to be updated (Example: 8771234567).
+            routing (str, required): Main Route for the DID. Receives values in the format 'header:record_id' where header could be: account, fwd, vm, sip, grp, ivr, sys, recording, queue, cb, tc, disa, none (Example: account:100000_SubAccount).
+
+        Returns:
+            dict: A dictionary containing the status of the request and the DID that was updated.
+        """
+        
+        mtd = "setDIDRouting"
+
+        try:
+            params = {
+                "did": did,
+                "routing": routing,
+            }
+            
+            data = self.vms_client.make_request(mtd, params)
+            data["did"] = did
+            data["result"] = f"DID routed to {routing}"
+            return data
+        
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error ocurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'An error occurred: {err}')
+            return None
