@@ -1,7 +1,13 @@
+'''
+VoIP.ms Call IVR functions
+'''
+
 import requests
+from voipms_client import VoipMsClient
+from accounts import Accounts
 from typing import Optional, Union
 
-class IVR():
+class IVR(VoipMsClient):
     '''
     A class to call the IVR functions of the VoIP.ms API.
 
@@ -16,26 +22,6 @@ class IVR():
             Updates the configuration of an IVR and returns the result of the request.
     '''
 
-    def __init__(self, username=None, password=None) -> None:
-
-        from voipms_api import Accounts, VoipMsClient
-        
-        if (username and not password) or (password and not username):
-            raise ValueError("Both username and password must be provided together")
-        elif(username and password):
-            self.username = username
-            self.password = password
-            self.vms_client = VoipMsClient(self.username, self.password)
-        else:
-            self.vms_client = VoipMsClient()
-
-        # Code to get the Account number to set the Main Account as the routing for the options so it is not required.
-        accounts = Accounts()
-        get_accounts = accounts.get_subaccounts()
-        self.acc_number = get_accounts['accounts'][0]['account']
-        self.acc_number = self.acc_number[0:6]
-
-
     def create_ivr(self, 
             name:str,
             recording:Union[str, int],
@@ -48,19 +34,24 @@ class IVR():
         Calls the VoIP.ms setIVR function to create a new IVR.
 
         Args:
-            name (str, optional): A name for the IVR.
-            recording (str or int, optional): ID of the recording to set to the IVR (values from get_recordings).
+            name (str): A name for the IVR.
+            recording (str or int): ID of the recording to set to the IVR (values from get_recordings).
             time_out (str or int, optional): Maximum time to dial in an option after recording (values from 1 to 10. Default is 5).
             language (str, optional): Language of the IVR. Default  is 'en' for English (values from get_languages).
             voicemail (str, optional): Voicemail Setup for the IVR (Default  is '1' for use 'Default DID voicemail'. Alternative is '2' for 'Account voicemail').
             options (srt, optional): A string of options separated by semicolons (Default is Main Account for 1 as only choice. Example: '1=account:100001;2=fwd:16006').
 
         Returns:
-            dict: A dictionary containing the status of the request and the name of the IVR that was created.
+            dict: Created IVR.
         """
         
         mtd = "setIVR"
-        default_opt = "1=account:" + self.acc_number
+        # Code to get the Account number to set the Main Account as the routing for the options so it is not required.
+        accounts = Accounts(self.username, self.password)
+        get_accounts = accounts.get_subaccounts()
+        acc_number = get_accounts['accounts'][0]['account']
+        acc_number = acc_number[0:6]
+        default_opt = "1=account:" + acc_number
 
         try:
             params = {
@@ -76,8 +67,6 @@ class IVR():
             }
 
             # Optional in this package.
-            if recording:
-                params["recording"] = recording
             if time_out:
                 params["timeout"] = time_out
             if language:
@@ -87,7 +76,7 @@ class IVR():
             if options:
                 params["choices"] = options
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["name"] = name
             return data
         
@@ -112,7 +101,7 @@ class IVR():
             ivr (str or int, required): ID of the IVR that will be deleted (Example: 18635). Value from get_ivrs.
 
         Returns:
-            dict: A dictionary containing the status of the request and the ID of the IVR that was deleted.
+            dict: Deleted IVR.
         """
         
         mtd = "delIVR"
@@ -126,7 +115,7 @@ class IVR():
             ivr_info = self.get_ivrs(ivr)
             ivr_name = ivr_info["ivrs"][0]["name"]
 
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["ivr"] = ivr_name
             return data
         
@@ -151,7 +140,7 @@ class IVR():
             ivr (str or int, optional): ID of a specific IVR (Example: 323).
 
         Returns:
-            dict: A dictionary containing the status of the request and the data of all the IVRs, or the data of a specific IVR if an ID is provided.
+            dict: All the IVRs, or a specific IVR if an ID is provided.
         """
         
         mtd = "getIVRs"
@@ -163,7 +152,7 @@ class IVR():
             if ivr:
                 params["ivr"] = ivr
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
@@ -199,7 +188,7 @@ class IVR():
             options (srt, optional): A string of options separated by semicolons (Example: '1=account:100001;2=fwd:16006').
 
         Returns:
-            dict: A dictionary containing the status of the request and the name of the IVR that was updated.
+            dict: Updated IVR.
         """
         
         mtd = "setIVR"
@@ -223,7 +212,7 @@ class IVR():
             if options:
                 params["choices"] = options
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["name"] = name
             return data
         
