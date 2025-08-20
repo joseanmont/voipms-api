@@ -3,10 +3,11 @@ VoIP.ms DIDs functions
 '''
 
 import requests
+from voipms_client import VoipMsClient
 from typing import Optional, Union
 
 
-class DIDs():
+class DIDs(VoipMsClient):
     '''
     A class to call the DID functions of the VoIP.ms API.
 
@@ -20,20 +21,6 @@ class DIDs():
         order_toll_free:
             Orders a new Toll Free US or Canadian DID number.
     '''
-
-    def __init__(self, username=None, password=None) -> None:
-
-        from voipms_api import VoipMsClient
-        
-        if (username and not password) or (password and not username):
-            raise ValueError("Both username and password must be provided together")
-        elif(username and password):
-            self.username = username
-            self.password = password
-            self.vms_client = VoipMsClient(self.username, self.password)
-        else:
-            self.vms_client = VoipMsClient()
-
     
     def cancel_did(self, 
             did:Union[str, int],
@@ -51,7 +38,7 @@ class DIDs():
             test (str or bool, optional): Set True if testing the DID cancelation function.
 
         Returns:
-            dict: A dictionary containing the status of the request and the DID that was canceled.
+            dict: The canceled DID.
         """
         
         mtd = "cancelDID"
@@ -68,7 +55,7 @@ class DIDs():
             if test:
                 params["test"] = test
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["result"] = "DID canceled"
             data["did"] = did
             return data
@@ -96,10 +83,10 @@ class DIDs():
             did (str or int, optional): Specific DID number or Sub Account (Example: 5551234567).   
 
         Returns:
-            dict:   If no parameter is provided, a dictionary containing the status and information from all the DIDs.
-                    If a client ID is provided, a dictionary containing the status and information from the client's DIDs.
-                    If a Sub Account is provided, a dictionary containing the status and information of the Sub Account's DID.
-                    If a DID is provided, a dictionary containing the status and information of the specific DID.
+            dict:   If no parameter is provided, All the DIDs.
+                    If a client ID is provided, Client's DIDs.
+                    If a Sub Account is provided, Sub Account's DID.
+                    If a DID is provided, Specific DID.
         """
         
         mtd = "getDIDsInfo"
@@ -112,7 +99,7 @@ class DIDs():
             if did:
                 params["did"] = did
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
@@ -146,7 +133,7 @@ class DIDs():
             billing type (str or int, optional): Sets the Billing plan. Default is 1 (Per Minute). Set 2 for Flat Rate.
 
         Returns:
-            dict: A dictionary containing the status of the request and the DID that was ordered.
+            dict:   Ordered DID.
         """
         
         mtd = "orderDID"
@@ -161,7 +148,7 @@ class DIDs():
                 "billing_type": billing_type,
             }
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["result"] = "DID ordered"
             data["did"] = did
             return data
@@ -196,7 +183,7 @@ class DIDs():
             billing type (str or int, optional): Sets the Billing plan. Default is 1 (Per Minute). Set 2 for Flat Rate.
 
         Returns:
-            dict: A dictionary containing the status of the request and the DID that was ordered.
+            dict: Ordered Toll Free DID.
         """
         
         mtd = "orderTollFree"
@@ -210,7 +197,7 @@ class DIDs():
                 "cnam": cnam
             }
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["result"] = "DID ordered"
             data["did"] = did
             return data
@@ -238,7 +225,7 @@ class DIDs():
             routing (str, required): Main Route for the DID. Receives values in the format 'header:record_id' where header could be: account, fwd, vm, sip, grp, ivr, sys, recording, queue, cb, tc, disa, none (Example: account:100000_SubAccount).
 
         Returns:
-            dict: A dictionary containing the status of the request and the DID that was updated.
+            dict: Updated DID.
         """
         
         mtd = "setDIDRouting"
@@ -249,7 +236,7 @@ class DIDs():
                 "routing": routing,
             }
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["did"] = did
             data["result"] = f"DID routed to {routing}"
             return data
