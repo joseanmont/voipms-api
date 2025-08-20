@@ -1,8 +1,10 @@
 import requests
+from voipms_client import VoipMsClient
+from accounts import Accounts
 from typing import Optional, Union
 
 
-class RingGroups():
+class RingGroups(VoipMsClient):
     '''
     A class to call the Ring Groups functions of the VoIP.ms API.
 
@@ -16,26 +18,6 @@ class RingGroups():
         update_ring_group:
             Updates the configuration of a Ring Group and returns the result of the request.
     '''
-
-    def __init__(self, username=None, password=None) -> None:
-        
-        from voipms_api import VoipMsClient, Accounts
-
-        if (username and not password) or (password and not username):
-            raise ValueError("Both username and password must be provided together")
-        elif(username and password):
-            self.username = username
-            self.password = password
-            self.vms_client = VoipMsClient(self.username, self.password)
-        else:
-            self.vms_client = VoipMsClient()
-
-        # Code to get the Account number to set the Main Account as the default member so it is not required.
-        accounts = Accounts()
-        get_accounts = accounts.get_subaccounts()
-        self.acc_number = get_accounts['accounts'][0]['account']
-        self.acc_number = self.acc_number[0:6]
-
 
     def create_ring_group(self, 
             name:str,
@@ -54,11 +36,17 @@ class RingGroups():
             members (srt, optional): A string of members separated by semicolons. Default is Main Account as only member. (Example: 'account:100001;fwd:16006'). See VoIP.ms API documentation for more details.
 
         Returns:
-            dict: A dictionary containing the status of the request and the name of the Ring Group that was created.
+            dict: Created Ring Group.
         """
         
         mtd = "setRingGroup"
-        default_member = "account:" + self.acc_number
+
+        # Code to get the Account number to set the Main Account as the default member so it is not required.
+        accounts = Accounts(self.username, self.password)
+        get_accounts = accounts.get_subaccounts()
+        acc_number = get_accounts['accounts'][0]['account']
+        acc_number = acc_number[0:6]
+        default_member = "account:" + acc_number
 
         try:
             params = {
@@ -80,7 +68,7 @@ class RingGroups():
             if language:
                 params["language"] = language
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["name"] = name
             return data
         
@@ -105,7 +93,7 @@ class RingGroups():
             ring_group (str or int, required): ID of the ring group that will be deleted (value from get_ring_groups. Example: 18635).
 
         Returns:
-            dict: A dictionary containing the status of the request and the ID of the ring group that was deleted.
+            dict: Deleted Ring Group.
         """
         
         mtd = "delRingGroup"
@@ -119,7 +107,7 @@ class RingGroups():
             rg_info = self.get_ring_groups(ring_group)
             rg_name = rg_info["ring_groups"][0]["name"]
 
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["ring_group"] = rg_name
             return data
         
@@ -144,7 +132,7 @@ class RingGroups():
             ring_group (str or int, optional): ID of a specific ring group (Example: 18635).
 
         Returns:
-            dict: A dictionary containing the status of the request and the data of all the ring groups, or the data of a specific ring group if an ID is provided.
+            dict: All the ring groups, or a specific ring group if an ID is provided.
         """
         
         mtd = "getRingGroups"
@@ -156,7 +144,7 @@ class RingGroups():
             if ring_group:
                 params["ring_group"] = ring_group
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
@@ -189,7 +177,7 @@ class RingGroups():
             members (srt, optional): A string of members separated by semicolons (Example: 'account:100001;fwd:16006'). See VoIP.ms API documentation for more details.
 
         Returns:
-            dict: A dictionary containing the status of the request and the name of the Ring Group that was updated.
+            dict: Updated Ring Group.
         """
         
         mtd = "setRingGroup"
@@ -214,7 +202,7 @@ class RingGroups():
             if language:
                 params["language"] = language
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["name"] = name
             return data
         
