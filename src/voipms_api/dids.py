@@ -9,7 +9,7 @@ from typing import Optional, Union
 
 class DIDs(VoipMsClient):
     '''
-    A class to call the DID functions of the VoIP.ms API.
+    DID functions of the VoIP.ms API.
 
     Methods:
         cancel_did:

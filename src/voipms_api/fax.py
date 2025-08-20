@@ -1,3 +1,7 @@
+'''
+VoIP.ms Virtual Fax functions
+'''
+
 import requests
 from typing import Optional, Union
 

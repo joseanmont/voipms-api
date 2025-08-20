@@ -9,7 +9,7 @@ from typing import Optional, Union
 
 class CallHunting(VoipMsClient):
     '''
-    A class to call the Call Hunting functions of the VoIP.ms API.
+    Call Hunting functions of the VoIP.ms API.
 
     Methods:
         create_call_hunting:
