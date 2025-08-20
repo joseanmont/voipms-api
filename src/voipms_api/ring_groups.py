@@ -1,3 +1,7 @@
+'''
+VoIP.ms Ring Groups functions
+'''
+
 import requests
 from voipms_client import VoipMsClient
 from accounts import Accounts

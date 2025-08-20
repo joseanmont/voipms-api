@@ -3,31 +3,18 @@ VoIP.ms SMS/MMS functions
 '''
 
 import requests
+from voipms_client import VoipMsClient
 from datetime import datetime
 from typing import Optional, Union
 
-class SMS():
+class SMS(VoipMsClient):
     '''
     A class to call the SMS functions of the VoIP.ms API.
 
     Methods:
         send_sms:
             Sends a SMS message from a specific DID to a specific number.
-    '''
-
-    def __init__(self, username=None, password=None) -> None:
-        
-        from voipms_api import VoipMsClient
-
-        if (username and not password) or (password and not username):
-            raise ValueError("Both username and password must be provided together")
-        elif(username and password):
-            self.username = username
-            self.password = password
-            self.vms_client = VoipMsClient(self.username, self.password)
-        else:
-            self.vms_client = VoipMsClient()
-    
+    '''    
 
     def get_sms(
             self,
@@ -54,7 +41,7 @@ class SMS():
             timezone (str or int, optional): Adjust time of the messages according to Timezome (values from -12 to 13).
 
         Returns:
-            dict: A dictionary containing the status and the data of the requested messages.
+            dict: Requested messages.
         """
 
         mtd = "getSMS"
@@ -89,7 +76,7 @@ class SMS():
             if timezone is not None:
                 params["timezone"] =  timezone
 
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             return data
                     
         except requests.exceptions.HTTPError as http_err:
@@ -117,7 +104,7 @@ class SMS():
             message (str, required): The content of the message   
 
         Returns:
-            dict: A dictionary containing the status of the request.
+            dict: Status of the request.
         """
         
         mtd = "sendSMS"
@@ -128,7 +115,7 @@ class SMS():
                 "dst": dst,
                 "message": message
             }
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data = dict(data)
             return data
         except requests.exceptions.HTTPError as http_err:
