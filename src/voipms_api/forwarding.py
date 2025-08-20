@@ -1,10 +1,15 @@
+'''
+VoIP.ms Call Forwarding functions
+'''
+
 import requests
+from voipms_client import VoipMsClient
 from typing import Optional, Union
 
 
-class Forwarding():
+class Forwarding(VoipMsClient):
     '''
-    A class to call the Forwarding related functions of the VoIP.ms API.
+    Call Forwarding functions of the VoIP.ms API.
 
     Methods:
         create_forwarding:
@@ -16,20 +21,6 @@ class Forwarding():
         update_forwarding:
             Updates the configuration of a forwarding and returns the result of the request.
     '''
-
-    def __init__(self, username=None, password=None) -> None:
-
-        from voipms_api import VoipMsClient
-        
-        if (username and not password) or (password and not username):
-            raise ValueError("Both username and password must be provided together")
-        elif(username and password):
-            self.username = username
-            self.password = password
-            self.vms_client = VoipMsClient(self.username, self.password)
-        else:
-            self.vms_client = VoipMsClient()
-
 
     def create_forwarding(self, 
             phone_number:Union[str, int],
@@ -49,7 +40,7 @@ class Forwarding():
             pause (str or float, optional): Pause in seconds before sending the DTMF digits. From 0 to 10 in increments of 0.5 (Example: 1.5).
 
         Returns:
-            dict: A dictionary containing the status of the request and the forwarding's phone number that was created.
+            dict: Created Call Forwarding.
         """
         
         mtd = "setForwarding"
@@ -69,7 +60,7 @@ class Forwarding():
             if pause:
                 params["pause"] = pause
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["forwarding"] = phone_number
             return data
         
@@ -94,7 +85,7 @@ class Forwarding():
             forwarding (str or int, required): ID of the forwarding that will be deleted (Example: 18635). Value from get_forwardings.
 
         Returns:
-            dict: A dictionary containing the status of the request and the the forwarding phone number that was deleted.
+            dict: Deleted Call Forwarding.
         """
         
         mtd = "delForwarding"
@@ -108,7 +99,7 @@ class Forwarding():
             fwd_info = self.get_forwardings(forwarding)
             fwd_pn = fwd_info["forwardings"][0]["phone_number"]
 
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["phone_number"] = fwd_pn
             return data
         
@@ -133,7 +124,7 @@ class Forwarding():
             forwarding (str or int, optional): ID of a specific forwarding (Example: 18635).
 
         Returns:
-            dict: A dictionary containing the status of the request and the data of all the forwardings, or the data of a specific forwarding if an ID is provided.
+            dict: All the Call Forwardings, or a specific Call Forwarding if an ID is provided.
         """
         
         mtd = "getForwardings"
@@ -145,7 +136,7 @@ class Forwarding():
             if forwarding:
                 params["forwarding"] = forwarding
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
@@ -179,7 +170,7 @@ class Forwarding():
             pause (str or float, optional): Pause in seconds before sending the DTMF digits. From 0 to 10 in increments of 0.5 (Example: 1.5).
 
         Returns:
-            dict: A dictionary containing the status of the request and the forwarding's phone number that was updated.
+            dict: Updated Call Forwarding.
         """
         
         mtd = "setForwarding"
@@ -203,7 +194,7 @@ class Forwarding():
             if pause is not None:
                 params["pause"] = pause
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
