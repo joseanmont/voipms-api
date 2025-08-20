@@ -1,3 +1,7 @@
+'''
+VoIP.ms Accounts functions
+'''
+
 import requests
 from voipms_client import VoipMsClient
 from typing import Optional, Union

@@ -1,3 +1,7 @@
+'''
+VoIP.ms Call Hunting functions
+'''
+
 import requests
 from voipms_client import VoipMsClient
 from accounts import Accounts
