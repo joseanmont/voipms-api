@@ -1,7 +1,8 @@
 import requests
+from voipms_client import VoipMsClient
 from typing import Optional, Union
 
-class CallHunting():
+class CallHunting(VoipMsClient):
     '''
     A class to call the Call Hunting functions of the VoIP.ms API.
 
@@ -18,18 +19,9 @@ class CallHunting():
 
     def __init__(self, username=None, password=None) -> None:
 
-        from voipms_api import Accounts, VoipMsClient
-        
-        if (username and not password) or (password and not username):
-            raise ValueError("Both username and password must be provided together")
-        elif(username and password):
-            self.username = username
-            self.password = password
-            self.vms_client = VoipMsClient(self.username, self.password)
-        else:
-            self.vms_client = VoipMsClient()
+        from voipms_api import Accounts
 
-        # Code to get the Account number to set the Main Account as the default member so it is not required.
+        # Code to get the Account number to set the Main Account as the default member if no members are provided.
         accounts = Accounts()
         get_accounts = accounts.get_subaccounts()
         self.acc_number = get_accounts['accounts'][0]['account']
@@ -60,7 +52,7 @@ class CallHunting():
             press_one (srt or int, optional): Defines if the member must press 1 to take the call or not (value '1' for enabled and '2' for disabled).
 
         Returns:
-            dict: A dictionary containing the status of the request and the name of the Call Hunting that was created.
+            dict: Call Hunting created.
         """
         
         mtd = "setCallHunting"
@@ -122,7 +114,7 @@ class CallHunting():
             call_hunting (str or int, required): ID of the call hunting that will be deleted (Example: 18635). Value from get_call_huntings.
 
         Returns:
-            dict: A dictionary containing the status of the request and the ID of the call hunting that was deleted.
+            dict: Deleted Call Hunting.
         """
         
         mtd = "delCallHunting"
@@ -161,7 +153,7 @@ class CallHunting():
             call_hunting (str or int, optional): ID of a specific call hunting (Example: 323).
 
         Returns:
-            dict: A dictionary containing the status of the request and the data of all the call huntings, or the data of a specific call hunting if an ID is provided.
+            dict: All the call huntings, or a specific call hunting if an ID is provided.
         """
         
         mtd = "getCallHuntings"
@@ -213,7 +205,7 @@ class CallHunting():
             press_one (srt or int, optional): Defines if the member must press 1 to take the call or not (value '1' for enabled and '2' for disabled | For multiple members use '0;0;0').
 
         Returns:
-            dict: A dictionary containing the status of the request.
+            dict: Status of the request.
         """
         
         mtd = "setCallHunting"

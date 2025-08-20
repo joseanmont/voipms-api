@@ -22,3 +22,5 @@ my_tests*
 # Ignore builder files
 dist/
 voipms_api.egg-info/
+
+.DS_Store

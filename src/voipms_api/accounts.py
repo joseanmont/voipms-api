@@ -138,7 +138,7 @@ class Accounts(VoipMsClient):
             id (str or int, required): ID of the Sub Account that will be deleted(Example: '99785' or 99785). Value from get_subaccounts.
 
         Returns:
-            dict: A dictionary containing the status of the request and the Sub Account that was canceled.
+            dict: Deleted Sub Account.
         """
         
         mtd = "delSubAccount"
@@ -174,7 +174,7 @@ class Accounts(VoipMsClient):
             subaccount (str or int, optional): Sub Account ID or username (Example: '100000_SubAccount' or 99785).
 
         Returns:
-            dict: A dictionary containing the status of the request and the Sub Accounts and their data, or a specific Sub Account data if an ID or username is provided.
+            dict: Sub Accounts and their data, or a specific Sub Account data if an ID or username is provided.
         """
         
         mtd = "getSubAccounts"
@@ -245,7 +245,7 @@ class Accounts(VoipMsClient):
             dtmf_mode (str, optional): DTMF mode for the sub account (values from get_dtmf_modes).
 
         Returns:
-            dict: A dictionary containing the status of the request.
+            dict: Status of the request.
 
         Raises:
                 ValueError: If auth_type is 1 and password is not provided.
