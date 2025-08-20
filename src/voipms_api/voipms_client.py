@@ -16,17 +16,18 @@ class VoipMsClient:
         make_request:
             Establishes the connection with VoIP.ms API and takes care of sending the request.
         test_connection():
-            Used to verify the connection to the VoIP.ms API, confirming the credentials and IP address are correct.
+            Used to test the connection to the VoIP.ms API, confirming the credentials and IP address are correct.
     """
 
 
-    def __init__(self, username:Optional[str]=None, password:Optional[str]=None) -> None:
+    def __init__(self, username:Optional[str]=None, password:Optional[str]=None, verify:Optional[bool]=True) -> None:
         """
         Constructs the necessary attributes to connect to the VoIP.ms API.
 
         Args:
             username (str, optional): Loads the username from the .env file or can be provided when calling the class.
             password (str, optional): Pulls the password from the .env file or can be provided when calling the class.
+            verify (bool, optional): Set to False to disable certificate validation. WARNING: DO NOT USE ON PRODUCTION.
         """
 
         # Create a .env file to load your credentials using the enviroment variables below.
@@ -38,6 +39,7 @@ class VoipMsClient:
 
         self.username = username if username or username != None else os.environ.get("VOIPMS_API_USER")
         self.password = password if password or password != None else os.environ.get("VOIPMS_API_PASSWORD")
+        self.verify = verify
 
     
     def make_request(self, method:str, params:Optional[dict]=None) -> dict:
@@ -59,7 +61,11 @@ class VoipMsClient:
         
         # print(f"{params}/n") # Uncomment this to see username, password and method
 
-        response = requests.get(self.voipms_url, params=params)
+        if not self.verify:
+            response = requests.get(self.voipms_url, params=params, verify=False) # Certificate won't be verified
+        else:
+            response = requests.get(self.voipms_url, params=params)
+
         # print(f"Request URL: {response.request.url}\n") # Uncomment to print the full URL
         response.raise_for_status()  # Raises an HTTPError for bad responses
         response = response.json()

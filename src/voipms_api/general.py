@@ -3,10 +3,11 @@ VoIP.ms General functions
 '''
 
 import requests
+from voipms_client import VoipMsClient
 from datetime import datetime
 from typing import Optional, Union
 
-class General():
+class General(VoipMsClient):
     '''
     A class to call the general functions of the VoIP.ms API.
 
@@ -37,18 +38,18 @@ class General():
             Returns the transactions of a specific period.
     '''
 
-    def __init__(self, username=None, password=None) -> None:
+    # def __init__(self, username=None, password=None) -> None:
 
-        from voipms_api import VoipMsClient
+    #     # from voipms_api import VoipMsClient
         
-        if (username and not password) or (password and not username):
-            raise ValueError("Both username and password must be provided together")
-        elif(username and password):
-            self.username = username
-            self.password = password
-            self.vms_client = VoipMsClient(self.username, self.password)
-        else:
-            self.vms_client = VoipMsClient()
+    #     if (username and not password) or (password and not username):
+    #         raise ValueError("Both username and password must be provided together")
+    #     elif(username and password):
+    #         self.username = username
+    #         self.password = password
+    #         self.vms_client = VoipMsClient(self.username, self.password)
+    #     else:
+    #         self.vms_client = VoipMsClient()
 
     
     def get_balance(
@@ -62,7 +63,7 @@ class General():
             advanced (bool, optional): If True, also returns Balance and Calls Statistics of the Account. Default is False.
 
         Returns:
-            dict: A dictionary containing the status and the current account balance.
+            dict: The current account balance.
         """
         
         mtd = "getBalance"
@@ -72,9 +73,9 @@ class General():
                 params = {
                      "advanced": True,
                 }
-                data = self.vms_client.make_request(mtd, params)
+                data = self.make_request(mtd, params)
             else:
-                 data = self.vms_client.make_request(mtd)
+                 data = self.make_request(mtd)
             return data
         except requests.exceptions.HTTPError as http_err:
             print(f"HTTP error ocurred: {http_err}")
@@ -98,7 +99,7 @@ class General():
             id (str or int, optional): ID of a specific conference.
 
         Returns:
-            dict: A dictionary containing the status and the data of the existing conferences, or a specific conference if a conference ID is provided.
+            dict: Existing conferences, or a specific conference if a conference ID is provided.
         """
 
         mtd = "getConference"
@@ -108,19 +109,16 @@ class General():
             if id:
                 params["conference"] = id
 
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
 
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
-            return None
+            return f"HTTP error ocurred: {http_err}"
         except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
+            return f"Key error: {key_err}"
         except Exception as err:
-            print(f'An error ocurred: {err}')
-            return None
+            return f'An error ocurred: {err}'
 
 
     def get_conference_members(
@@ -134,7 +132,7 @@ class General():
             member (str or int, optional): ID of a specific conference member.
 
         Returns:
-            dict: A dictionary containing the status and the data of the conference members, or a specific conference member if a member ID is provided.
+            dict: The data of the conference members, or a specific conference member if a member ID is provided.
         """
 
         mtd = "getConferenceMembers"
@@ -145,18 +143,15 @@ class General():
             if member:
                 params["member"] = member
 
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
-            return None
+            return f"HTTP error ocurred: {http_err}"
         except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
+            return f"Key error: {key_err}"
         except Exception as err:
-            print(f'An error ocurred: {err}')
-            return None
+            return f'An error ocurred: {err}'
         
 
     def get_conference_recordings(
@@ -174,7 +169,7 @@ class General():
             to date (str, optional): End date to search recordings. (Example: '2016-07-03').
 
         Returns:
-            dict: A dictionary containing the status and the data of the recordings of the requested conference.
+            dict: The data of the recordings of the requested conference.
         """
 
         mtd = "getConferenceRecordings"
@@ -194,18 +189,15 @@ class General():
                 else:
                     raise TypeError("The TO date cannot be prior the FROM date")
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             return data
                     
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
-            return None
+            return f"HTTP error ocurred: {http_err}"
         except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
+            return f"Key error: {key_err}"
         except Exception as err:
-            print(f'An error ocurred: {err}')
-            return None
+            return f'An error ocurred: {err}'
         
 
     def get_conference_recording_file(
@@ -221,7 +213,7 @@ class General():
             recording (str or int, required): ID of the recording to retrieve the file for.            
 
         Returns:
-            dict: A dictionary containing the status and the requested recording file.
+            dict: The specified recording file.
         """
 
         mtd = "getConferenceRecordingFile"
@@ -232,18 +224,15 @@ class General():
                 "recording": recording,
             }
 
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
-            return None
+            return f"HTTP error ocurred: {http_err}"
         except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
+            return f"Key error: {key_err}"
         except Exception as err:
-            print(f'An error ocurred: {err}')
-            return None
+            return f'An error ocurred: {err}'
 
 
     def get_sequences(
@@ -260,7 +249,7 @@ class General():
                 client (str or int, optional): ID of a specific Reseller client.            
 
             Returns:
-                dict: A dictionary containing the status and the data of the existing sequences, or a specific sequence if a sequence ID is provided.
+                dict: The existing sequences, or a specific sequence if a sequence ID is provided.
             """
 
             mtd = "getSequences"
@@ -273,7 +262,7 @@ class General():
                 if client:
                     params["client"] = client
 
-                data = self.vms_client.make_request(mtd, params)
+                data = self.make_request(mtd, params)
                 return data
             
             except requests.exceptions.HTTPError as http_err:
@@ -298,7 +287,7 @@ class General():
                     country (str, optional): ID code of a specific Country (Example: 'CA').
 
                 Returns:
-                    dict: A dictionary containing the status and the list of available countries and their values, or a specific country if a country ID code is provided.
+                    dict: The list of available countries and their values, or a specific country if a country ID code is provided.
                 """
 
                 mtd = "getCountries"
@@ -309,7 +298,7 @@ class General():
                     if country:
                         params["country"] = country
                     
-                    data = self.vms_client.make_request(mtd, params)
+                    data = self.make_request(mtd, params)
                     return data
 
                 except requests.exceptions.HTTPError as http_err:
@@ -328,13 +317,13 @@ class General():
                 Calls the VoIP.ms getIP function.
 
                 Returns:
-                    dict: A dictionary containing the status and the public IPv4 address of the network the request comes from.
+                    dict: The public IPv4 address of the network the request comes from.
                 """
 
                 mtd = "getIP"
 
                 try:
-                    data = self.vms_client.make_request(mtd)
+                    data = self.make_request(mtd)
                     return data
                 
                 except requests.exceptions.HTTPError as http_err:
@@ -359,7 +348,7 @@ class General():
                     language (str, optional): ID code of a specific Language (Example: 'en').
 
                 Returns:
-                    dict: A dictionary containing the status and the list of available languages and their values, or a specific language if a language ID code is provided.
+                    dict: The list of available languages and their values, or a specific language if a language ID code is provided.
                 """
 
                 mtd = "getLanguages"
@@ -370,7 +359,7 @@ class General():
                     if language:
                         params["language"] = language
                     
-                    data = self.vms_client.make_request(mtd, params)
+                    data = self.make_request(mtd, params)
                     return data
                 
                 except requests.exceptions.HTTPError as http_err:
@@ -395,7 +384,7 @@ class General():
                     locale (str, optional): ID code of a specific Locale code (Example: 'en-US').
 
                 Returns:
-                    dict: A dictionary containing the status and the list of available Locale codes and their values, or a specific Locale code if a Locale code is provided.
+                    dict: The list of available Locale codes and their values, or a specific Locale code if a Locale code is provided.
                 """
 
                 mtd = "getLocales"
@@ -406,7 +395,7 @@ class General():
                     if locales:
                         params["locale"] = locales
 
-                    data = self.vms_client.make_request(mtd, params)
+                    data = self.make_request(mtd, params)
                     return data
                 
                 except requests.exceptions.HTTPError as http_err:
@@ -431,7 +420,7 @@ class General():
                     server (str, optional): ID of a specific POP server (Example: 65).
 
                 Returns:
-                    dict: A dictionary containing the status and the list of available POP servers and their values, or a specific POP server if a server ID code is provided.
+                    dict: The list of available POP servers and their values, or a specific POP server if a server ID code is provided.
                 """
 
                 mtd = "getServersInfo"
@@ -442,7 +431,7 @@ class General():
                     if server:
                         params["server_pop"] = server
 
-                    data = self.vms_client.make_request(mtd, params)
+                    data = self.make_request(mtd, params)
                     return data
                 
                 except requests.exceptions.HTTPError as http_err:
@@ -469,7 +458,7 @@ class General():
             to date (str, required): end date to search transactions. (Example: '2016-07-03').
 
         Returns:
-            dict: A dictionary containing the status and the data of the transactions of the requested period.
+            dict: The data of the transactions of the requested period.
         """
 
         mtd = "getTransactionHistory"
@@ -485,15 +474,12 @@ class General():
                     "date_to": date_to
                 }
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             return data
                     
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
-            return None
+            return f"HTTP error ocurred: {http_err}"
         except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
+            return f"Key error: {key_err}"
         except Exception as err:
-            print(f'An error ocurred: {err}')
-            return None
+            return f'An error ocurred: {err}'

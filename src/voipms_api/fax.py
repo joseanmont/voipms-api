@@ -33,8 +33,8 @@ class Fax():
             send_email_enabled: Optional[Union[str, int]] = None,
             send_email: Optional[str] = None,
             station_id:str = None,
-            test=Optional[Union[str, int]] = None,
-    ) -> dict:
+            test:Optional[Union[str, int]] = None
+        ) -> dict:
         """
         Calls the VoIP.ms sendFaxMessage function. 
         Sends a fax from a specific DID to a specific number.
