@@ -1,5 +1,6 @@
 import requests
 from voipms_client import VoipMsClient
+from accounts import Accounts
 from typing import Optional, Union
 
 class CallHunting(VoipMsClient):
@@ -16,17 +17,6 @@ class CallHunting(VoipMsClient):
         update_call_hunting:
             Updates the configuration of a Call Hunting and returns the result of the request.
     '''
-
-    def __init__(self, username=None, password=None) -> None:
-
-        from voipms_api import Accounts
-
-        # Code to get the Account number to set the Main Account as the default member if no members are provided.
-        accounts = Accounts()
-        get_accounts = accounts.get_subaccounts()
-        self.acc_number = get_accounts['accounts'][0]['account']
-        self.acc_number = self.acc_number[0:6]
-
 
     def create_call_hunting(self, 
             name:str,
@@ -56,7 +46,13 @@ class CallHunting(VoipMsClient):
         """
         
         mtd = "setCallHunting"
-        default_member = "account:" + self.acc_number
+
+        # Code to get the Account number to set the Main Account as the default member if no members are provided.
+        accounts = Accounts(self.username, self.password)
+        get_accounts = accounts.get_subaccounts()
+        acc_number = get_accounts['accounts'][0]['account']
+        acc_number = acc_number[0:6]
+        default_member = "account:" + acc_number
 
         try:
             params = {
@@ -89,7 +85,7 @@ class CallHunting(VoipMsClient):
             if press_one is not None:
                 params["press"] = press_one
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["name"] = name
             return data
         
@@ -128,7 +124,7 @@ class CallHunting(VoipMsClient):
             ch_info = self.get_call_huntings(call_hunting)
             ch_name = ch_info["call_hunting"][0]["description"]
 
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["call_hunting"] = ch_name
             return data
         
@@ -165,7 +161,7 @@ class CallHunting(VoipMsClient):
             if call_hunting:
                 params["callhunting"] = call_hunting
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
@@ -235,7 +231,7 @@ class CallHunting(VoipMsClient):
             if press_one is not None:
                 params["press"] = press_one
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["name"] = name
             return data
         
