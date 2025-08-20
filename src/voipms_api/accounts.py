@@ -1,10 +1,11 @@
 import requests
+from voipms_client import VoipMsClient
 from typing import Optional, Union
 
 
-class Accounts():
+class Accounts(VoipMsClient):
     '''
-    A class to call the Sub Accounts functions of the VoIP.ms API.
+        Sub Accounts functions of the VoIP.ms API.
 
     Methods:
         create_subaccount:
@@ -16,20 +17,6 @@ class Accounts():
         update_subaccount:
             Updates the configuration of a Sub Account and returns the result of the request.
     '''
-
-    def __init__(self, username=None, password=None) -> None:
-
-        from voipms_api import VoipMsClient
-        
-        if (username and not password) or (password and not username):
-            raise ValueError("Both username and password must be provided together")
-        elif(username and password):
-            self.username = username
-            self.password = password
-            self.vms_client = VoipMsClient(self.username, self.password)
-        else:
-            self.vms_client = VoipMsClient()
-
     
     def create_subaccount(self, 
             username:str,
@@ -68,7 +55,7 @@ class Accounts():
             codecs (str, optional): Audio codecs for calls. Default is 'g722' (values from get_allowed_codecs).
 
         Returns:
-            dict: A dictionary containing the status of the request and the Sub Account that was created.
+            dict: Created Sub Account.
 
         Raises:
                 ValueError: If auth_type is 1 and password is not provided.
@@ -127,7 +114,7 @@ class Accounts():
             if codecs:
                 params["allowed_codecs"] = codecs
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
@@ -161,7 +148,7 @@ class Accounts():
                 "id": id,
             }
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["result"] = "Sub Account deleted"
             data["id"] = id
             return data
@@ -198,7 +185,7 @@ class Accounts():
             if subaccount:
                 params["account"] = subaccount
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
@@ -332,7 +319,7 @@ class Accounts():
             if dtmf_mode:
                 params["dtmf_mode"] = dtmf_mode
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["subacc"] = subaccount
             return data
         
