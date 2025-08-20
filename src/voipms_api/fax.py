@@ -3,10 +3,11 @@ VoIP.ms Virtual Fax functions
 '''
 
 import requests
+from voipms_client import VoipMsClient
 from typing import Optional, Union
 
 
-class Fax():
+class Fax(VoipMsClient):
     '''
     A class to call the Virtual Fax functions of the VoIP.ms API.
 
@@ -14,19 +15,6 @@ class Fax():
         send_fax:
             Sends a Fax from a specific DID to a specific number.
     '''
-
-    def __init__(self, username=None, password=None) -> None:
-        
-        from voipms_api import VoipMsClient
-
-        if (username and not password) or (password and not username):
-            raise ValueError("Both username and password must be provided together")
-        elif(username and password):
-            self.username = username
-            self.password = password
-            self.vms_client = VoipMsClient(self.username, self.password)
-        else:
-            self.vms_client = VoipMsClient()
 
     def send_fax(
             self,
@@ -53,7 +41,7 @@ class Fax():
             station_id (str, optional): To identify a equipment or department sending the Fax.
             test (str or int, optional): Set to true if testing how to send a Fax Message.
         Returns:
-            dict: A dictionary containing the status of the request.
+            dict: Status of the request.
         """
 
         mtd = "sendFaxMessage"
@@ -76,7 +64,7 @@ class Fax():
             if test:
                 params["test"] = test
 
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data = dict(data)
             return data
         except requests.exceptions.HTTPError as http_err:
