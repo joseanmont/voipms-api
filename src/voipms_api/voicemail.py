@@ -1,8 +1,13 @@
+'''
+VoIP.ms Voicemail functions
+'''
+
 import requests
+from voipms_client import VoipMsClient
 from typing import Optional, Union
 
 
-class Voicemail():
+class Voicemail(VoipMsClient):
     '''
     A class to call the Voicemail functions of the VoIP.ms API.
 
@@ -16,20 +21,6 @@ class Voicemail():
         update_voicemail:
             Updates the configuration of a voicemail and returns the result of the request.
     '''
-
-    def __init__(self, username=None, password=None) -> None:
-        
-        from voipms_api import VoipMsClient
-
-        if (username and not password) or (password and not username):
-            raise ValueError("Both username and password must be provided together")
-        elif(username and password):
-            self.username = username
-            self.password = password
-            self.vms_client = VoipMsClient(self.username, self.password)
-        else:
-            self.vms_client = VoipMsClient()
-
     
     def create_voicemail(self, 
             id:Union[str, int],
@@ -59,7 +50,7 @@ class Voicemail():
             client (str or int, optional): The ID of a Reseller client's account.
 
         Returns:
-            dict: A dictionary containing the status of the request and the voicemail that was created.
+            dict: Created Voicemail.
         """
         
         mtd = "createVoicemail"
@@ -93,7 +84,7 @@ class Voicemail():
             if client:
                 params["client"] = client
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["voicemail"] = id
             data["name"] = name
             return data
@@ -119,7 +110,7 @@ class Voicemail():
             id (str or int, required): ID number of the Voicemail that will be deleted(Example: '1' or 101).
 
         Returns:
-            dict: A dictionary containing the status of the request and the Voicemail that was canceled.
+            dict: Deleted Voicemail.
         """
         
         mtd = "delVoicemail"
@@ -129,7 +120,7 @@ class Voicemail():
                 "mailbox": id,
             }
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["result"] = "Voicemail deleted"
             data["voicemail"] = id
             return data
@@ -157,7 +148,7 @@ class Voicemail():
             client (str or int, optional): ID of a specific Reseller client (Example: '561115' or 561115).
 
         Returns:
-            dict: A dictionary containing the status of the request and the voicemails and their data, or a specific voicemail data if an ID is provided.
+            dict: All the voicemails, or a specific voicemail if an ID is provided.
         """
         
         mtd = "getVoicemails"
@@ -170,7 +161,7 @@ class Voicemail():
             if client:
                 params["client"] = client
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
@@ -212,7 +203,7 @@ class Voicemail():
             client (str or int, optional): The ID of a Reseller client's account.
 
         Returns:
-            dict: A dictionary containing the status of the request and the voicemail that was updated.
+            dict: Updated Voicemail.
         """
         
         mtd = "setVoicemail"
@@ -249,7 +240,7 @@ class Voicemail():
             if client:
                 params["client"] = client
             
-            data = self.vms_client.make_request(mtd, params)
+            data = self.make_request(mtd, params)
             data["voicemail"] = id
             data["name"] = name
             return data
