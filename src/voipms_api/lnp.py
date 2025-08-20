@@ -3,11 +3,12 @@ VoIP.ms LNP functions
 '''
 
 import requests
+from voipms_client import VoipMsClient
 from datetime import datetime
 from typing import Optional, Union
 
 
-class LNP:
+class LNP(VoipMsClient):
     '''
     A class to call the LNP functions of the VoIP.ms API.
 
@@ -15,19 +16,6 @@ class LNP:
         get_portability:
             Returns the result of verifying portability for a single number.
     '''
-
-    def __init__(self, username=None, password=None) -> None:
-
-        from voipms_api import VoipMsClient
-        
-        if (username and not password) or (password and not username):
-            raise ValueError("Both username and password must be provided together")
-        elif(username and password):
-            self.username = username
-            self.password = password
-            self.vms_client = VoipMsClient(self.username, self.password)
-        else:
-            self.vms_client = VoipMsClient()
 
     def get_portability(
             self, 
@@ -40,7 +28,7 @@ class LNP:
             did (str or int, required): Specific DID number to be verified (Example: 5551234567).
 
         Returns:
-            dict: A dictionary containing the DID and the result of the verification.
+            dict: Result of the verification.
         """
 
         mtd = "getPortability"
