@@ -281,131 +281,110 @@ class General(VoipMsClient):
             print(f'An error occurred: {err}')
             return None
                 
-    
-    def get_languages(
-            self, 
-            language:Optional[str]=None
-        ) -> dict:
-                """
-                Calls the VoIP.ms getLanguages function.
-
-                Args:
-                    language (str, optional): ID code of a specific Language (Example: 'en').
-
-                Returns:
-                    dict: The list of available languages and their values, or a specific language if a language ID code is provided.
-                """
-
-                mtd = "getLanguages"
-
-                try:
-                    params = {}
-
-                    if language:
-                        params["language"] = language
-                    
-                    data = self.get(mtd, params)
-                    return data
-                
-                except requests.exceptions.HTTPError as http_err:
-                    print(f"HTTP error ocurred: {http_err}")
-                    return None
-                except KeyError as key_err:
-                    print(f"Key error: {key_err}")
-                    return None
-                except Exception as err:
-                    print(f'An error ocurred: {err}')
-                    return None
-
-
-    def get_locales(
-            self, 
-            locales:Optional[str]=None
-        ) -> dict:
-                """
-                Calls the VoIP.ms getLocales function.
-
-                Args:
-                    locale (str, optional): ID code of a specific Locale code (Example: 'en-US').
-
-                Returns:
-                    dict: The list of available Locale codes and their values, or a specific Locale code if a Locale code is provided.
-                """
-
-                mtd = "getLocales"
-
-                try:
-                    params = {}
-
-                    if locales:
-                        params["locale"] = locales
-
-                    data = self.get(mtd, params)
-                    return data
-                
-                except requests.exceptions.HTTPError as http_err:
-                    print(f"HTTP error ocurred: {http_err}")
-                    return None
-                except KeyError as key_err:
-                    print(f"Key error: {key_err}")
-                    return None
-                except Exception as err:
-                    print(f'An error ocurred: {err}')
-                    return None
-                
-    
-    def get_servers(
-            self, 
-            server:Optional[Union[int, str]]=None
-        ) -> dict:
-                """
-                Calls the VoIP.ms getServersInfo function.
-
-                Args:
-                    server (str, optional): ID of a specific POP server (Example: 65).
-
-                Returns:
-                    dict: The list of available POP servers and their values, or a specific POP server if a server ID code is provided.
-                """
-
-                mtd = "getServersInfo"
-
-                try:
-                    params = {}
-
-                    if server:
-                        params["server_pop"] = server
-
-                    data = self.get(mtd, params)
-                    return data
-                
-                except requests.exceptions.HTTPError as http_err:
-                    print(f"HTTP error ocurred: {http_err}")
-                    return None
-                except KeyError as key_err:
-                    print(f"Key error: {key_err}")
-                    return None
-                except Exception as err:
-                    print(f'An error ocurred: {err}')
-                    return None
-                
-
-    def get_transactions(
-            self, 
-            date_from:str, 
-            date_to:str
-        ) -> dict :
+    def get_languages(self, language: Optional[str] = None) -> dict:
         """
-        Calls the VoIP.ms getTransactionHistory function.
+        List languages or get one by code (VoIP.ms getLanguages).
 
         Args:
-            from date (str, required): start date to retrieve transactions. (Example: '2016-06-03').
-            to date (str, required): end date to search transactions. (Example: '2016-07-03').
+            language: Optional language code (e.g. 'en'). If omitted, all are returned.
 
         Returns:
-            dict: The data of the transactions of the requested period.
+            API response with language(s) data.
         """
+        mtd = "getLanguages"
 
+        try:
+            params = {}
+            if language:
+                params["language"] = language
+
+            data = self.get(mtd, params)
+            return data
+
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error occurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'An error occurred: {err}')
+            return None
+
+    def get_locales(self, locales: Optional[str] = None) -> dict:
+        """
+        List locale codes or get one by code (VoIP.ms getLocales).
+
+        Args:
+            locales: Optional locale code (e.g. 'en-US'). If omitted, all are returned.
+
+        Returns:
+            API response with locale(s) data.
+        """
+        mtd = "getLocales"
+
+        try:
+            params = {}
+            if locales:
+                params["locale"] = locales
+
+            data = self.get(mtd, params)
+            return data
+
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error occurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'An error occurred: {err}')
+            return None
+
+    def get_servers(self, server: Optional[Union[int, str]] = None) -> dict:
+        """
+        List POP servers or get one by ID (VoIP.ms getServersInfo).
+
+        Args:
+            server: Optional POP server ID (e.g. 65). If omitted, all servers are returned.
+
+        Returns:
+            API response with POP server(s) data.
+        """
+        mtd = "getServersInfo"
+
+        try:
+            params = {}
+            if server:
+                params["server_pop"] = server
+
+            data = self.get(mtd, params)
+            return data
+
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error occurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'An error occurred: {err}')
+            return None
+
+    def get_transactions(self, date_from: str, date_to: str) -> dict:
+        """
+        Get transaction history for a date range (VoIP.ms getTransactionHistory).
+
+        Args:
+            date_from: Start date (e.g. '2016-06-03').
+            date_to: End date (e.g. '2016-07-03'). Must be >= date_from.
+
+        Returns:
+            API response with transactions for the period.
+
+        Raises:
+            ValueError: If date_to is before date_from.
+        """
         mtd = "getTransactionHistory"
 
         try:
@@ -413,18 +392,18 @@ class General(VoipMsClient):
             dt = datetime.strptime(date_to, '%Y-%m-%d')
             if df > dt:
                 raise ValueError("The TO date cannot be prior the FROM date")
-            
+
             params = {
-                    "date_from": date_from,
-                    "date_to": date_to
-                }
-            
+                "date_from": date_from,
+                "date_to": date_to
+            }
+
             data = self.get(mtd, params)
             return data
-                    
+
         except requests.exceptions.HTTPError as http_err:
-            return f"HTTP error ocurred: {http_err}"
+            return f"HTTP error occurred: {http_err}"
         except KeyError as key_err:
             return f"Key error: {key_err}"
         except Exception as err:
-            return f'An error ocurred: {err}'
+            return f'An error occurred: {err}'
