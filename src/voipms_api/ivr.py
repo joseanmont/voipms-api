@@ -76,7 +76,7 @@ class IVR(VoipMsClient):
             if options:
                 params["choices"] = options
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             data["name"] = name
             return data
         
@@ -115,7 +115,7 @@ class IVR(VoipMsClient):
             ivr_info = self.get_ivrs(ivr)
             ivr_name = ivr_info["ivrs"][0]["name"]
 
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             data["ivr"] = ivr_name
             return data
         
@@ -152,7 +152,7 @@ class IVR(VoipMsClient):
             if ivr:
                 params["ivr"] = ivr
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
@@ -212,7 +212,7 @@ class IVR(VoipMsClient):
             if options:
                 params["choices"] = options
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             data["name"] = name
             return data
         

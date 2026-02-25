@@ -9,6 +9,6 @@ from voipms_api import VoipMsClient
 func = "getMusicOnHold" # Function of the VoIP.ms API.
 
 vms_client = VoipMsClient() # Client object.
-response = vms_client.make_request(func) # Method to send a custom request to the API.
+response = vms_client.get(func) # Method to send a custom request to the API.
 
 print(response)

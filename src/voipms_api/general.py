@@ -73,9 +73,9 @@ class General(VoipMsClient):
                 params = {
                      "advanced": True,
                 }
-                data = self.make_request(mtd, params)
+                data = self.get(mtd, params)
             else:
-                 data = self.make_request(mtd)
+                 data = self.get(mtd)
             return data
         except requests.exceptions.HTTPError as http_err:
             print(f"HTTP error ocurred: {http_err}")
@@ -109,7 +109,7 @@ class General(VoipMsClient):
             if id:
                 params["conference"] = id
 
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
 
             return data
         
@@ -143,7 +143,7 @@ class General(VoipMsClient):
             if member:
                 params["member"] = member
 
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
@@ -189,7 +189,7 @@ class General(VoipMsClient):
                 else:
                     raise TypeError("The TO date cannot be prior the FROM date")
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             return data
                     
         except requests.exceptions.HTTPError as http_err:
@@ -224,7 +224,7 @@ class General(VoipMsClient):
                 "recording": recording,
             }
 
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
@@ -262,7 +262,7 @@ class General(VoipMsClient):
                 if client:
                     params["client"] = client
 
-                data = self.make_request(mtd, params)
+                data = self.get(mtd, params)
                 return data
             
             except requests.exceptions.HTTPError as http_err:
@@ -298,7 +298,7 @@ class General(VoipMsClient):
                     if country:
                         params["country"] = country
                     
-                    data = self.make_request(mtd, params)
+                    data = self.get(mtd, params)
                     return data
 
                 except requests.exceptions.HTTPError as http_err:
@@ -323,7 +323,7 @@ class General(VoipMsClient):
                 mtd = "getIP"
 
                 try:
-                    data = self.make_request(mtd)
+                    data = self.get(mtd)
                     return data
                 
                 except requests.exceptions.HTTPError as http_err:
@@ -359,7 +359,7 @@ class General(VoipMsClient):
                     if language:
                         params["language"] = language
                     
-                    data = self.make_request(mtd, params)
+                    data = self.get(mtd, params)
                     return data
                 
                 except requests.exceptions.HTTPError as http_err:
@@ -395,7 +395,7 @@ class General(VoipMsClient):
                     if locales:
                         params["locale"] = locales
 
-                    data = self.make_request(mtd, params)
+                    data = self.get(mtd, params)
                     return data
                 
                 except requests.exceptions.HTTPError as http_err:
@@ -431,7 +431,7 @@ class General(VoipMsClient):
                     if server:
                         params["server_pop"] = server
 
-                    data = self.make_request(mtd, params)
+                    data = self.get(mtd, params)
                     return data
                 
                 except requests.exceptions.HTTPError as http_err:
@@ -474,7 +474,7 @@ class General(VoipMsClient):
                     "date_to": date_to
                 }
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             return data
                     
         except requests.exceptions.HTTPError as http_err:

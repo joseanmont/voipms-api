@@ -119,7 +119,7 @@ print(balance.get_balance())
 
 Additionally, you can add your credentials or use different credentials by using the class VoipMsClient.
 
-This class also allows you use the method "make_request" to call a VoIP.ms function that might not be available in this package yet.
+This class also allows you use the method "get" to call a VoIP.ms function that might not be available in this package yet.
 
 Here is an example:
 
@@ -127,7 +127,7 @@ Here is an example:
 from voipms_api import VoipMsClient
 
 vms_client = VoipMsClient(username="me@email.com", password="your VoIP.ms API password")
-vms_client.make_request("sendFax")
+vms_client.get("sendFax")
 ```
 
 ## Module Capabilities

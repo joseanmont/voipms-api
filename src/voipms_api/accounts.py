@@ -118,7 +118,7 @@ class Accounts(VoipMsClient):
             if codecs:
                 params["allowed_codecs"] = codecs
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
@@ -152,7 +152,7 @@ class Accounts(VoipMsClient):
                 "id": id,
             }
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             data["result"] = "Sub Account deleted"
             data["id"] = id
             return data
@@ -189,7 +189,7 @@ class Accounts(VoipMsClient):
             if subaccount:
                 params["account"] = subaccount
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
@@ -323,7 +323,7 @@ class Accounts(VoipMsClient):
             if dtmf_mode:
                 params["dtmf_mode"] = dtmf_mode
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             data["subacc"] = subaccount
             return data
         

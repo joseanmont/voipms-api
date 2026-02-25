@@ -55,7 +55,7 @@ class DIDs(VoipMsClient):
             if test:
                 params["test"] = test
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             data["result"] = "DID canceled"
             data["did"] = did
             return data
@@ -99,7 +99,7 @@ class DIDs(VoipMsClient):
             if did:
                 params["did"] = did
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
@@ -148,7 +148,7 @@ class DIDs(VoipMsClient):
                 "billing_type": billing_type,
             }
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             data["result"] = "DID ordered"
             data["did"] = did
             return data
@@ -197,7 +197,7 @@ class DIDs(VoipMsClient):
                 "cnam": cnam
             }
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             data["result"] = "DID ordered"
             data["did"] = did
             return data
@@ -236,7 +236,7 @@ class DIDs(VoipMsClient):
                 "routing": routing,
             }
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             data["did"] = did
             data["result"] = f"DID routed to {routing}"
             return data

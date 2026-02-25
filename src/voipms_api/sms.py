@@ -76,7 +76,7 @@ class SMS(VoipMsClient):
             if timezone is not None:
                 params["timezone"] =  timezone
 
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             return data
                     
         except requests.exceptions.HTTPError as http_err:
@@ -115,7 +115,7 @@ class SMS(VoipMsClient):
                 "dst": dst,
                 "message": message
             }
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             data = dict(data)
             return data
         except requests.exceptions.HTTPError as http_err:

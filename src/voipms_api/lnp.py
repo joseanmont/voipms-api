@@ -40,7 +40,7 @@ class LNP(VoipMsClient):
                 "did": did
             }
             
-            response = self.vms_client.make_request(mtd, params)
+            response = self.get(mtd, params)
             portability_result["did"] = did
             portability_result["result"] = response
 

@@ -84,7 +84,7 @@ class Voicemail(VoipMsClient):
             if client:
                 params["client"] = client
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             data["voicemail"] = id
             data["name"] = name
             return data
@@ -120,7 +120,7 @@ class Voicemail(VoipMsClient):
                 "mailbox": id,
             }
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             data["result"] = "Voicemail deleted"
             data["voicemail"] = id
             return data
@@ -161,7 +161,7 @@ class Voicemail(VoipMsClient):
             if client:
                 params["client"] = client
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
@@ -240,7 +240,7 @@ class Voicemail(VoipMsClient):
             if client:
                 params["client"] = client
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             data["voicemail"] = id
             data["name"] = name
             return data

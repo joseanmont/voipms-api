@@ -13,8 +13,8 @@ class VoipMsClient:
         IMPORTANT: The VoIP.ms API must be enabled and the IP address that will consume the API must be allowed in the VoIP.ms Customer Portal.
 
     Methods:
-        make_request:
-            Establishes the connection with VoIP.ms API and takes care of sending the request.
+        get:
+            Sends a GET request to the VoIP.ms API.
         test_connection():
             Used to test the connection to the VoIP.ms API, confirming the credentials and IP address are correct.
     """
@@ -42,12 +42,12 @@ class VoipMsClient:
         self.verify = verify
 
     
-    def make_request(self, method:str, params:Optional[dict]=None) -> dict:
+    def get(self, method:str, params:Optional[dict]=None) -> dict:
         """
-        Establishes the connection with the VoIP.ms API and takes care of sending the request.
+        Sends a GET request to the VoIP.ms API.
 
         Returns:
-            dict: A dictionary containing the status and data returned from the VoIP.ms API.
+            dict: VoIP.ms API reponse.
         """
 
         if params is None:
@@ -70,6 +70,34 @@ class VoipMsClient:
         response.raise_for_status()  # Raises an HTTPError for bad responses
         response = response.json()
         return response
+    
+
+    def post(self, method:str, params:Optional[dict]=None) -> dict:
+        """
+        Sends a POST request to the VoIP.ms API.
+
+        Returns:
+            dict: VoIP.ms API reponse.
+        """
+
+        if params is None:
+            params = {}
+        # Include authentication details in the parameters
+        params.update({
+            'api_username': self.username,
+            'api_password': self.password,
+            'method': method
+        })
+        
+        if not self.verify:
+            response = requests.post(self.voipms_url, params=params, verify=False) # Certificate won't be verified
+        else:
+            response = requests.post(self.voipms_url, params=params)
+
+        response.raise_for_status()  # Raises an HTTPError for bad responses
+        response = response.json()
+        return response
+    
     
     def test_connection(self):
         """

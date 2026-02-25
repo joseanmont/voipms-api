@@ -72,7 +72,7 @@ class RingGroups(VoipMsClient):
             if language:
                 params["language"] = language
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             data["name"] = name
             return data
         
@@ -111,7 +111,7 @@ class RingGroups(VoipMsClient):
             rg_info = self.get_ring_groups(ring_group)
             rg_name = rg_info["ring_groups"][0]["name"]
 
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             data["ring_group"] = rg_name
             return data
         
@@ -148,7 +148,7 @@ class RingGroups(VoipMsClient):
             if ring_group:
                 params["ring_group"] = ring_group
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
@@ -206,7 +206,7 @@ class RingGroups(VoipMsClient):
             if language:
                 params["language"] = language
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             data["name"] = name
             return data
         

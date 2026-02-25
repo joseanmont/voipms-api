@@ -60,7 +60,7 @@ class Forwarding(VoipMsClient):
             if pause:
                 params["pause"] = pause
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             data["forwarding"] = phone_number
             return data
         
@@ -99,7 +99,7 @@ class Forwarding(VoipMsClient):
             fwd_info = self.get_forwardings(forwarding)
             fwd_pn = fwd_info["forwardings"][0]["phone_number"]
 
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             data["phone_number"] = fwd_pn
             return data
         
@@ -136,7 +136,7 @@ class Forwarding(VoipMsClient):
             if forwarding:
                 params["forwarding"] = forwarding
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:
@@ -194,7 +194,7 @@ class Forwarding(VoipMsClient):
             if pause is not None:
                 params["pause"] = pause
             
-            data = self.make_request(mtd, params)
+            data = self.get(mtd, params)
             return data
         
         except requests.exceptions.HTTPError as http_err:

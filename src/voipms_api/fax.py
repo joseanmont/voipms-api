@@ -2,7 +2,7 @@
 VoIP.ms Virtual Fax functions
 '''
 
-import requests
+import requests, base64
 from voipms_client import VoipMsClient
 from typing import Optional, Union
 
@@ -21,7 +21,7 @@ class Fax(VoipMsClient):
             to_number: Union[str, int],
             from_name: str,
             from_number: Union[str, int],
-            file:str,
+            file_path:str,
             send_email_enabled: Optional[Union[str, int]] = None,
             send_email: Optional[str] = None,
             station_id:str = None,
@@ -46,12 +46,22 @@ class Fax(VoipMsClient):
 
         mtd = "sendFaxMessage"
 
+        # Encode file in base64
+        try:
+            with open(file_path, "rb") as file:
+                encoded_content = base64.b64encode(file.read()).decode('utf-8')
+            # encoded_content.decode("ascii")  # Return as a string
+        except FileNotFoundError:
+            return "Error: File not found."
+        except Exception as e:
+            return f"An error occurred: {e}"
+
         try:
             params = {
                 "to_number": to_number,
                 "from_name": from_name,
                 "from_number": from_number,
-                "file": file,
+                "file": encoded_content,
             }
 
             # Optional in this package.
@@ -64,7 +74,13 @@ class Fax(VoipMsClient):
             if test:
                 params["test"] = test
 
-            data = self.make_request(mtd, params)
+            # data = self.make_request(mtd, params)
+            # data = dict(data)
+            # return data
+
+            # USING POST
+            # url = f"{self.voipms_url}?method={mtd}&api_username={self.username}&api_password={self.password}"
+            data = requests.post(self.voipms_url, data=params)
             data = dict(data)
             return data
         except requests.exceptions.HTTPError as http_err:
