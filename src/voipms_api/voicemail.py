@@ -1,6 +1,4 @@
-'''
-VoIP.ms Voicemail functions
-'''
+"""VoIP.ms voicemail management."""
 
 import requests
 from voipms_client import VoipMsClient
@@ -8,49 +6,46 @@ from typing import Optional, Union
 
 
 class Voicemail(VoipMsClient):
-    '''
-    A class to call the Voicemail functions of the VoIP.ms API.
+    """
+    Voicemail operations for the VoIP.ms API.
 
     Methods:
-        create_voicemail:
-            Creates a new voicemail and returns the result of the request.
-        delete_voicemail:
-            Deletes a specific voicemail and returns the result of the request.
-        get_voicemails:
-            Returns all the existing Voicemails, or a specific Voicemail if a Voicemail ID or Client ID is provided.
-        update_voicemail:
-            Updates the configuration of a voicemail and returns the result of the request.
-    '''
-    
-    def create_voicemail(self, 
-            id:Union[str, int],
-            name:str,
-            password:int,
-            skip_password:Optional[str]='no',
-            email:Optional[str]=None,
-            attach_message:Optional[str]='yes',
-            delete_message:Optional[str]='no',
-            timezone:Optional[str]='US/Eastern',
-            language:Optional[str]='en',
-            client:Optional[Union[str, int]]=None,
-        ) -> dict:
+        create_voicemail(id, name, password, ...): Create a voicemail.
+        delete_voicemail(id): Delete a voicemail by ID.
+        get_voicemails(voicemail, client): List voicemails or get one by ID/client.
+        update_voicemail(id, ...): Update an existing voicemail.
+    """
+
+    def create_voicemail(
+        self,
+        id: Union[str, int],
+        name: str,
+        password: int,
+        skip_password: Optional[str] = 'no',
+        email: Optional[str] = None,
+        attach_message: Optional[str] = 'yes',
+        delete_message: Optional[str] = 'no',
+        timezone: Optional[str] = 'US/Eastern',
+        language: Optional[str] = 'en',
+        client: Optional[Union[str, int]] = None,
+    ) -> dict:
         """
-        Calls the VoIP.ms createVoicemail function.
+        Create a new voicemail (VoIP.ms createVoicemail).
 
         Args:
-            id (str or int, required): ID number of the Voicemail (Example: '1' or 101 | Minimum 1 digit, maximum 10).
-            name (str, required): Name of the voicemail.
-            password (int, required): Password to set for the authentication to access the voicemail (4 digits mandatory).
-            skip_password (str, optional): Defines if the password will be skipped or not (Default is 'no').
-            email (str, optional): Email address to receive the notifications and the messages. Accepts multiple voicemails separated by commas.
-            attach_message (str, optional): Defines if the audio file will be attached to the email (Default is 'yes').
-            delete_message (str, optional): Defines if the messages will be deleted from the portal after sent to the email (Default is 'no').
-            timezone (str, optional): The Time Zone of the voicemail (Default is 'America/New York' | Values from get_time_zones).
-            language (str, optional): The language of the voicemail (Default is 'en' for English | Values from get_languages).
-            client (str or int, optional): The ID of a Reseller client's account.
+            id: Voicemail ID (1–10 digits, e.g. '1' or 101).
+            name: Display name for the voicemail.
+            password: 4-digit PIN for voicemail access.
+            skip_password: 'no' (default) or 'yes' to skip password prompt.
+            email: Email for notifications; multiple addresses comma-separated.
+            attach_message: 'yes' (default) or 'no' to attach audio to email.
+            delete_message: 'no' (default) or 'yes' to delete from portal after email.
+            timezone: Timezone (e.g. 'US/Eastern'). See get_time_zones.
+            language: Language code (e.g. 'en'). See get_languages.
+            client: Reseller client account ID.
 
         Returns:
-            dict: Created Voicemail.
+            API response with the created voicemail data.
         """
         
         mtd = "createVoicemail"
@@ -90,7 +85,7 @@ class Voicemail(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -100,17 +95,15 @@ class Voicemail(VoipMsClient):
             return None
         
         
-    def delete_voicemail(self, 
-            id:Union[str, int],
-        ) -> dict:
+    def delete_voicemail(self, id: Union[str, int]) -> dict:
         """
-        Calls the VoIP.ms delVoicemail function.
+        Delete a voicemail by ID (VoIP.ms delVoicemail).
 
         Args:
-            id (str or int, required): ID number of the Voicemail that will be deleted(Example: '1' or 101).
+            id: Voicemail ID to delete (e.g. '1' or 101).
 
         Returns:
-            dict: Deleted Voicemail.
+            API response with result and voicemail id.
         """
         
         mtd = "delVoicemail"
@@ -126,7 +119,7 @@ class Voicemail(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -136,19 +129,20 @@ class Voicemail(VoipMsClient):
             return None
         
 
-    def get_voicemails(self, 
-            voicemail:Optional[Union[str, int]]=None,
-            client:Optional[Union[str, int]]=None
-        ) -> dict:
+    def get_voicemails(
+        self,
+        voicemail: Optional[Union[str, int]] = None,
+        client: Optional[Union[str, int]] = None,
+    ) -> dict:
         """
-        Calls the VoIP.ms getVoicemails function.
+        List voicemails or get one by ID/client (VoIP.ms getVoicemails).
 
         Args:
-            voicemail (str or int, optional): ID number of a specific Voicemail (Example: '1001' or 1001).
-            client (str or int, optional): ID of a specific Reseller client (Example: '561115' or 561115).
+            voicemail: Optional voicemail ID (e.g. '1001' or 1001).
+            client: Optional reseller client ID (e.g. '561115' or 561115).
 
         Returns:
-            dict: All the voicemails, or a specific voicemail if an ID is provided.
+            API response with all voicemails or the requested one.
         """
         
         mtd = "getVoicemails"
@@ -165,7 +159,7 @@ class Voicemail(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -175,35 +169,36 @@ class Voicemail(VoipMsClient):
             return None
         
 
-    def update_voicemail(self, 
-            id:Union[str, int],
-            name:str=None,
-            password:Union[str, int]=None,
-            skip_password:Optional[str]=None,
-            email:Optional[str]=None,
-            attach_message:Optional[str]=None,
-            delete_message:Optional[str]=None,
-            timezone:Optional[str]=None,
-            language:Optional[str]=None,
-            client:Optional[Union[str, int]]=None,
-        ) -> dict:
+    def update_voicemail(
+        self,
+        id: Union[str, int],
+        name: Optional[str] = None,
+        password: Optional[Union[str, int]] = None,
+        skip_password: Optional[str] = None,
+        email: Optional[str] = None,
+        attach_message: Optional[str] = None,
+        delete_message: Optional[str] = None,
+        timezone: Optional[str] = None,
+        language: Optional[str] = None,
+        client: Optional[Union[str, int]] = None,
+    ) -> dict:
         """
-        Calls the VoIP.ms setVoicemail function.
+        Update an existing voicemail (VoIP.ms setVoicemail).
 
         Args:
-            id (str or int, required): ID number of the Voicemail (Example: '1' or 101 | Minimum 1 digit, maximum 10).
-            name (str, optional): Name of the voicemail.
-            password (str or int, optional): Password to set for the authentication to access the voicemail (4 digits mandatory).
-            skip_password (str, optional): Defines if the password will be skipped or not.
-            email (str, optional): Email address to receive the notifications and the messages. Accepts multiple voicemails separated by commas.
-            attach_message (str, optional): Defines if the audio file will be attached to the email (Default is 'yes').
-            delete_message (str, optional): Defines if the messages will be deleted from the portal after sent to the email (Default is 'no').
-            timezone (str, optional): The Time Zone of the voicemail (Default is 'America/New York' | Values from get_time_zones).
-            language (str, optional): The language of the voicemail (Default is 'en' for English | Values from get_languages).
-            client (str or int, optional): The ID of a Reseller client's account.
+            id: Voicemail ID to update (1–10 digits, e.g. '1' or 101).
+            name: Display name.
+            password: 4-digit PIN for access.
+            skip_password: 'no' or 'yes' to skip password prompt.
+            email: Email for notifications; comma-separated for multiple.
+            attach_message: 'yes' or 'no' to attach audio to email.
+            delete_message: 'no' or 'yes' to delete from portal after email.
+            timezone: Timezone. See get_time_zones.
+            language: Language code. See get_languages.
+            client: Reseller client account ID.
 
         Returns:
-            dict: Updated Voicemail.
+            API response with updated voicemail data.
         """
         
         mtd = "setVoicemail"
@@ -246,7 +241,7 @@ class Voicemail(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")

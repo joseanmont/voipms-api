@@ -1,48 +1,44 @@
-'''
-VoIP.ms Call IVR functions
-'''
+"""VoIP.ms IVR (interactive voice response) management."""
 
 import requests
 from voipms_client import VoipMsClient
 from accounts import Accounts
 from typing import Optional, Union
 
+
 class IVR(VoipMsClient):
-    '''
-    A class to call the IVR functions of the VoIP.ms API.
+    """
+    IVR operations for the VoIP.ms API.
 
     Methods:
-        create_ivr:
-            Creates a new IVR and returns the result of the request.
-        delete_ivr:
-            Deletes a specific IVR and returns the result of the request.
-        get_ivr:
-            Returns all the existing IVRs, or a specific IVR if an IVR ID is provided.
-        update_ivr:
-            Updates the configuration of an IVR and returns the result of the request.
-    '''
+        create_ivr(name, recording, ...): Create an IVR.
+        delete_ivr(ivr): Delete an IVR by ID.
+        get_ivrs(ivr): List IVRs or get one by ID.
+        update_ivr(id, ...): Update an existing IVR.
+    """
 
-    def create_ivr(self, 
-            name:str,
-            recording:Union[str, int],
-            time_out:Optional[Union[str, int]]=None,
-            language:Optional[str]=None,
-            voicemail:Optional[str]=None,
-            options:Optional[str]=None,
-        ) -> dict:
+    def create_ivr(
+        self,
+        name: str,
+        recording: Union[str, int],
+        time_out: Optional[Union[str, int]] = None,
+        language: Optional[str] = None,
+        voicemail: Optional[str] = None,
+        options: Optional[str] = None,
+    ) -> dict:
         """
-        Calls the VoIP.ms setIVR function to create a new IVR.
+        Create a new IVR (VoIP.ms setIVR).
 
         Args:
-            name (str): A name for the IVR.
-            recording (str or int): ID of the recording to set to the IVR (values from get_recordings).
-            time_out (str or int, optional): Maximum time to dial in an option after recording (values from 1 to 10. Default is 5).
-            language (str, optional): Language of the IVR. Default  is 'en' for English (values from get_languages).
-            voicemail (str, optional): Voicemail Setup for the IVR (Default  is '1' for use 'Default DID voicemail'. Alternative is '2' for 'Account voicemail').
-            options (srt, optional): A string of options separated by semicolons (Default is Main Account for 1 as only choice. Example: '1=account:100001;2=fwd:16006').
+            name: Display name for the IVR.
+            recording: Recording ID for the IVR. See get_recordings.
+            time_out: Max seconds to dial an option after recording (1–10). Default 5.
+            language: Language code (e.g. 'en'). See get_languages. Default 'en'.
+            voicemail: '1' = default DID voicemail, '2' = account voicemail. Default '1'.
+            options: Semicolon-separated choices (e.g. '1=account:100001;2=fwd:16006'). Default is main account for 1.
 
         Returns:
-            dict: Created IVR.
+            API response with the created IVR data.
         """
         
         mtd = "setIVR"
@@ -81,7 +77,7 @@ class IVR(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -91,17 +87,15 @@ class IVR(VoipMsClient):
             return None
         
 
-    def delete_ivr(self, 
-            ivr:Union[str, int],
-        ) -> dict:
+    def delete_ivr(self, ivr: Union[str, int]) -> dict:
         """
-        Calls the VoIP.ms delIVR function.
+        Delete an IVR by ID (VoIP.ms delIVR).
 
         Args:
-            ivr (str or int, required): ID of the IVR that will be deleted (Example: 18635). Value from get_ivrs.
+            ivr: IVR ID to delete (e.g. 18635). Use get_ivrs to list IDs.
 
         Returns:
-            dict: Deleted IVR.
+            API response with result and IVR name.
         """
         
         mtd = "delIVR"
@@ -120,7 +114,7 @@ class IVR(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -130,17 +124,15 @@ class IVR(VoipMsClient):
             return None
         
 
-    def get_ivrs(self, 
-            ivr:Optional[Union[str, int]]=None,
-        ) -> dict:
+    def get_ivrs(self, ivr: Optional[Union[str, int]] = None) -> dict:
         """
-        Calls the VoIP.ms getIVRs function.
+        List IVRs or get one by ID (VoIP.ms getIVRs).
 
         Args:
-            ivr (str or int, optional): ID of a specific IVR (Example: 323).
+            ivr: Optional IVR ID (e.g. 323). If omitted, all IVRs are returned.
 
         Returns:
-            dict: All the IVRs, or a specific IVR if an ID is provided.
+            API response with all IVRs or the requested one.
         """
         
         mtd = "getIVRs"
@@ -156,7 +148,7 @@ class IVR(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -166,29 +158,30 @@ class IVR(VoipMsClient):
             return None
         
 
-    def update_ivr(self,
-            id:Union[str, int],
-            name:Optional[str]=None,
-            recording:Union[str, int]=None,
-            time_out:Optional[Union[str, int]]=None,
-            language:Optional[str]=None,
-            voicemail:Optional[str]=None,
-            options:Optional[str]=None,
-        ) -> dict:
+    def update_ivr(
+        self,
+        id: Union[str, int],
+        name: Optional[str] = None,
+        recording: Optional[Union[str, int]] = None,
+        time_out: Optional[Union[str, int]] = None,
+        language: Optional[str] = None,
+        voicemail: Optional[str] = None,
+        options: Optional[str] = None,
+    ) -> dict:
         """
-        Calls the VoIP.ms setIVR function to update an existing IVR.
+        Update an existing IVR (VoIP.ms setIVR).
 
         Args:
-            id (str or int, required): ID of the IVR that will be updated (values from get_ivrs).
-            name (str, optional): A name for the IVR.
-            recording (str or int, optional): ID of the recording to set to the IVR (values from get_recordings).
-            time_out (str or int, optional): Maximum time to dial in an option after recording (values from 1 to 10).
-            language (str, optional): Language of the IVR. Default  is 'en' for English (values from get_languages).
-            voicemail (str, optional): Voicemail Setup for the IVR ('1' to use 'Default DID voicemail' - '2' to use 'Account voicemail').
-            options (srt, optional): A string of options separated by semicolons (Example: '1=account:100001;2=fwd:16006').
+            id: IVR ID to update. Use get_ivrs to list IDs.
+            name: Display name for the IVR.
+            recording: Recording ID. See get_recordings.
+            time_out: Max seconds to dial an option (1–10).
+            language: Language code. See get_languages.
+            voicemail: '1' = default DID voicemail, '2' = account voicemail.
+            options: Semicolon-separated choices (e.g. '1=account:100001;2=fwd:16006').
 
         Returns:
-            dict: Updated IVR.
+            API response with updated IVR data.
         """
         
         mtd = "setIVR"
@@ -217,7 +210,7 @@ class IVR(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")

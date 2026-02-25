@@ -1,107 +1,69 @@
-'''
-VoIP.ms General functions
-'''
+"""VoIP.ms general/utility API functions."""
 
 import requests
 from voipms_client import VoipMsClient
 from datetime import datetime
 from typing import Optional, Union
 
+
 class General(VoipMsClient):
-    '''
-    A class to call the general functions of the VoIP.ms API.
+    """
+    General and utility operations for the VoIP.ms API.
 
     Methods:
-        get_balance:
-            Returns the current balance of the VoIP.ms account and call statistics.
-        get_conference:
-            Returns all the conferences if no ID is provided.
-        get_conference_members:
-            Returns the data of the conference members, or a specific conference member.
-        get_conference_recordings:
-            Returns the data of the recordings of the requested conference.
-        get_conference_recording_file:
-            Returns the file of a specific conference recording.
-        get_sequences:
-            Returns the data of the existing sequences, or a specific sequence.
-        get_countries:
-            Returns the list of available countries and their values, or a specific country and its values.
-        get_ip:
-            Returns the public IPv4 address of the network the request comes from.
-        get_languages:
-            Returns the list of available languages and their values, or a specific language and its values.
-        get_locales:
-            Returns the list of available Locale codes and their values, or a specific Locale code and its values.
-        get_servers:
-            Returns the list of available POP servers and their values, or a specific POP server and its values.
-        get_transactions:
-            Returns the transactions of a specific period.
-    '''
+        get_balance(advanced): Get account balance and optional call statistics.
+        get_conference(id): List conferences or get one by ID.
+        get_conference_members(member): List conference members or get one by ID.
+        get_conference_recordings(id, date_from, date_to): Get conference recordings.
+        get_conference_recording_file(id, recording): Get a conference recording file.
+        get_sequences(sequence, client): List sequences or get one by ID.
+        get_countries(country): List countries or get one by code.
+        get_ip(): Get the public IPv4 address seen by the API.
+        get_languages(language): List languages or get one by code.
+        get_locales(locales): List locale codes or get one by code.
+        get_servers(server): List POP servers or get one by ID.
+        get_transactions(date_from, date_to): Get transaction history for a date range.
+    """
 
-    # def __init__(self, username=None, password=None) -> None:
-
-    #     # from voipms_api import VoipMsClient
-        
-    #     if (username and not password) or (password and not username):
-    #         raise ValueError("Both username and password must be provided together")
-    #     elif(username and password):
-    #         self.username = username
-    #         self.password = password
-    #         self.vms_client = VoipMsClient(self.username, self.password)
-    #     else:
-    #         self.vms_client = VoipMsClient()
-
-    
-    def get_balance(
-            self, 
-            advanced:Optional[bool]=False
-        ) -> dict:
+    def get_balance(self, advanced: Optional[bool] = False) -> dict:
         """
-        Calls the VoIP.ms getBalance function.
+        Get account balance (VoIP.ms getBalance).
 
         Args:
-            advanced (bool, optional): If True, also returns Balance and Calls Statistics of the Account. Default is False.
+            advanced: If True, include balance and call statistics. Default False.
 
         Returns:
-            dict: The current account balance.
+            API response with current balance (and optionally statistics).
         """
-        
         mtd = "getBalance"
 
         try:
             if advanced:
-                params = {
-                     "advanced": True,
-                }
+                params = {"advanced": True}
                 data = self.get(mtd, params)
             else:
-                 data = self.get(mtd)
+                data = self.get(mtd)
             return data
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
             return None
         except Exception as err:
-            print(f'An error ocurred: {err}')
+            print(f'An error occurred: {err}')
             return None
 
-
-    def get_conference(
-            self, 
-            id:Optional[Union[str, int]]=None
-        ) -> dict:
+    def get_conference(self, id: Optional[Union[str, int]] = None) -> dict:
         """
-        Calls the VoIP.ms getConference function.
+        List conferences or get one by ID (VoIP.ms getConference).
 
         Args:
-            id (str or int, optional): ID of a specific conference.
+            id: Optional conference ID. If omitted, all conferences are returned.
 
         Returns:
-            dict: Existing conferences, or a specific conference if a conference ID is provided.
+            API response with conference(s) data.
         """
-
         mtd = "getConference"
 
         try:
@@ -110,112 +72,103 @@ class General(VoipMsClient):
                 params["conference"] = id
 
             data = self.get(mtd, params)
-
             return data
-        
+
         except requests.exceptions.HTTPError as http_err:
-            return f"HTTP error ocurred: {http_err}"
+            return f"HTTP error occurred: {http_err}"
         except KeyError as key_err:
             return f"Key error: {key_err}"
         except Exception as err:
-            return f'An error ocurred: {err}'
+            return f'An error occurred: {err}'
 
 
     def get_conference_members(
-            self, 
-            member:Optional[Union[str, int]]=None
-        ) -> dict:
+        self, member: Optional[Union[str, int]] = None
+    ) -> dict:
         """
-        Calls the VoIP.ms getConferenceMembers function.
+        List conference members or get one by ID (VoIP.ms getConferenceMembers).
 
         Args:
-            member (str or int, optional): ID of a specific conference member.
+            member: Optional conference member ID. If omitted, all members are returned.
 
         Returns:
-            dict: The data of the conference members, or a specific conference member if a member ID is provided.
+            API response with conference member(s) data.
         """
-
         mtd = "getConferenceMembers"
 
         try:
             params = {}
-            
             if member:
                 params["member"] = member
 
             data = self.get(mtd, params)
             return data
-        
+
         except requests.exceptions.HTTPError as http_err:
-            return f"HTTP error ocurred: {http_err}"
+            return f"HTTP error occurred: {http_err}"
         except KeyError as key_err:
             return f"Key error: {key_err}"
         except Exception as err:
-            return f'An error ocurred: {err}'
-        
+            return f'An error occurred: {err}'
 
     def get_conference_recordings(
-            self, 
-            id:Union[int, str], 
-            date_from:Optional[str]=None, 
-            date_to:Optional[str]=None
-        ) -> dict :
+        self,
+        id: Union[int, str],
+        date_from: Optional[str] = None,
+        date_to: Optional[str] = None,
+    ) -> dict:
         """
-        Calls the VoIP.ms getConferenceRecordings function.
+        Get recordings for a conference (VoIP.ms getConferenceRecordings).
 
         Args:
-            id (str or int, required): ID of the conference to retrieve the recordings from.
-            from date (str, optional): Start date to search recordings. (Example: '2016-06-03').
-            to date (str, optional): End date to search recordings. (Example: '2016-07-03').
+            id: Conference ID.
+            date_from: Start date for range (e.g. '2016-06-03'). Required with date_to.
+            date_to: End date for range (e.g. '2016-07-03'). Must be >= date_from.
 
         Returns:
-            dict: The data of the recordings of the requested conference.
-        """
+            API response with conference recordings.
 
+        Raises:
+            TypeError: If only one of date_from/date_to is provided, or if date_to is before date_from.
+        """
         mtd = "getConferenceRecordings"
 
         try:
-            params = {
-                "conference": id
-            }
+            params = {"conference": id}
             if date_from and not date_to:
-                 raise TypeError("Missing parameter. Send conference ID, From date and To date.")
+                raise TypeError("Missing parameter. Send conference ID, From date and To date.")
             if date_from or date_to:
                 df = datetime.strptime(date_from, '%Y-%m-%d')
                 dt = datetime.strptime(date_to, '%Y-%m-%d')
                 if df <= dt:
                     params["date_from"] = date_from
-                    params["date_to"] = date_to               
+                    params["date_to"] = date_to
                 else:
                     raise TypeError("The TO date cannot be prior the FROM date")
-            
+
             data = self.get(mtd, params)
             return data
-                    
+
         except requests.exceptions.HTTPError as http_err:
-            return f"HTTP error ocurred: {http_err}"
+            return f"HTTP error occurred: {http_err}"
         except KeyError as key_err:
             return f"Key error: {key_err}"
         except Exception as err:
-            return f'An error ocurred: {err}'
-        
+            return f'An error occurred: {err}'
 
     def get_conference_recording_file(
-            self, 
-            id:Union[int, str], 
-            recording:Union[int, str]
-        ) -> dict:
+        self, id: Union[int, str], recording: Union[int, str]
+    ) -> dict:
         """
-        Calls the VoIP.ms getConferenceRecordingFile function.
+        Get a specific conference recording file (VoIP.ms getConferenceRecordingFile).
 
         Args:
-            id (str or int, required): ID of the conference to retrieve the recording from.
-            recording (str or int, required): ID of the recording to retrieve the file for.            
+            id: Conference ID.
+            recording: Recording ID within that conference.
 
         Returns:
-            dict: The specified recording file.
+            API response with the recording file data.
         """
-
         mtd = "getConferenceRecordingFile"
 
         try:
@@ -226,115 +179,107 @@ class General(VoipMsClient):
 
             data = self.get(mtd, params)
             return data
-        
+
         except requests.exceptions.HTTPError as http_err:
-            return f"HTTP error ocurred: {http_err}"
+            return f"HTTP error occurred: {http_err}"
         except KeyError as key_err:
             return f"Key error: {key_err}"
         except Exception as err:
-            return f'An error ocurred: {err}'
+            return f'An error occurred: {err}'
 
 
     def get_sequences(
-            self, 
-            sequence: Optional[Union[str, int]]=None, 
-            client:Optional[Union[str, int]]=None
-        ) -> dict:
-            # Possible bug from the VoIP.ms API here: Does not return secuences associated with a Reseller client when no Secuence nor Client ID is provided.
-            """
-            Calls the VoIP.ms getSequences function.
+        self,
+        sequence: Optional[Union[str, int]] = None,
+        client: Optional[Union[str, int]] = None,
+    ) -> dict:
+        """
+        List sequences or get one by ID (VoIP.ms getSequences).
 
-            Args:
-                id (str or int, optional): ID of a specific Sequence.
-                client (str or int, optional): ID of a specific Reseller client.            
+        Note: API may not return sequences for a reseller client when neither
+        sequence nor client ID is provided.
 
-            Returns:
-                dict: The existing sequences, or a specific sequence if a sequence ID is provided.
-            """
+        Args:
+            sequence: Optional sequence ID.
+            client: Optional reseller client ID.
 
-            mtd = "getSequences"
+        Returns:
+            API response with sequence(s) data.
+        """
+        mtd = "getSequences"
 
-            try:
-                params = {}
+        try:
+            params = {}
+            if sequence:
+                params["sequence"] = sequence
+            if client:
+                params["client"] = client
 
-                if sequence:
-                    params["sequence"] = sequence
-                if client:
-                    params["client"] = client
+            data = self.get(mtd, params)
+            return data
 
-                data = self.get(mtd, params)
-                return data
-            
-            except requests.exceptions.HTTPError as http_err:
-                print(f"HTTP error ocurred: {http_err}")
-                return None
-            except KeyError as key_err:
-                print(f"Key error: {key_err}")
-                return None
-            except Exception as err:
-                print(f'An error ocurred: {err}')
-                return None
-            
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error occurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'An error occurred: {err}')
+            return None
 
-    def get_countries(
-            self, 
-            country:Optional[str]=None
-        ) -> dict:
-                """
-                Calls the VoIP.ms getCountries function.
+    def get_countries(self, country: Optional[str] = None) -> dict:
+        """
+        List countries or get one by code (VoIP.ms getCountries).
 
-                Args:
-                    country (str, optional): ID code of a specific Country (Example: 'CA').
+        Args:
+            country: Optional country code (e.g. 'CA'). If omitted, all countries are returned.
 
-                Returns:
-                    dict: The list of available countries and their values, or a specific country if a country ID code is provided.
-                """
+        Returns:
+            API response with country/countries data.
+        """
+        mtd = "getCountries"
 
-                mtd = "getCountries"
+        try:
+            params = {}
+            if country:
+                params["country"] = country
 
-                try:
-                    params = {}
+            data = self.get(mtd, params)
+            return data
 
-                    if country:
-                        params["country"] = country
-                    
-                    data = self.get(mtd, params)
-                    return data
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error occurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'An error occurred: {err}')
+            return None
 
-                except requests.exceptions.HTTPError as http_err:
-                    print(f"HTTP error ocurred: {http_err}")
-                    return None
-                except KeyError as key_err:
-                    print(f"Key error: {key_err}")
-                    return None
-                except Exception as err:
-                    print(f'An error ocurred: {err}')
-                    return None
-                
+    def get_ip(self) -> dict:
+        """
+        Get the public IPv4 address seen by the API (VoIP.ms getIP).
 
-    def get_ip(self):
-                """
-                Calls the VoIP.ms getIP function.
+        Returns:
+            API response with the requesting network's public IP.
+        """
+        mtd = "getIP"
 
-                Returns:
-                    dict: The public IPv4 address of the network the request comes from.
-                """
+        try:
+            data = self.get(mtd)
+            return data
 
-                mtd = "getIP"
-
-                try:
-                    data = self.get(mtd)
-                    return data
-                
-                except requests.exceptions.HTTPError as http_err:
-                    print(f"HTTP error ocurred: {http_err}")
-                    return None
-                except KeyError as key_err:
-                    print(f"Key error: {key_err}")
-                    return None
-                except Exception as err:
-                    print(f'An error ocurred: {err}')
-                    return None
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error occurred: {http_err}")
+            return None
+        except KeyError as key_err:
+            print(f"Key error: {key_err}")
+            return None
+        except Exception as err:
+            print(f'An error occurred: {err}')
+            return None
                 
     
     def get_languages(

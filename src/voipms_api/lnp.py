@@ -1,34 +1,27 @@
-'''
-VoIP.ms LNP functions
-'''
+"""VoIP.ms LNP (number portability) functions."""
 
 import requests
 from voipms_client import VoipMsClient
-from datetime import datetime
 from typing import Optional, Union
 
 
 class LNP(VoipMsClient):
-    '''
-    A class to call the LNP functions of the VoIP.ms API.
+    """
+    LNP (local number portability) operations for the VoIP.ms API.
 
     Methods:
-        get_portability:
-            Returns the result of verifying portability for a single number.
-    '''
+        get_portability(did): Check portability for a single DID.
+    """
 
-    def get_portability(
-            self, 
-            did:Union[str, int],
-        ):
+    def get_portability(self, did: Union[str, int]) -> dict:
         """
-        Calls the VoIP.ms getPortability function.
+        Check whether a DID is portable (VoIP.ms getPortability).
 
         Args:
-            did (str or int, required): Specific DID number to be verified (Example: 5551234567).
+            did: DID number to verify (e.g. 5551234567).
 
         Returns:
-            dict: Result of the verification.
+            Dict with 'did' and 'result' (API response for the portability check).
         """
 
         mtd = "getPortability"
@@ -47,7 +40,7 @@ class LNP(VoipMsClient):
             return portability_result
             
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")

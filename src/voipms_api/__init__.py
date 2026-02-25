@@ -15,7 +15,7 @@ __all__ = [
     "Accounts",
     "CallHunting",
     "DIDs",
-    "Fax"
+    "Fax",
     "Forwarding", 
     "General",
     "IVR", 

@@ -4,33 +4,39 @@ from typing import Optional
 class VoipMsClient:
 
     """
-    A class to connect to the VoIP.ms API.
+    Client for the VoIP.ms REST API.
 
     Attributes:
-        username (str): Your VoIP.ms account email address.
-        password (str): Your VoIP.ms API password
+        username (str or None): Account email address. Set from argument or VOIPMS_API_USER.
+        password (str or None): API password. Set from argument or VOIPMS_API_PASSWORD.
+        voipms_url (str): Base URL for the API (default: https://voip.ms/api/v1/rest.php).
+        verify (bool): Whether to verify SSL certificates for requests. Default True.
 
-        IMPORTANT: The VoIP.ms API must be enabled and the IP address that will consume the API must be allowed in the VoIP.ms Customer Portal.
+    Important:
+        The VoIP.ms API must be enabled and the calling IP must be allowed in the VoIP.ms Customer Portal.
 
     Methods:
-        get:
-            Sends a GET request to the VoIP.ms API.
-        test_connection():
-            Used to test the connection to the VoIP.ms API, confirming the credentials and IP address are correct.
+        get(method, params): Send a GET request to the API.
+        post(method, params): Send a POST request to the API.
+        test_connection(): Verify credentials and that the current IP is allowed to use the API.
     """
 
 
-    def __init__(self, username:Optional[str]=None, password:Optional[str]=None, verify:Optional[bool]=True) -> None:
+    def __init__(
+        self,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        verify: bool = True,
+    ) -> None:
         """
-        Constructs the necessary attributes to connect to the VoIP.ms API.
+        Initialize the API client.
 
         Args:
-            username (str, optional): Loads the username from the .env file or can be provided when calling the class.
-            password (str, optional): Pulls the password from the .env file or can be provided when calling the class.
-            verify (bool, optional): Set to False to disable certificate validation. WARNING: DO NOT USE ON PRODUCTION.
+            username: Account email. If omitted, read from environment variable VOIPMS_API_USER.
+            password: API password. If omitted, read from environment variable VOIPMS_API_PASSWORD.
+            verify: If False, disable SSL certificate verification. Do not use in production.
         """
-
-        # Create a .env file to load your credentials using the enviroment variables below.
+        # Create a .env file to load your credentials using the environment variables below.
         # Otherwise the credentials must be provided when creating the VoipMsClient object.
         self.voipms_url = "https://voip.ms/api/v1/rest.php"
         
@@ -42,12 +48,16 @@ class VoipMsClient:
         self.verify = verify
 
     
-    def get(self, method:str, params:Optional[dict]=None) -> dict:
+    def get(self, method: str, params: Optional[dict] = None) -> dict:
         """
-        Sends a GET request to the VoIP.ms API.
+        Send a GET request to the VoIP.ms API.
+
+        Args:
+            method: API method name (e.g. 'getBalance', 'getIP').
+            params: Optional query parameters to send with the request. Auth and method are added automatically.
 
         Returns:
-            dict: VoIP.ms API reponse.
+            Parsed JSON response from the API (typically includes 'status' and/or 'data').
         """
 
         if params is None:
@@ -72,12 +82,16 @@ class VoipMsClient:
         return response
     
 
-    def post(self, method:str, params:Optional[dict]=None) -> dict:
+    def post(self, method: str, params: Optional[dict] = None) -> dict:
         """
-        Sends a POST request to the VoIP.ms API.
+        Send a POST request to the VoIP.ms API.
+
+        Args:
+            method: API method name (e.g. 'createSubAccount').
+            params: Optional form/query parameters. Auth and method are added automatically.
 
         Returns:
-            dict: VoIP.ms API reponse.
+            Parsed JSON response from the API (typically includes 'status' and/or 'data').
         """
 
         if params is None:
@@ -99,12 +113,12 @@ class VoipMsClient:
         return response
     
     
-    def test_connection(self):
+    def test_connection(self) -> dict:
         """
-        Tests the connection with the VoIP.ms API.
+        Verify that credentials work and the current IP is allowed to use the API.
 
         Returns:
-            dict: A dictionary containing the status and the IP address that is consuming the API.
+            Parsed JSON response including status and the public IP address seen by the API.
         """
         params = {
             'api_username': self.username,

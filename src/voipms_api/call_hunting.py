@@ -1,52 +1,48 @@
-'''
-VoIP.ms Call Hunting functions
-'''
+"""VoIP.ms call hunting (ring group / find-me) management."""
 
 import requests
 from voipms_client import VoipMsClient
 from accounts import Accounts
 from typing import Optional, Union
 
+
 class CallHunting(VoipMsClient):
-    '''
-    Call Hunting functions of the VoIP.ms API.
+    """
+    Call hunting operations for the VoIP.ms API.
 
     Methods:
-        create_call_hunting:
-            Creates a new Call Hunting and returns the result of the request.
-        delete_call_hunting:
-            Deletes a specific Call Hunting and returns the result of the request.
-        get_call_hunting:
-            Returns all the existing Call Huntings, or a specific Call Hunting if a Call Hunting ID is provided.
-        update_call_hunting:
-            Updates the configuration of a Call Hunting and returns the result of the request.
-    '''
+        create_call_hunting(name, ...): Create a call hunting and return the result.
+        delete_call_hunting(call_hunting): Delete a call hunting by ID.
+        get_call_huntings(call_hunting): List all call huntings or one by ID.
+        update_call_hunting(id, ...): Update an existing call hunting.
+    """
 
-    def create_call_hunting(self, 
-            name:str,
-            music:Optional[Union[str, int]]=None,
-            recording:Optional[Union[str, int]]=None,
-            language:Optional[str]=None,
-            order:Optional[str]=None,
-            members:Optional[str]=None,
-            ring_time:Optional[Union[str, int]]=None,
-            press_one:Optional[Union[str, int]]=None
-        ) -> dict:
+    def create_call_hunting(
+        self,
+        name: str,
+        music: Optional[Union[str, int]] = None,
+        recording: Optional[Union[str, int]] = None,
+        language: Optional[str] = None,
+        order: Optional[str] = None,
+        members: Optional[str] = None,
+        ring_time: Optional[Union[str, int]] = None,
+        press_one: Optional[Union[str, int]] = None,
+    ) -> dict:
         """
-        Calls the VoIP.ms setCallHunting function to create a new Call Hunting.
+        Create a new call hunting (VoIP.ms setCallHunting).
 
         Args:
-            name (str, required): A name for the new Call Hunting.
-            music (str or int, optional): Music to be played while the caller waits (values from get_music_on_hold).
-            recording (str or int, optional): ID of the recording to set to the Call Hunting (values from get_recordings).
-            language (str, optional): Language of the Call Hunting. Default  is 'en' for English (values from get_languages).
-            order (str, optional): Ring order of the Call Hunting. Default  is 'follow' to follow member's order. Alternative is 'random'.
-            members (srt, optional): A string of members separated by semicolons. Default is Main Account as only member. (Example: 'account:100001;fwd:16006'). See VoIP.ms API documentation for more details.
-            ring_time (str or int, optional): The ring time of the members (seconds in 5 increments).
-            press_one (srt or int, optional): Defines if the member must press 1 to take the call or not (value '1' for enabled and '2' for disabled).
+            name: Display name for the call hunting.
+            music: Music on hold while waiting. See get_music_on_hold. Default 'default'.
+            recording: Recording ID. See get_recordings. Default 'none:'.
+            language: Language code (e.g. 'en'). See get_languages. Default 'en'.
+            order: Ring order: 'follow' (member order) or 'random'. Default 'follow'.
+            members: Semicolon-separated member list (e.g. 'account:100001;fwd:16006'). See API docs. Default is main account only.
+            ring_time: Ring time per member in seconds (multiples of 5). Default 25.
+            press_one: 1 = press 1 to accept, 2 = disabled. Default 0.
 
         Returns:
-            dict: Call Hunting created.
+            API response with the created call hunting data.
         """
         
         mtd = "setCallHunting"
@@ -94,7 +90,7 @@ class CallHunting(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -104,17 +100,15 @@ class CallHunting(VoipMsClient):
             return None
         
 
-    def delete_call_hunting(self, 
-            call_hunting:Union[str, int],
-        ) -> dict:
+    def delete_call_hunting(self, call_hunting: Union[str, int]) -> dict:
         """
-        Calls the VoIP.ms delCallHunting function.
+        Delete a call hunting by ID (VoIP.ms delCallHunting).
 
         Args:
-            call_hunting (str or int, required): ID of the call hunting that will be deleted (Example: 18635). Value from get_call_huntings.
+            call_hunting: Call hunting ID to delete (e.g. 18635). Use get_call_huntings to list IDs.
 
         Returns:
-            dict: Deleted Call Hunting.
+            API response with result and call hunting name.
         """
         
         mtd = "delCallHunting"
@@ -133,7 +127,7 @@ class CallHunting(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -143,17 +137,15 @@ class CallHunting(VoipMsClient):
             return None
         
 
-    def get_call_huntings(self, 
-            call_hunting:Optional[Union[str, int]]=None,
-        ) -> dict:
+    def get_call_huntings(self, call_hunting: Optional[Union[str, int]] = None) -> dict:
         """
-        Calls the VoIP.ms getCallHuntings function.
+        List call huntings or get one by ID (VoIP.ms getCallHuntings).
 
         Args:
-            call_hunting (str or int, optional): ID of a specific call hunting (Example: 323).
+            call_hunting: Optional call hunting ID (e.g. 323). If omitted, all are returned.
 
         Returns:
-            dict: All the call huntings, or a specific call hunting if an ID is provided.
+            API response with all call huntings or the requested one.
         """
         
         mtd = "getCallHuntings"
@@ -169,7 +161,7 @@ class CallHunting(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -179,33 +171,34 @@ class CallHunting(VoipMsClient):
             return None
         
 
-    def update_call_hunting(self,
-            id:Union[str, int],
-            name:Optional[str]=None,
-            music:Optional[Union[str, int]]=None,
-            recording:Optional[Union[str, int]]=None,
-            language:Optional[str]=None,
-            order:Optional[str]=None,
-            members:Optional[str]=None,
-            ring_time:Optional[Union[str, int]]=None,
-            press_one:Optional[Union[str, int]]=None
-        ) -> dict:
+    def update_call_hunting(
+        self,
+        id: Union[str, int],
+        name: Optional[str] = None,
+        music: Optional[Union[str, int]] = None,
+        recording: Optional[Union[str, int]] = None,
+        language: Optional[str] = None,
+        order: Optional[str] = None,
+        members: Optional[str] = None,
+        ring_time: Optional[Union[str, int]] = None,
+        press_one: Optional[Union[str, int]] = None,
+    ) -> dict:
         """
-        Calls the VoIP.ms setCallHunting function to update an existing call hunting.
+        Update an existing call hunting (VoIP.ms setCallHunting).
 
         Args:
-            id (str or int, required): The ID of the Call Hunting that will be updated.
-            name (str, optional): The name of the Call Hunting.
-            music (str or int, optional): Music to be played while the caller waits (values from get_music_on_hold).
-            recording (str or int, optional): ID of the recording to set to the Call Hunting (values from get_recordings).
-            language (str, optional): Language of the Call Hunting (values from get_languages).
-            order (str, optional): Ring order of the Call Hunting (options are 'follow' or 'random').
-            members (srt, optional): A string of members separated by semicolons. (Example: 'account:100001;fwd:16006'). See VoIP.ms API documentation for more details.
-            ring_time (str or int, optional): The ring time of the members (seconds in 5 increments | For multiple members use '20;20;20').
-            press_one (srt or int, optional): Defines if the member must press 1 to take the call or not (value '1' for enabled and '2' for disabled | For multiple members use '0;0;0').
+            id: Call hunting ID to update. Use get_call_huntings to list IDs.
+            name: Display name for the call hunting.
+            music: Music on hold. See get_music_on_hold.
+            recording: Recording ID. See get_recordings.
+            language: Language code. See get_languages.
+            order: 'follow' or 'random'.
+            members: Semicolon-separated member list (e.g. 'account:100001;fwd:16006'). Multiple ring times: '20;20;20'.
+            ring_time: Ring time in seconds (multiples of 5). For multiple members use '20;20;20'.
+            press_one: 1 = enabled, 2 = disabled. For multiple members use '0;0;0'.
 
         Returns:
-            dict: Status of the request.
+            API response with status and updated data.
         """
         
         mtd = "setCallHunting"
@@ -240,7 +233,7 @@ class CallHunting(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")

@@ -1,6 +1,4 @@
-'''
-VoIP.ms Call Forwarding functions
-'''
+"""VoIP.ms call forwarding management."""
 
 import requests
 from voipms_client import VoipMsClient
@@ -8,39 +6,36 @@ from typing import Optional, Union
 
 
 class Forwarding(VoipMsClient):
-    '''
-    Call Forwarding functions of the VoIP.ms API.
+    """
+    Call forwarding operations for the VoIP.ms API.
 
     Methods:
-        create_forwarding:
-            Creates a new forwarding and returns the result of the request.
-        delete_forwarding:
-            Deletes a specific forwarding and returns the result of the request.
-        get_forwardings:
-            Returns all the existing forwardings, or a specific forwarding if a forwarding ID or Client ID is provided.
-        update_forwarding:
-            Updates the configuration of a forwarding and returns the result of the request.
-    '''
+        create_forwarding(phone_number, ...): Create a forwarding and return the result.
+        delete_forwarding(forwarding): Delete a forwarding by ID.
+        get_forwardings(forwarding): List all forwardings or one by ID.
+        update_forwarding(id, ...): Update an existing forwarding.
+    """
 
-    def create_forwarding(self, 
-            phone_number:Union[str, int],
-            cid_override:Union[str, int]=None,
-            description:Union[str, int]=None,
-            dtmf_digits:Union[str, int]=None,
-            pause:Union[str, float]=None,
-        ) -> dict:
+    def create_forwarding(
+        self,
+        phone_number: Union[str, int],
+        cid_override: Optional[Union[str, int]] = None,
+        description: Optional[str] = None,
+        dtmf_digits: Optional[Union[str, int]] = None,
+        pause: Optional[Union[str, float]] = None,
+    ) -> dict:
         """
-        Calls the VoIP.ms setForwarding function to create a new forwarding.
+        Create a new call forwarding (VoIP.ms setForwarding).
 
         Args:
-            phone_number (str or int, required): Phone number to add as forwarding (Example: 2052550000).
-            cid_override (str or int, optional): Phone number to override the caller's caller ID number (Example: 4042820000).
-            description (str, optional): A description for the forwarding that will be created.
-            dtmf_digits (str or int, optional): Digits to be sent as DTMF tones when forwarding the call (Example: 101).
-            pause (str or float, optional): Pause in seconds before sending the DTMF digits. From 0 to 10 in increments of 0.5 (Example: 1.5).
+            phone_number: Destination phone number (e.g. 2052550000).
+            cid_override: Optional caller ID override number (e.g. 4042820000).
+            description: Optional description for this forwarding.
+            dtmf_digits: Optional DTMF digits to send when forwarding (e.g. '101').
+            pause: Optional pause in seconds before DTMF (0–10, steps of 0.5, e.g. 1.5).
 
         Returns:
-            dict: Created Call Forwarding.
+            API response with the created forwarding data.
         """
         
         mtd = "setForwarding"
@@ -65,7 +60,7 @@ class Forwarding(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -75,17 +70,15 @@ class Forwarding(VoipMsClient):
             return None
         
 
-    def delete_forwarding(self, 
-            forwarding:Optional[Union[str, int]],
-        ) -> dict:
+    def delete_forwarding(self, forwarding: Union[str, int]) -> dict:
         """
-        Calls the VoIP.ms delForwarding function.
+        Delete a call forwarding by ID (VoIP.ms delForwarding).
 
         Args:
-            forwarding (str or int, required): ID of the forwarding that will be deleted (Example: 18635). Value from get_forwardings.
+            forwarding: Forwarding ID to delete (e.g. 18635). Use get_forwardings to list IDs.
 
         Returns:
-            dict: Deleted Call Forwarding.
+            API response with result and the forwarding phone number.
         """
         
         mtd = "delForwarding"
@@ -104,7 +97,7 @@ class Forwarding(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -114,17 +107,15 @@ class Forwarding(VoipMsClient):
             return None
         
     
-    def get_forwardings(self, 
-            forwarding:Optional[Union[str, int]]=None,
-        ) -> dict:
+    def get_forwardings(self, forwarding: Optional[Union[str, int]] = None) -> dict:
         """
-        Calls the VoIP.ms getForwardings function.
+        List call forwardings or get one by ID (VoIP.ms getForwardings).
 
         Args:
-            forwarding (str or int, optional): ID of a specific forwarding (Example: 18635).
+            forwarding: Optional forwarding ID (e.g. 18635). If omitted, all forwardings are returned.
 
         Returns:
-            dict: All the Call Forwardings, or a specific Call Forwarding if an ID is provided.
+            API response with all forwardings or the requested one.
         """
         
         mtd = "getForwardings"
@@ -140,7 +131,7 @@ class Forwarding(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -150,27 +141,28 @@ class Forwarding(VoipMsClient):
             return None
         
 
-    def update_forwarding(self,
-            id:Union[str, int],
-            phone_number:Union[str, int]=None,
-            cid_override:Union[str, int]=None,
-            description:Union[str, int]=None,
-            dtmf_digits:Union[str, int]=None,
-            pause:Union[str, float]=None,
-        ) -> dict:
+    def update_forwarding(
+        self,
+        id: Union[str, int],
+        phone_number: Optional[Union[str, int]] = None,
+        cid_override: Optional[Union[str, int]] = None,
+        description: Optional[str] = None,
+        dtmf_digits: Optional[Union[str, int]] = None,
+        pause: Optional[Union[str, float]] = None,
+    ) -> dict:
         """
-        Calls the VoIP.ms setForwarding function to update an existing call forwarding.
+        Update an existing call forwarding (VoIP.ms setForwarding).
 
         Args:
-            id (str or int, required): ID of the forwarding that will be updated (value from get_forwardings).
-            phone_number (str or int, optional): Phone number to set as forwarding (Example: 2052550000).
-            cid_override (str or int, optional): Phone number to override the caller's caller ID number (Example: 4042820000).
-            description (str, optional): A description for the forwarding.
-            dtmf_digits (str or int, optional): Digits to be sent as DTMF tones when forwarding the call (Example: 101).
-            pause (str or float, optional): Pause in seconds before sending the DTMF digits. From 0 to 10 in increments of 0.5 (Example: 1.5).
+            id: Forwarding ID to update. Use get_forwardings to list IDs.
+            phone_number: New destination number (e.g. 2052550000).
+            cid_override: Caller ID override number (e.g. 4042820000).
+            description: Description for the forwarding.
+            dtmf_digits: DTMF digits to send when forwarding (e.g. '101').
+            pause: Pause in seconds before DTMF (0–10, steps of 0.5, e.g. 1.5).
 
         Returns:
-            dict: Updated Call Forwarding.
+            API response with the updated forwarding data.
         """
         
         mtd = "setForwarding"
@@ -198,7 +190,7 @@ class Forwarding(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")

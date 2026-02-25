@@ -1,6 +1,4 @@
-'''
-VoIP.ms DIDs functions
-'''
+"""VoIP.ms DIDs (phone numbers) management."""
 
 import requests
 from voipms_client import VoipMsClient
@@ -8,37 +6,35 @@ from typing import Optional, Union
 
 
 class DIDs(VoipMsClient):
-    '''
-    DID functions of the VoIP.ms API.
+    """
+    DID (phone number) operations for the VoIP.ms API.
 
     Methods:
-        cancel_did:
-            Cancels a specific DID number and returns the result of the request.
-        get_dids_info:
-            Returns the current balance of the VoIP.ms account.
-        order_did:
-            Orders a new local US or Canadian DID number.
-        order_toll_free:
-            Orders a new Toll Free US or Canadian DID number.
-    '''
-    
-    def cancel_did(self, 
-            did:Union[str, int],
-            comment:Optional[str]=None,
-            port_out:Optional[Union[str, bool]]=None,
-            test:Optional[Union[str, bool]]=None
-        ) -> dict:
+        cancel_did(did, ...): Cancel a DID and optionally add comment/port-out flag.
+        get_dids_info(client, did): List DIDs for account, client, or a specific DID.
+        order_did(did, ...): Order a local US/Canadian DID.
+        order_toll_free(did, ...): Order a toll-free US/Canadian DID.
+        set_did_routing(did, routing): Set the routing for a DID.
+    """
+
+    def cancel_did(
+        self,
+        did: Union[str, int],
+        comment: Optional[str] = None,
+        port_out: Optional[Union[str, bool]] = None,
+        test: Optional[Union[str, bool]] = None,
+    ) -> dict:
         """
-        Calls the VoIP.ms cancelDID function.
+        Cancel a DID (VoIP.ms cancelDID).
 
         Args:
-            did (str or int, required): Specific DID number to be canceled (Example: 5551234567).
-            comment (str, optional): Comment for DID cancellation.
-            port out (str or bool, optional): Set True if the DID was ported out.
-            test (str or bool, optional): Set True if testing the DID cancelation function.
+            did: DID number to cancel (e.g. 5551234567).
+            comment: Optional comment for the cancellation.
+            port_out: Set True if the DID was ported out.
+            test: Set True to test the cancel flow without actually canceling.
 
         Returns:
-            dict: The canceled DID.
+            API response with result and the canceled DID.
         """
         
         mtd = "cancelDID"
@@ -61,7 +57,7 @@ class DIDs(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -71,22 +67,20 @@ class DIDs(VoipMsClient):
             return None
 
 
-    def get_dids_info(self, 
-            client:Optional[Union[str, int]]=None, 
-            did:Optional[Union[str, int]]=None
-        ) -> dict:
+    def get_dids_info(
+        self,
+        client: Optional[Union[str, int]] = None,
+        did: Optional[Union[str, int]] = None,
+    ) -> dict:
         """
-        Calls the VoIP.ms getDIDsInfo function.
+        Get DID(s) info (VoIP.ms getDIDsInfo).
 
         Args:
-            client (str or int, optional): ID of a specific Reseller client or Sub Account (Example: 123456 or 100000_Account).
-            did (str or int, optional): Specific DID number or Sub Account (Example: 5551234567).   
+            client: Optional reseller client ID or sub-account (e.g. 123456 or '100000_Account').
+            did: Optional specific DID or sub-account to filter by (e.g. 5551234567).
 
         Returns:
-            dict:   If no parameter is provided, All the DIDs.
-                    If a client ID is provided, Client's DIDs.
-                    If a Sub Account is provided, Sub Account's DID.
-                    If a DID is provided, Specific DID.
+            API response: all DIDs (no args), client's DIDs (client), sub-account DID (did=subaccount), or specific DID (did=number).
         """
         
         mtd = "getDIDsInfo"
@@ -103,7 +97,7 @@ class DIDs(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -113,27 +107,28 @@ class DIDs(VoipMsClient):
             return None
         
         
-    def order_did(self,
+    def order_did(
+        self,
         did: Union[str, int],
-        routing: Optional[str]="sys:hangup",
-        pop:Optional[Union[str, int]]=22,
-        dial_time:Optional[Union[str, int]]=60,
-        cnam:Optional[Union[str, int]]=0,
-        billing_type: Optional[Union[str, int]]=1
-        )-> dict:
+        routing: Optional[str] = "sys:hangup",
+        pop: Optional[Union[str, int]] = 22,
+        dial_time: Optional[Union[str, int]] = 60,
+        cnam: Optional[Union[str, int]] = 0,
+        billing_type: Optional[Union[str, int]] = 1,
+    ) -> dict:
         """
-        Calls the VoIP.ms orderDID function.
+        Order a local US or Canadian DID (VoIP.ms orderDID).
 
         Args:
-            did (str or int, required): Specific DID number to be ordered (Example: 5551234567).
-            routing (str, optional): Routing of the DID. Default is sys:hangup.
-            pop (str or int, optional): POP server of the DID. Default is 22 (sanjose1.voip.ms). Data from get_severs.
-            dial time (str or int, optional): Ring time of the DID. Default is 60 (seconds).
-            cnam: (str or int, optional): Activates CNAM lookup. Default is 0 (disabled). Set 1 for enable.
-            billing type (str or int, optional): Sets the Billing plan. Default is 1 (Per Minute). Set 2 for Flat Rate.
+            did: DID number to order (e.g. 5551234567).
+            routing: Initial routing. Default 'sys:hangup'. Change later with set_did_routing.
+            pop: POP server ID. Default 22 (sanjose1.voip.ms). See get_servers.
+            dial_time: Ring time in seconds. Default 60.
+            cnam: CNAM lookup: 0 = disabled, 1 = enabled. Default 0.
+            billing_type: 1 = per minute, 2 = flat rate. Default 1.
 
         Returns:
-            dict:   Ordered DID.
+            API response with the ordered DID.
         """
         
         mtd = "orderDID"
@@ -154,7 +149,7 @@ class DIDs(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -164,26 +159,26 @@ class DIDs(VoipMsClient):
             return None
         
 
-    def order_toll_free(self,
+    def order_toll_free(
+        self,
         did: Union[str, int],
-        routing: Optional[str]="sys:hangup",
-        pop:Optional[Union[str, int]]=22,
-        dial_time:Optional[Union[str, int]]=60,
-        cnam:Optional[Union[str, int]]=0
-        )-> dict:
+        routing: Optional[str] = "sys:hangup",
+        pop: Optional[Union[str, int]] = 22,
+        dial_time: Optional[Union[str, int]] = 60,
+        cnam: Optional[Union[str, int]] = 0,
+    ) -> dict:
         """
-        Calls the VoIP.ms orderTollFree function.
+        Order a toll-free US or Canadian DID (VoIP.ms orderTollFree).
 
         Args:
-            did (str or int, required): Specific Toll-free DID number to be ordered (Example: 8771234567).
-            routing (str, optional): Routing of the DID. Default is sys:hangup.
-            pop (str or int, optional): POP server of the DID. Default is 22 (sanjose1.voip.ms). Data from get_severs.
-            dial time (str or int, optional): Ring time of the DID. Default is 60 (seconds).
-            cnam: (str or int, optional): Activates CNAM lookup. Default is 0 (disabled). Set 1 for enable.
-            billing type (str or int, optional): Sets the Billing plan. Default is 1 (Per Minute). Set 2 for Flat Rate.
+            did: Toll-free DID to order (e.g. 8771234567).
+            routing: Initial routing. Default 'sys:hangup'. Change later with set_did_routing.
+            pop: POP server ID. Default 22. See get_servers.
+            dial_time: Ring time in seconds. Default 60.
+            cnam: CNAM lookup: 0 = disabled, 1 = enabled. Default 0.
 
         Returns:
-            dict: Ordered Toll Free DID.
+            API response with the ordered toll-free DID.
         """
         
         mtd = "orderTollFree"
@@ -203,7 +198,7 @@ class DIDs(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -213,19 +208,16 @@ class DIDs(VoipMsClient):
             return None
         
 
-    def set_did_routing(self,
-        did: Union[str, int],
-        routing:str,
-        )-> dict:
+    def set_did_routing(self, did: Union[str, int], routing: str) -> dict:
         """
-        Calls the VoIP.ms setDIDRouting function.
+        Set routing for a DID (VoIP.ms setDIDRouting).
 
         Args:
-            did (str or int, required): Specific DID number to be updated (Example: 8771234567).
-            routing (str, required): Main Route for the DID. Receives values in the format 'header:record_id' where header could be: account, fwd, vm, sip, grp, ivr, sys, recording, queue, cb, tc, disa, none (Example: account:100000_SubAccount).
+            did: DID to update (e.g. 8771234567).
+            routing: Route in the form 'header:record_id'. Header can be: account, fwd, vm, sip, grp, ivr, sys, recording, queue, cb, tc, disa, none (e.g. 'account:100000_SubAccount').
 
         Returns:
-            dict: Updated DID.
+            API response with the updated DID and result message.
         """
         
         mtd = "setDIDRouting"
@@ -242,7 +234,7 @@ class DIDs(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")

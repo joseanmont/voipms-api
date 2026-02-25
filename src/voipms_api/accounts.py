@@ -1,6 +1,4 @@
-'''
-VoIP.ms Accounts functions
-'''
+"""VoIP.ms sub-account management."""
 
 import requests
 from voipms_client import VoipMsClient
@@ -8,62 +6,57 @@ from typing import Optional, Union
 
 
 class Accounts(VoipMsClient):
-    '''
-        Sub Accounts functions of the VoIP.ms API.
+    """
+    Sub-account operations for the VoIP.ms API.
 
     Methods:
-        create_subaccount:
-            Creates a Sub Account and returns the result of the request.
-        delete_subaccount:
-            Deletes a specific Sub Account and returns the result of the request.
-        get_subaccounts:
-            Returns all the Sub Accounts or a specific Sub Account if an ID is provided.
-        update_subaccount:
-            Updates the configuration of a Sub Account and returns the result of the request.
-    '''
-    
-    def create_subaccount(self, 
-            username:str,
-            auth_type:Optional[Union[str, int]]=1,
-            password:Optional[str]=None,
-            ip:Optional[str]=None,
-            protocol:Optional[Union[str, int]]=1,
-            device_type:Optional[Union[str, int]]=2,
-            callerid_number:Optional[Union[str, int]]=None,
-            internal_extension:Optional[Union[str, int]]=None,
-            internal_voicemail:Optional[Union[str, int]]=None,
-            internal_cnam:Optional[str]=None,
-            enable_internal_cnam:Optional[Union[str, int]]=0,
-            description:Optional[str]=None,
-            lock_international:Optional[Union[str, int]]=1,
-            codecs:Optional[str]="g722"
-        ) -> dict:
+        create_subaccount(username, ...): Create a sub-account and return the result.
+        delete_subaccount(id): Delete a sub-account by ID.
+        get_subaccounts(subaccount): List all sub-accounts or one by ID/username.
+        update_subaccount(subaccount, ...): Update a sub-account's configuration.
+    """
+
+    def create_subaccount(
+        self,
+        username: str,
+        auth_type: Optional[Union[str, int]] = 1,
+        password: Optional[str] = None,
+        ip: Optional[str] = None,
+        protocol: Optional[Union[str, int]] = 1,
+        device_type: Optional[Union[str, int]] = 2,
+        callerid_number: Optional[Union[str, int]] = None,
+        internal_extension: Optional[Union[str, int]] = None,
+        internal_voicemail: Optional[Union[str, int]] = None,
+        internal_cnam: Optional[str] = None,
+        enable_internal_cnam: Optional[Union[str, int]] = 0,
+        description: Optional[str] = None,
+        lock_international: Optional[Union[str, int]] = 1,
+        codecs: Optional[str] = "g722",
+    ) -> dict:
         """
-        Calls the VoIP.ms createSubAccount function.
+        Create a new sub-account (VoIP.ms createSubAccount).
 
         Args:
-            username (str, required): Username to set to the sub account (Example: 'VoIP').
-            auth_type (str or int, optional): The authentication type the sub account will use. Default is '1' for User/Password (value from get_auth_types).
-            password (str, optional): Password to set for password authentication.
-            ip (str, optional): IP address or Fully Qualified Domain Name for IP authentication.
-            protocol (str or int, optional): The protocol the sub account will use. Default is '1' for SIP (value from get_Protocols).
-            device_type (str or int, optional): Device type that will be used. Default is '2' for ATA device, IP Phone or Softphone (value from get_device_types).
-            callerid_number (str or int, optional): Caller ID number of the sub account (Example: 4052550000).
-            extension (str or int, optional): Sub Account Internal Extension (Example: 1 -> Creates 101).
-            internal_extension (str or int, optional): Sub Account Internal Extension (Example: 1 -> Creates 101).
-            internal_voicemail (str or int, optional): ID of a voicemail to set as the Sub Account Internal Voicemail (Example: 101).
-            internal_cnam (str, optional): Caller ID name for internal calls.
-            enable_internal_cnam (str, optional): Enables/Disables the internal caller ID name for internal calls. Default is '0' for disabled (send '1' to enable it).
-            description (str, optional): A description or name for the Sub Account.
-            lock_international (str or int, optional): Enables/Disables International calls. Default is '1' for disabled. (values from get_lock_international).
-            codecs (str, optional): Audio codecs for calls. Default is 'g722' (values from get_allowed_codecs).
+            username: Sub-account username (e.g. 'VoIP'). Max 12 characters.
+            auth_type: Authentication type. 1 = User/Password, 2 = IP (see get_auth_types). Default 1.
+            password: Password for auth_type 1. Required when auth_type is 1.
+            ip: IP or FQDN for auth_type 2. Required when auth_type is 2.
+            protocol: Protocol (e.g. 1 = SIP). Default 1. See get_Protocols.
+            device_type: Device type (e.g. 2 = ATA/IP phone/softphone). Default 2. See get_device_types.
+            callerid_number: Caller ID number (e.g. 4052550000).
+            internal_extension: Internal extension (e.g. 1 creates 101).
+            internal_voicemail: Voicemail ID for internal voicemail (e.g. 101).
+            internal_cnam: Caller ID name for internal calls.
+            enable_internal_cnam: 0 = disabled, 1 = enabled. Default 0.
+            description: Description or label for the sub-account.
+            lock_international: 1 = international disabled. Default 1. See get_lock_international.
+            codecs: Audio codecs (e.g. 'g722'). Default 'g722'. See get_allowed_codecs.
 
         Returns:
-            dict: Created Sub Account.
+            API response with the created sub-account data.
 
         Raises:
-                ValueError: If auth_type is 1 and password is not provided.
-                            If auth_type is 2 and ip is not provided.
+            ValueError: If auth_type is 1 and password is missing, or auth_type is 2 and ip is missing.
         """
         
         mtd = "createSubAccount"
@@ -122,7 +115,7 @@ class Accounts(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -130,19 +123,16 @@ class Accounts(VoipMsClient):
         except Exception as err:
             print(f'An error occurred: {err}')
             return None
-        
 
-    def delete_subaccount(self, 
-            id:Union[str, int],
-        ) -> dict:
+    def delete_subaccount(self, id: Union[str, int]) -> dict:
         """
-        Calls the VoIP.ms delSubAccount function.
+        Delete a sub-account by ID (VoIP.ms delSubAccount).
 
         Args:
-            id (str or int, required): ID of the Sub Account that will be deleted(Example: '99785' or 99785). Value from get_subaccounts.
+            id: Sub-account ID to delete (e.g. '99785' or 99785). Use get_subaccounts to list IDs.
 
         Returns:
-            dict: Deleted Sub Account.
+            API response with result and id.
         """
         
         mtd = "delSubAccount"
@@ -158,7 +148,7 @@ class Accounts(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -166,19 +156,16 @@ class Accounts(VoipMsClient):
         except Exception as err:
             print(f'An error occurred: {err}')
             return None
-        
 
-    def get_subaccounts(self, 
-            subaccount:Optional[Union[str, int]]=None
-        ) -> dict:
+    def get_subaccounts(self, subaccount: Optional[Union[str, int]] = None) -> dict:
         """
-        Calls the VoIP.ms getSubAccounts function.
+        List sub-accounts or get one by ID/username (VoIP.ms getSubAccounts).
 
         Args:
-            subaccount (str or int, optional): Sub Account ID or username (Example: '100000_SubAccount' or 99785).
+            subaccount: Optional sub-account ID or username (e.g. '100000_SubAccount' or 99785).
 
         Returns:
-            dict: Sub Accounts and their data, or a specific Sub Account data if an ID or username is provided.
+            API response with all sub-accounts or the requested sub-account data.
         """
         
         mtd = "getSubAccounts"
@@ -193,7 +180,7 @@ class Accounts(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
@@ -201,59 +188,58 @@ class Accounts(VoipMsClient):
         except Exception as err:
             print(f'An error occurred: {err}')
             return None
-        
 
-    def update_subaccount(self, 
-            subaccount:Union[str, int],
-            auth_type:Optional[Union[str, int]]=None,
-            password:Optional[str]=None,
-            ip:Optional[str]=None,
-            protocol:Optional[Union[str, int]]=None,
-            device_type:Optional[Union[str, int]]=None,
-            callerid_number:Optional[Union[str, int]]=None,
-            internal_extension:Optional[Union[str, int]]=None,
-            internal_voicemail:Optional[Union[str, int]]=None,
-            internal_cnam:Optional[str]=None,
-            enable_internal_cnam:Optional[str]=None,
-            description:Optional[str]=None,
-            canada_route:Optional[Union[str, int]]=None,
-            lock_international:Optional[Union[str, int]]=None,
-            international_route:Optional[Union[str, int]]=None,
-            record_calls:Optional[Union[str, int]]=None,
-            music_on_hold:Optional[str]=None,
-            codecs:Optional[str]=None,
-            dtmf_mode:Optional[str]=None
-        ) -> dict:
+    def update_subaccount(
+        self,
+        subaccount: Union[str, int],
+        auth_type: Optional[Union[str, int]] = None,
+        password: Optional[str] = None,
+        ip: Optional[str] = None,
+        protocol: Optional[Union[str, int]] = None,
+        device_type: Optional[Union[str, int]] = None,
+        callerid_number: Optional[Union[str, int]] = None,
+        internal_extension: Optional[Union[str, int]] = None,
+        internal_voicemail: Optional[Union[str, int]] = None,
+        internal_cnam: Optional[str] = None,
+        enable_internal_cnam: Optional[str] = None,
+        description: Optional[str] = None,
+        canada_route: Optional[Union[str, int]] = None,
+        lock_international: Optional[Union[str, int]] = None,
+        international_route: Optional[Union[str, int]] = None,
+        record_calls: Optional[Union[str, int]] = None,
+        music_on_hold: Optional[str] = None,
+        codecs: Optional[str] = None,
+        dtmf_mode: Optional[str] = None,
+    ) -> dict:
         """
-        Calls the VoIP.ms setSubAccount function.
+        Update an existing sub-account (VoIP.ms setSubAccount).
 
         Args:
-            subaccount (str, required): Full mame of the sub account that will be updated (Example: '100000_SubAccount').
-            auth_type (str or int, optional): The authentication type the sub account will use (value from get_auth_types).
-            password (str, optional): Password to set for password authentication.
-            ip (str, optional): IP address or Fully Qualified Domain Name for IP authentication.
-            protocol (str or int, optional): The protocol the sub account will use. (value from get_Protocols).
-            device_type (str or int, optional): Device type that will be used (value from get_device_types).
-            callerid_number (str or int, optional): Caller ID number of the sub account.
-            internal_extension (str or int, optional): Sub Account Internal Extension (Example: 1 -> Creates 101).
-            internal_voicemail (str or int, optional): ID of a voicemail to set as the Sub Account Internal Voicemail (Example: 101).
-            internal_cnam (str, optional): Caller ID name for internal calls.
-            enable_internal_cnam (str, optional): Enables/Disables the internal caller ID name for internal calls (values '0' for disabled,'1' for enabled).
-            description (str, optional): Description or name of the Sub Account.
-            canada_route (str or int, optional): Defines the route for calls to Canada (values from get_routes).
-            lock_international (str or int, optional): Enables/Disables International calls (values from get_lock_international).
-            international_route (str or int, optional): Defines the route for International calls (values from get_routes).
-            music_on_hold (str, optional): Music on hold for the sub account (values from get_music_on_hold).
-            record_calls (str or int, optional): Enables/Disables call recording (values 1/0).
-            codecs (str, optional): Audio codecs for calls (values from get_allowed_codecs).
-            dtmf_mode (str, optional): DTMF mode for the sub account (values from get_dtmf_modes).
+            subaccount: Full sub-account name (e.g. '100000_SubAccount'). Must contain '_'.
+            auth_type: Authentication type. See get_auth_types.
+            password: Password for auth_type 1. Required when auth_type is 1.
+            ip: IP or FQDN for auth_type 2. Required when auth_type is 2.
+            protocol: Protocol. See get_Protocols.
+            device_type: Device type. See get_device_types.
+            callerid_number: Caller ID number.
+            internal_extension: Internal extension (e.g. 1 creates 101).
+            internal_voicemail: Voicemail ID for internal voicemail.
+            internal_cnam: Caller ID name for internal calls.
+            enable_internal_cnam: '0' = disabled, '1' = enabled.
+            description: Description or name for the sub-account.
+            canada_route: Route for Canada calls. See get_routes.
+            lock_international: International call lock. See get_lock_international.
+            international_route: Route for international calls. See get_routes.
+            record_calls: Call recording: 1 = on, 0 = off.
+            music_on_hold: Music on hold. See get_music_on_hold.
+            codecs: Audio codecs. See get_allowed_codecs.
+            dtmf_mode: DTMF mode. See get_dtmf_modes.
 
         Returns:
-            dict: Status of the request.
+            API response with status and sub-account identifier.
 
         Raises:
-                ValueError: If auth_type is 1 and password is not provided.
-                            If auth_type is 2 and ip is not provided.
+            ValueError: If subaccount format is invalid, not found, or auth_type requires missing password/ip.
         """
         
         mtd = "setSubAccount"
@@ -328,7 +314,7 @@ class Accounts(VoipMsClient):
             return data
         
         except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
         except KeyError as key_err:
             print(f"Key error: {key_err}")
