@@ -49,8 +49,7 @@ class Fax(VoipMsClient):
         # Encode file in base64
         try:
             with open(file_path, "rb") as file:
-                encoded_content = base64.b64encode(file.read()).decode('utf-8')
-            # encoded_content.decode("ascii")  # Return as a string
+                encoded_content = base64.b64encode(file.read_bytes()).decode("ascii")
         except FileNotFoundError:
             return "Error: File not found."
         except Exception as e:
@@ -74,15 +73,10 @@ class Fax(VoipMsClient):
             if test:
                 params["test"] = test
 
-            # data = self.make_request(mtd, params)
-            # data = dict(data)
-            # return data
-
-            # USING POST
-            # url = f"{self.voipms_url}?method={mtd}&api_username={self.username}&api_password={self.password}"
-            data = requests.post(self.voipms_url, data=params)
+            data = self.post(mtd, params)
             data = dict(data)
             return data
+
         except requests.exceptions.HTTPError as http_err:
             print(f"HTTP error ocurred: {http_err}")
             return None
