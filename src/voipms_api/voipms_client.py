@@ -1,4 +1,4 @@
-import requests, os
+import requests, os, warnings
 from typing import Optional
 
 class VoipMsClient:
@@ -115,6 +115,23 @@ class VoipMsClient:
         return response
     
     
+    def make_request(self, method: str, params: Optional[dict] = None) -> dict:
+        """
+        Deprecated alias of get(), kept for compatibility with 1.1.x.
+        """
+        warnings.warn("make_request() is deprecated, use get() instead.", DeprecationWarning, stacklevel=2)
+        return self.get(method, params)
+
+
+    @property
+    def vms_client(self) -> "VoipMsClient":
+        """
+        Deprecated. In 1.1.x the modules wrapped a client in this attribute; now they are the client.
+        """
+        warnings.warn("vms_client is deprecated, use the object itself instead.", DeprecationWarning, stacklevel=2)
+        return self
+
+
     def test_connection(self) -> dict:
         """
         Verify that credentials work and the current IP is allowed to use the API.

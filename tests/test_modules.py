@@ -25,7 +25,7 @@ def test_get_sms_rejects_date_to_without_date_from(mock_requests):
 def test_get_conference_recordings_rejects_date_to_without_date_from(mock_requests):
     get, _ = mock_requests
     result = General("u", "p").get_conference_recordings(1, date_to="2026-01-01")
-    assert "Missing parameter" in result
+    assert result is None
     get.assert_not_called()
 
 
