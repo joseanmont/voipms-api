@@ -1,7 +1,7 @@
 """VoIP.ms voicemail management."""
 
 import requests
-from voipms_client import VoipMsClient
+from .voipms_client import VoipMsClient
 from typing import Optional, Union
 
 

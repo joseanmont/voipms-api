@@ -1,7 +1,7 @@
 """VoIP.ms sub-account management."""
 
 import requests
-from voipms_client import VoipMsClient
+from .voipms_client import VoipMsClient
 from typing import Optional, Union
 
 
@@ -68,7 +68,7 @@ class Accounts(VoipMsClient):
                 raise ValueError("Password must be provided for User/Password authentication.")
             if (auth_type == 2 or auth_type == '2') and not ip:
                 raise ValueError("IP address must be provided for IP authentication.")
-            if (enable_internal_cnam == 0 or auth_type == '0') and internal_cnam:
+            if (enable_internal_cnam == 0 or enable_internal_cnam == '0') and internal_cnam:
                 raise ValueError("The cnam cannot be set because you did not enable the internal cnam. To fix this error send 'enable_internal_cnam = 1'")
 
             params = {
@@ -262,7 +262,7 @@ class Accounts(VoipMsClient):
                 raise ValueError("Password must be provided for User/Password authentication.")
             if (auth_type == 2 or auth_type == '2') and not ip:
                 raise ValueError("IP address must be provided for IP authentication.")
-            if (enable_internal_cnam == 0 or auth_type == '0') and internal_cnam:
+            if (enable_internal_cnam == 0 or enable_internal_cnam == '0') and internal_cnam:
                 raise ValueError("The cnam cannot be set because you did not enable the internal cnam. To fix this error send 'enable_internal_cnam = 1'")
             
             # If the authentication type is changed this validation ensures the password or ip is removed from the parameters to avoid error responses from the VoIP.ms API.

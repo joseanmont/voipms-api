@@ -1,7 +1,7 @@
 """VoIP.ms SMS/MMS functions."""
 
 import requests
-from voipms_client import VoipMsClient
+from .voipms_client import VoipMsClient
 from datetime import datetime
 from typing import Optional, Union
 
@@ -50,7 +50,7 @@ class SMS(VoipMsClient):
                     "sms": id
                 }
             
-            if (date_from and not date_to) or (date_from and not date_to):
+            if (date_from and not date_to) or (date_to and not date_from):
                 raise ValueError("A date is missing")
             elif date_from and date_to:
                 df = datetime.strptime(date_from, '%Y-%m-%d')

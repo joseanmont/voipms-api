@@ -1,8 +1,8 @@
 """VoIP.ms ring groups management."""
 
 import requests
-from voipms_client import VoipMsClient
-from accounts import Accounts
+from .voipms_client import VoipMsClient
+from .accounts import Accounts
 from typing import Optional, Union
 
 
@@ -44,7 +44,7 @@ class RingGroups(VoipMsClient):
         mtd = "setRingGroup"
 
         # Code to get the Account number to set the Main Account as the default member so it is not required.
-        accounts = Accounts(self.username, self.password)
+        accounts = Accounts(self.username, self.password, self.verify, self.timeout)
         get_accounts = accounts.get_subaccounts()
         acc_number = get_accounts['accounts'][0]['account']
         acc_number = acc_number[0:6]
