@@ -1,7 +1,7 @@
 """VoIP.ms general/utility API functions."""
 
 import requests
-from voipms_client import VoipMsClient
+from .voipms_client import VoipMsClient
 from datetime import datetime
 from typing import Optional, Union
 
@@ -135,7 +135,7 @@ class General(VoipMsClient):
 
         try:
             params = {"conference": id}
-            if date_from and not date_to:
+            if (date_from and not date_to) or (date_to and not date_from):
                 raise TypeError("Missing parameter. Send conference ID, From date and To date.")
             if date_from or date_to:
                 df = datetime.strptime(date_from, '%Y-%m-%d')

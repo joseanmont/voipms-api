@@ -8,53 +8,9 @@ This package is developed to streamline the process of integrating with the VoIP
 - **Modular Design**: Organized into separate modules for different functionalities, allowing targeted imports and reduced overhead.
 - **Ongoing Development**: New functions will continue to be added.
 
-## Updates
+## Changelog
 
-- \*\*1.1.5b11:
-  - DIDs
-    - Added method 'set_did_routing'.
-- \*\*1.1.4b11:
-  - Accounts
-    - Methods updated: 'create_sub_account', 'update_subaccount'
-      - added additional validations for the username on 'create_sub_account'.
-      - arg 'extension' renamed to 'internal_extension'.
-      - added optional arg 'internal_voicemail'.
-      - added optional arg 'internal_cnam' to specify a Caller ID name for internal calls.
-      - added optional arg 'enable_internal_cnam' to enable/disable the internal Caller ID name.
-- \*\*1.1.3b11:
-  - Fixed bug on 'create_call_hunting' and 'update_call_hunting' that did not allow adding multiple members.
-- \*\*1.1.2b11:
-
-  - Accounts
-    - Method updated: 'create_sub_account'
-      - arg 'password' set as optional so Sub Accounts can be created using IP authentication.
-      - added optional arg 'ip' for sub accounts created with 'auth_type' IP authentication.
-      - added optional arg 'codecs' to specify the codec the sub account will use.
-      - added optional arg 'lock_international' to enable/disable International calls.
-      - added optional arg 'callerid_number' to set a caller ID number for the sub account.
-    - Added method 'update_subaccounts'
-  - CallHunting
-    - Added method 'update_call_hunting'
-  - Forwarding
-    - Added method 'update_forwarding'
-  - General
-    - Bug fixed on 'get_transactions' that did not allow get records from one single day.
-  - IVR
-    - Added method 'update_ivr'
-  - RingGroup
-    - Method updated: 'create_ring_group'
-      - added optional arg 'announcement' to set an announcement recording.
-      - added optional arg 'music_on_hold' to set music on hold.
-      - added optional arg 'language' to set the language.
-    - Added method 'update_ring_group'
-  - SMS
-    - Added method 'get_sms'
-  - Voicemail
-    - Added method 'update_voicemail'
-
-- \*\*1.0.2b11: The method create_sub_account now accepts description as an optional argument.
-- \*\*1.0.1b11: Fixed bug that causes importing errors when using the module Voicemail.
-- \*\*1.0.0b11: All modules were refactored to improve imports.
+See [CHANGELOG.md](CHANGELOG.md) for the release history.
 
 ## Installation
 
@@ -64,9 +20,7 @@ The package is now available at PyPi and can be installed in your virtual enviro
 pip install voipms-api
 ```
 
-You can also clone the repository in your project from [Github](https://github.com/joseanmont/voipms-api).
-
-**Note:** If you clone it and have problems importing the modules, add the path to the directory and subdirectories in PYTHONPATH.
+Requires Python 3.11 or newer.
 
 ## Package structure
 
@@ -78,6 +32,7 @@ voipms-api
 │       ├── accounts.py
 │       ├── call_hunting.py
 │       ├── dids.py
+│       ├── fax.py
 │       ├── forwarding.py
 │       ├── general.py
 │       ├── ivr.py
@@ -86,8 +41,10 @@ voipms-api
 │       ├── sms.py
 │       ├── voicemail.py
 │       └── voipms_client.py
-│── tests/
-│   └── test_voipms_client.py
+└── tests/
+    ├── conftest.py
+    ├── test_modules.py
+    └── test_voipms_client.py
 ```
 
 ## Usage
@@ -119,7 +76,7 @@ print(balance.get_balance())
 
 Additionally, you can add your credentials or use different credentials by using the class VoipMsClient.
 
-This class also allows you use the method "get" to call a VoIP.ms function that might not be available in this package yet.
+This class also allows you to use the methods "get" and "post" to call a VoIP.ms function that might not be available in this package yet.
 
 Here is an example:
 
@@ -127,7 +84,7 @@ Here is an example:
 from voipms_api import VoipMsClient
 
 vms_client = VoipMsClient(username="me@email.com", password="your VoIP.ms API password")
-vms_client.get("sendFax")
+vms_client.get("getCountries", {"country": "CA"})
 ```
 
 ## Module Capabilities
@@ -141,6 +98,34 @@ Additional functionalities will be added over time.
 ## Examples of scripts
 
 You can find more examples of scripts in the examples directory in the [Github](https://github.com/joseanmont/voipms-api) repository. These scripts demonstrate how to use the some features of the voipms-api package.
+
+## Development
+
+Clone the repository and install the development environment with [pipenv](https://pipenv.pypa.io/) (Python version in `.python-version`):
+
+```
+pipenv sync --dev
+pipenv run pytest
+```
+
+The tests mock the API, so no credentials are needed. To also run the tests that call the real API with the credentials in your `.env`:
+
+```
+VOIPMS_LIVE_TESTS=1 pipenv run pytest
+```
+
+### Releasing
+
+Versions follow [Semantic Versioning](https://semver.org/): `MAJOR` for breaking changes, `MINOR` for new features, `PATCH` for bug fixes.
+
+1. Update `version` in `pyproject.toml` and move the `Unreleased` notes in `CHANGELOG.md` under the new version and date. Run `pipenv sync --dev` so your local install picks up the new version.
+2. Merge to `main`.
+3. Tag the release and push the tag. GitHub Actions runs the tests and publishes to PyPI.
+
+```
+git tag v1.2.0
+git push origin v1.2.0
+```
 
 ## Contributing
 

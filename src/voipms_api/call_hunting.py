@@ -1,8 +1,8 @@
 """VoIP.ms call hunting (ring group / find-me) management."""
 
 import requests
-from voipms_client import VoipMsClient
-from accounts import Accounts
+from .voipms_client import VoipMsClient
+from .accounts import Accounts
 from typing import Optional, Union
 
 
@@ -48,7 +48,7 @@ class CallHunting(VoipMsClient):
         mtd = "setCallHunting"
 
         # Code to get the Account number to set the Main Account as the default member if no members are provided.
-        accounts = Accounts(self.username, self.password)
+        accounts = Accounts(self.username, self.password, self.verify, self.timeout)
         get_accounts = accounts.get_subaccounts()
         acc_number = get_accounts['accounts'][0]['account']
         acc_number = acc_number[0:6]

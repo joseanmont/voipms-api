@@ -3,7 +3,7 @@ VoIP.ms Virtual Fax functions
 '''
 
 import requests, base64
-from voipms_client import VoipMsClient
+from .voipms_client import VoipMsClient
 from typing import Optional, Union
 
 
@@ -49,7 +49,7 @@ class Fax(VoipMsClient):
         # Encode file in base64
         try:
             with open(file_path, "rb") as file:
-                encoded_content = base64.b64encode(file.read_bytes()).decode("ascii")
+                encoded_content = base64.b64encode(file.read()).decode("ascii")
         except FileNotFoundError:
             return "Error: File not found."
         except Exception as e:

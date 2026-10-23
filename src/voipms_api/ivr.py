@@ -1,8 +1,8 @@
 """VoIP.ms IVR (interactive voice response) management."""
 
 import requests
-from voipms_client import VoipMsClient
-from accounts import Accounts
+from .voipms_client import VoipMsClient
+from .accounts import Accounts
 from typing import Optional, Union
 
 
@@ -43,7 +43,7 @@ class IVR(VoipMsClient):
         
         mtd = "setIVR"
         # Code to get the Account number to set the Main Account as the routing for the options so it is not required.
-        accounts = Accounts(self.username, self.password)
+        accounts = Accounts(self.username, self.password, self.verify, self.timeout)
         get_accounts = accounts.get_subaccounts()
         acc_number = get_accounts['accounts'][0]['account']
         acc_number = acc_number[0:6]
