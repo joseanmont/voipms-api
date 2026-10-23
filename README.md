@@ -10,7 +10,7 @@ This package is developed to streamline the process of integrating with the VoIP
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for the release history.
+See [CHANGELOG.md](https://github.com/joseanmont/voipms-api/blob/main/CHANGELOG.md) for the release history.
 
 ## Installation
 
