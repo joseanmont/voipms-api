@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases before 1.2.0 were published as pre-releases (`bNN` suffix).
 
+## [1.2.1] - Unreleased
+
+### Fixed
+- Restored compatibility with 1.1.5b11, broken in 1.2.0:
+  - `VoipMsClient.make_request` is back as a deprecated alias of `get`.
+  - The `vms_client` attribute of the modules is back as a deprecated alias of the object itself.
+  - `get_conference`, `get_conference_members`, `get_conference_recordings`, `get_conference_recording_file`
+    and `get_transactions` return `None` on error again, instead of an error message string.
+
+### Deprecated
+- `make_request` and `vms_client` emit a `DeprecationWarning` and will be removed in 2.0.0.
+
 ## [1.2.0] - 2026-10-23
 
 ### Added

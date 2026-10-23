@@ -75,11 +75,14 @@ class General(VoipMsClient):
             return data
 
         except requests.exceptions.HTTPError as http_err:
-            return f"HTTP error occurred: {http_err}"
+            print(f"HTTP error occurred: {http_err}")
+            return None
         except KeyError as key_err:
-            return f"Key error: {key_err}"
+            print(f"Key error: {key_err}")
+            return None
         except Exception as err:
-            return f'An error occurred: {err}'
+            print(f'An error occurred: {err}')
+            return None
 
 
     def get_conference_members(
@@ -105,11 +108,14 @@ class General(VoipMsClient):
             return data
 
         except requests.exceptions.HTTPError as http_err:
-            return f"HTTP error occurred: {http_err}"
+            print(f"HTTP error occurred: {http_err}")
+            return None
         except KeyError as key_err:
-            return f"Key error: {key_err}"
+            print(f"Key error: {key_err}")
+            return None
         except Exception as err:
-            return f'An error occurred: {err}'
+            print(f'An error occurred: {err}')
+            return None
 
     def get_conference_recordings(
         self,
@@ -150,11 +156,14 @@ class General(VoipMsClient):
             return data
 
         except requests.exceptions.HTTPError as http_err:
-            return f"HTTP error occurred: {http_err}"
+            print(f"HTTP error occurred: {http_err}")
+            return None
         except KeyError as key_err:
-            return f"Key error: {key_err}"
+            print(f"Key error: {key_err}")
+            return None
         except Exception as err:
-            return f'An error occurred: {err}'
+            print(f'An error occurred: {err}')
+            return None
 
     def get_conference_recording_file(
         self, id: Union[int, str], recording: Union[int, str]
@@ -181,11 +190,14 @@ class General(VoipMsClient):
             return data
 
         except requests.exceptions.HTTPError as http_err:
-            return f"HTTP error occurred: {http_err}"
+            print(f"HTTP error occurred: {http_err}")
+            return None
         except KeyError as key_err:
-            return f"Key error: {key_err}"
+            print(f"Key error: {key_err}")
+            return None
         except Exception as err:
-            return f'An error occurred: {err}'
+            print(f'An error occurred: {err}')
+            return None
 
 
     def get_sequences(
@@ -402,8 +414,11 @@ class General(VoipMsClient):
             return data
 
         except requests.exceptions.HTTPError as http_err:
-            return f"HTTP error occurred: {http_err}"
+            print(f"HTTP error occurred: {http_err}")
+            return None
         except KeyError as key_err:
-            return f"Key error: {key_err}"
+            print(f"Key error: {key_err}")
+            return None
         except Exception as err:
-            return f'An error occurred: {err}'
+            print(f'An error occurred: {err}')
+            return None
