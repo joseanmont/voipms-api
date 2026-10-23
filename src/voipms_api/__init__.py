@@ -1,3 +1,5 @@
+from importlib.metadata import version
+
 from .accounts import Accounts
 from .call_hunting import CallHunting
 from .dids import DIDs
@@ -10,6 +12,8 @@ from .ring_groups import RingGroups
 from .sms import SMS
 from .voicemail import Voicemail
 from .voipms_client import VoipMsClient
+
+__version__ = version("voipms-api")
 
 __all__ = [
     "Accounts",

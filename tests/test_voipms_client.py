@@ -86,3 +86,11 @@ class TestLiveConnection(unittest.TestCase):
         client = VoipMsClient()
         result = client.post("getIP")
         self.assertEqual(result["status"], "success")
+
+
+def test_version_matches_pyproject():
+    import tomllib
+    import voipms_api
+
+    with open("pyproject.toml", "rb") as f:
+        assert voipms_api.__version__ == tomllib.load(f)["project"]["version"]

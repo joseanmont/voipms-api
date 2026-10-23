@@ -114,6 +114,19 @@ The tests mock the API, so no credentials are needed. To also run the tests that
 VOIPMS_LIVE_TESTS=1 pipenv run pytest
 ```
 
+### Releasing
+
+Versions follow [Semantic Versioning](https://semver.org/): `MAJOR` for breaking changes, `MINOR` for new features, `PATCH` for bug fixes.
+
+1. Update `version` in `pyproject.toml` and move the `Unreleased` notes in `CHANGELOG.md` under the new version and date. Run `pipenv sync --dev` so your local install picks up the new version.
+2. Merge to `main`.
+3. Tag the release and push the tag. GitHub Actions runs the tests and publishes to PyPI.
+
+```
+git tag v1.2.0
+git push origin v1.2.0
+```
+
 ## Contributing
 
 Currently, we are not accepting collaborations. However, if you have suggestions or feedback, feel free to contact us. Issues can be reported on GitHub.

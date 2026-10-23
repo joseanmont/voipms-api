@@ -12,6 +12,7 @@ Releases before 1.2.0 were published as pre-releases (`bNN` suffix).
 - `Fax` module with `send_fax`.
 - `VoipMsClient.post` to call API methods with the parameters in the request body.
 - `timeout` argument on `VoipMsClient` (default 30 seconds). Requests no longer wait forever.
+- `voipms_api.__version__`.
 
 ### Changed
 - Python 3.11 or newer is now required.
