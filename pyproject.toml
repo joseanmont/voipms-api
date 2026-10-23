@@ -8,7 +8,7 @@ version = "1.1.5b11"
 authors = [{ name = "Jose Pineda", email = "hello@joseanmont.com" }]
 description = "A python package to simplify the use of the VoIP.ms API"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
