@@ -2,6 +2,7 @@ from importlib.metadata import version
 
 from .accounts import Accounts
 from .call_hunting import CallHunting
+from .cdr import CDR
 from .dids import DIDs
 from .errors import VoipMsApiError, VoipMsConnectionError, VoipMsError
 from .fax import Fax
@@ -19,6 +20,7 @@ __version__ = version("voipms-api")
 __all__ = [
     "Accounts",
     "CallHunting",
+    "CDR",
     "DIDs",
     "Fax",
     "Forwarding", 
