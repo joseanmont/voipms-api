@@ -31,7 +31,9 @@ voipms-api
 │       ├── __init__.py
 │       ├── accounts.py
 │       ├── call_hunting.py
+│       ├── cdr.py
 │       ├── dids.py
+│       ├── errors.py
 │       ├── fax.py
 │       ├── forwarding.py
 │       ├── general.py
@@ -43,6 +45,8 @@ voipms-api
 │       └── voipms_client.py
 └── tests/
     ├── conftest.py
+    ├── test_cdr.py
+    ├── test_errors.py
     ├── test_modules.py
     └── test_voipms_client.py
 ```

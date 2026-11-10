@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases before 1.2.0 were published as pre-releases (`bNN` suffix).
 
+## [2.1.0] - 2026-11-10
+
+### Added
+- `CDR` module:
+  - `get_cdr`: call detail records for a date range.
+  - `get_call_recordings` (all the accounts by default), `get_call_recording` (with `file_path` to save the audio), `delete_call_recording` and `send_call_recording_email`.
+  - `get_call_transcriptions` (all the accounts by default, with `file_path` to save them as readable text
+    and `include_account` to add the account of each one, which the API does not return).
+  - `get_call_accounts`, `get_call_types` and `get_call_billing`, the values accepted by the filters.
+
 ## [2.0.0] - 2026-11-10
 
 Errors are now raised as exceptions instead of being printed. On success, every method returns the same as in 1.x.
