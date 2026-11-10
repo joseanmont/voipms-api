@@ -3,6 +3,7 @@ from importlib.metadata import version
 from .accounts import Accounts
 from .call_hunting import CallHunting
 from .dids import DIDs
+from .errors import VoipMsApiError, VoipMsConnectionError, VoipMsError
 from .fax import Fax
 from .forwarding import Forwarding
 from .general import General
@@ -27,5 +28,8 @@ __all__ = [
     "RingGroups",
     "SMS", 
     "Voicemail", 
-    "VoipMsClient"
+    "VoipMsClient",
+    "VoipMsError",
+    "VoipMsApiError",
+    "VoipMsConnectionError",
 ]

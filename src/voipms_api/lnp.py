@@ -1,6 +1,5 @@
 """VoIP.ms LNP (number portability) functions."""
 
-import requests
 from .voipms_client import VoipMsClient
 from typing import Optional, Union
 
@@ -26,25 +25,14 @@ class LNP(VoipMsClient):
 
         mtd = "getPortability"
         
-        try:
-            portability_result = {}    
+        portability_result = {}    
 
-            params = {
-                "did": did
-            }
-            
-            response = self.get(mtd, params)
-            portability_result["did"] = did
-            portability_result["result"] = response
+        params = {
+            "did": did
+        }
 
-            return portability_result
-            
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        response = self.get(mtd, params)
+        portability_result["did"] = did
+        portability_result["result"] = response
+
+        return portability_result

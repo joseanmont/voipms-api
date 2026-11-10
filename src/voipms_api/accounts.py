@@ -1,6 +1,5 @@
 """VoIP.ms sub-account management."""
 
-import requests
 from .voipms_client import VoipMsClient
 from typing import Optional, Union
 
@@ -61,68 +60,57 @@ class Accounts(VoipMsClient):
         
         mtd = "createSubAccount"
 
-        try:
-            if len(username) > 12:
-                raise ValueError("Username characters exceeded.")
-            if (auth_type == 1 or auth_type == '1') and not password:
-                raise ValueError("Password must be provided for User/Password authentication.")
-            if (auth_type == 2 or auth_type == '2') and not ip:
-                raise ValueError("IP address must be provided for IP authentication.")
-            if (enable_internal_cnam == 0 or enable_internal_cnam == '0') and internal_cnam:
-                raise ValueError("The cnam cannot be set because you did not enable the internal cnam. To fix this error send 'enable_internal_cnam = 1'")
+        if len(username) > 12:
+            raise ValueError("Username characters exceeded.")
+        if (auth_type == 1 or auth_type == '1') and not password:
+            raise ValueError("Password must be provided for User/Password authentication.")
+        if (auth_type == 2 or auth_type == '2') and not ip:
+            raise ValueError("IP address must be provided for IP authentication.")
+        if (enable_internal_cnam == 0 or enable_internal_cnam == '0') and internal_cnam:
+            raise ValueError("The cnam cannot be set because you did not enable the internal cnam. To fix this error send 'enable_internal_cnam = 1'")
 
-            params = {
+        params = {
 
-                # Required by this package.
-                "username": username,
+            # Required by this package.
+            "username": username,
 
-                # Required by the VoIP.ms API but set with default values in this package so they are optional.
-                "international_route": 1,
-                "music_on_hold": "default",
-                "dtmf_mode": "auto",
-                "nat": "yes",
-            }
+            # Required by the VoIP.ms API but set with default values in this package so they are optional.
+            "international_route": 1,
+            "music_on_hold": "default",
+            "dtmf_mode": "auto",
+            "nat": "yes",
+        }
 
-            # Optional parameters in this package.
-            if auth_type:
-                params["auth_type"] = auth_type
-            if password:
-                params["password"] =  password
-            if ip:
-                params["ip"] = ip
-            if protocol:
-                params["protocol"] = protocol
-            if device_type is not None:
-                params["device_type"] = device_type
-            if callerid_number:
-                params["callerid_number"] = callerid_number
-            if internal_extension:
-                params["internal_extension"] = internal_extension
-            if internal_voicemail:
-                params["internal_voicemail"] = internal_voicemail
-            if internal_cnam:
-                params["internal_cnam"] = internal_cnam
-            if enable_internal_cnam:
-                params["enable_internal_cnam"] = enable_internal_cnam
-            if description:
-                params["description"] = description
-            if lock_international is not None:
-                params["lock_international"] = lock_international
-            if codecs:
-                params["allowed_codecs"] = codecs
-            
-            data = self.get(mtd, params)
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        # Optional parameters in this package.
+        if auth_type:
+            params["auth_type"] = auth_type
+        if password:
+            params["password"] =  password
+        if ip:
+            params["ip"] = ip
+        if protocol:
+            params["protocol"] = protocol
+        if device_type is not None:
+            params["device_type"] = device_type
+        if callerid_number:
+            params["callerid_number"] = callerid_number
+        if internal_extension:
+            params["internal_extension"] = internal_extension
+        if internal_voicemail:
+            params["internal_voicemail"] = internal_voicemail
+        if internal_cnam:
+            params["internal_cnam"] = internal_cnam
+        if enable_internal_cnam:
+            params["enable_internal_cnam"] = enable_internal_cnam
+        if description:
+            params["description"] = description
+        if lock_international is not None:
+            params["lock_international"] = lock_international
+        if codecs:
+            params["allowed_codecs"] = codecs
+
+        data = self.get(mtd, params)
+        return data
 
     def delete_subaccount(self, id: Union[str, int]) -> dict:
         """
@@ -137,25 +125,14 @@ class Accounts(VoipMsClient):
         
         mtd = "delSubAccount"
 
-        try:
-            params = {
-                "id": id,
-            }
-            
-            data = self.get(mtd, params)
-            data["result"] = "Sub Account deleted"
-            data["id"] = id
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        params = {
+            "id": id,
+        }
+
+        data = self.get(mtd, params)
+        data["result"] = "Sub Account deleted"
+        data["id"] = id
+        return data
 
     def get_subaccounts(self, subaccount: Optional[Union[str, int]] = None) -> dict:
         """
@@ -170,24 +147,13 @@ class Accounts(VoipMsClient):
         
         mtd = "getSubAccounts"
 
-        try:
-            params = {}
+        params = {}
 
-            if subaccount:
-                params["account"] = subaccount
-            
-            data = self.get(mtd, params)
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        if subaccount:
+            params["account"] = subaccount
+
+        data = self.get(mtd, params)
+        return data
 
     def update_subaccount(
         self,
@@ -244,81 +210,67 @@ class Accounts(VoipMsClient):
         
         mtd = "setSubAccount"
 
-        try:
-            if "_" not in subaccount:
-                raise ValueError("This method expects the full sub account name.")
+        if "_" not in subaccount:
+            raise ValueError("This method expects the full sub account name.")
 
-            # Code to get the settings of the sub account that will be edited.
-            sa_config = self.get_subaccounts(subaccount)
+        # Code to get the settings of the sub account that will be edited.
+        sa_config = self.get_subaccounts(subaccount)
 
-            if sa_config['status'] == "no_subaccount":
-                raise ValueError("Sub Account not found.")
-            
-            # Saving the current settings in the parameters
-            params = sa_config["accounts"][0]
+        # Saving the current settings in the parameters
+        params = self._first(sa_config, "accounts", "Sub Account")
 
-            # Validation to ensure there's no missing parameters based on the authentication type.
-            if (auth_type == 1 or auth_type == '1') and not password:
-                raise ValueError("Password must be provided for User/Password authentication.")
-            if (auth_type == 2 or auth_type == '2') and not ip:
-                raise ValueError("IP address must be provided for IP authentication.")
-            if (enable_internal_cnam == 0 or enable_internal_cnam == '0') and internal_cnam:
-                raise ValueError("The cnam cannot be set because you did not enable the internal cnam. To fix this error send 'enable_internal_cnam = 1'")
-            
-            # If the authentication type is changed this validation ensures the password or ip is removed from the parameters to avoid error responses from the VoIP.ms API.
-            if params["auth_type"] == '1' and (auth_type == 2 or auth_type == '2'):
-                params.pop('password', None)
-            if params["auth_type"] == '2' and (auth_type == 1 or auth_type == '1'):
-                params.pop('ip', None)
+        # Validation to ensure there's no missing parameters based on the authentication type.
+        if (auth_type == 1 or auth_type == '1') and not password:
+            raise ValueError("Password must be provided for User/Password authentication.")
+        if (auth_type == 2 or auth_type == '2') and not ip:
+            raise ValueError("IP address must be provided for IP authentication.")
+        if (enable_internal_cnam == 0 or enable_internal_cnam == '0') and internal_cnam:
+            raise ValueError("The cnam cannot be set because you did not enable the internal cnam. To fix this error send 'enable_internal_cnam = 1'")
 
-            # Optional parameters in this method.
-            if auth_type is not None:
-                params["auth_type"] = auth_type
-            if password:
-                params["password"] =  password
-            if ip:
-                params["ip"] = ip
-            if protocol:
-                params["protocol"] = protocol
-            if device_type is not None:
-                params["device_type"] = device_type
-            if callerid_number:
-                params["callerid_number"] = callerid_number
-            if description:
-                params["description"] = description
-            if canada_route:
-                params["canada_routing"] = canada_route
-            if lock_international is not None:
-                params["lock_international"] = lock_international
-            if international_route:
-                params["international_route"] = international_route
-            if record_calls is not None:
-                params["record_calls"] = record_calls
-            if music_on_hold:
-                params["music_on_hold"] = music_on_hold
-            if internal_extension:
-                params["internal_extension"] = internal_extension
-            if internal_voicemail:
-                params["internal_voicemail"] = internal_voicemail
-            if internal_cnam:
-                params["internal_cnam"] = internal_cnam
-            if enable_internal_cnam:
-                params["enable_internal_cnam"] = enable_internal_cnam
-            if codecs:
-                params["allowed_codecs"] = codecs
-            if dtmf_mode:
-                params["dtmf_mode"] = dtmf_mode
-            
-            data = self.get(mtd, params)
-            data["subacc"] = subaccount
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        # If the authentication type is changed this validation ensures the password or ip is removed from the parameters to avoid error responses from the VoIP.ms API.
+        if params["auth_type"] == '1' and (auth_type == 2 or auth_type == '2'):
+            params.pop('password', None)
+        if params["auth_type"] == '2' and (auth_type == 1 or auth_type == '1'):
+            params.pop('ip', None)
+
+        # Optional parameters in this method.
+        if auth_type is not None:
+            params["auth_type"] = auth_type
+        if password:
+            params["password"] =  password
+        if ip:
+            params["ip"] = ip
+        if protocol:
+            params["protocol"] = protocol
+        if device_type is not None:
+            params["device_type"] = device_type
+        if callerid_number:
+            params["callerid_number"] = callerid_number
+        if description:
+            params["description"] = description
+        if canada_route:
+            params["canada_routing"] = canada_route
+        if lock_international is not None:
+            params["lock_international"] = lock_international
+        if international_route:
+            params["international_route"] = international_route
+        if record_calls is not None:
+            params["record_calls"] = record_calls
+        if music_on_hold:
+            params["music_on_hold"] = music_on_hold
+        if internal_extension:
+            params["internal_extension"] = internal_extension
+        if internal_voicemail:
+            params["internal_voicemail"] = internal_voicemail
+        if internal_cnam:
+            params["internal_cnam"] = internal_cnam
+        if enable_internal_cnam:
+            params["enable_internal_cnam"] = enable_internal_cnam
+        if codecs:
+            params["allowed_codecs"] = codecs
+        if dtmf_mode:
+            params["dtmf_mode"] = dtmf_mode
+
+        data = self.get(mtd, params)
+        data["subacc"] = subaccount
+        return data

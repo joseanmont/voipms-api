@@ -1,6 +1,5 @@
 """VoIP.ms DIDs (phone numbers) management."""
 
-import requests
 from .voipms_client import VoipMsClient
 from typing import Optional, Union
 
@@ -39,33 +38,21 @@ class DIDs(VoipMsClient):
         
         mtd = "cancelDID"
 
-        try:
-            params = {
-                "did": did,
-            }
+        params = {
+            "did": did,
+        }
 
-            if comment:
-                params["comment"] = comment
-            if port_out:
-                params["portout"] = port_out
-            if test:
-                params["test"] = test
-            
-            data = self.get(mtd, params)
-            data["result"] = "DID canceled"
-            data["did"] = did
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        if comment:
+            params["comment"] = comment
+        if port_out:
+            params["portout"] = port_out
+        if test:
+            params["test"] = test
 
+        data = self.get(mtd, params)
+        data["result"] = "DID canceled"
+        data["did"] = did
+        return data
 
     def get_dids_info(
         self,
@@ -85,28 +72,16 @@ class DIDs(VoipMsClient):
         
         mtd = "getDIDsInfo"
 
-        try:
-            params = {}
+        params = {}
 
-            if client:
-                params["client"] = client
-            if did:
-                params["did"] = did
-            
-            data = self.get(mtd, params)
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-        
-        
+        if client:
+            params["client"] = client
+        if did:
+            params["did"] = did
+
+        data = self.get(mtd, params)
+        return data
+
     def order_did(
         self,
         did: Union[str, int],
@@ -133,31 +108,19 @@ class DIDs(VoipMsClient):
         
         mtd = "orderDID"
 
-        try:
-            params = {
-                "did": did,
-                "routing": routing,
-                "pop": pop,
-                "dialtime": dial_time,
-                "cnam": cnam,
-                "billing_type": billing_type,
-            }
-            
-            data = self.get(mtd, params)
-            data["result"] = "DID ordered"
-            data["did"] = did
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-        
+        params = {
+            "did": did,
+            "routing": routing,
+            "pop": pop,
+            "dialtime": dial_time,
+            "cnam": cnam,
+            "billing_type": billing_type,
+        }
+
+        data = self.get(mtd, params)
+        data["result"] = "DID ordered"
+        data["did"] = did
+        return data
 
     def order_toll_free(
         self,
@@ -183,30 +146,18 @@ class DIDs(VoipMsClient):
         
         mtd = "orderTollFree"
 
-        try:
-            params = {
-                "did": did,
-                "routing": routing,
-                "pop": pop,
-                "dialtime": dial_time,
-                "cnam": cnam
-            }
-            
-            data = self.get(mtd, params)
-            data["result"] = "DID ordered"
-            data["did"] = did
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-        
+        params = {
+            "did": did,
+            "routing": routing,
+            "pop": pop,
+            "dialtime": dial_time,
+            "cnam": cnam
+        }
+
+        data = self.get(mtd, params)
+        data["result"] = "DID ordered"
+        data["did"] = did
+        return data
 
     def set_did_routing(self, did: Union[str, int], routing: str) -> dict:
         """
@@ -222,23 +173,12 @@ class DIDs(VoipMsClient):
         
         mtd = "setDIDRouting"
 
-        try:
-            params = {
-                "did": did,
-                "routing": routing,
-            }
-            
-            data = self.get(mtd, params)
-            data["did"] = did
-            data["result"] = f"DID routed to {routing}"
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        params = {
+            "did": did,
+            "routing": routing,
+        }
+
+        data = self.get(mtd, params)
+        data["did"] = did
+        data["result"] = f"DID routed to {routing}"
+        return data

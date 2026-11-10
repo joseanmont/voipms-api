@@ -87,6 +87,29 @@ vms_client = VoipMsClient(username="me@email.com", password="your VoIP.ms API pa
 vms_client.get("getCountries", {"country": "CA"})
 ```
 
+### Errors
+
+Every method returns the API response (a dict) on success and raises an exception when something goes wrong:
+
+```
+from voipms_api import DIDs, VoipMsApiError, VoipMsConnectionError, VoipMsError
+
+try:
+    DIDs().cancel_did(5551234567)
+except VoipMsApiError as e:          # The API answered with an error status
+    print(e.method, e.status)        # cancelDID invalid_did
+except VoipMsConnectionError as e:   # Network error, timeout, HTTP error or invalid response
+    print(e)                         # The message never includes your API password
+```
+
+- `VoipMsError` is the base class of both, so `except VoipMsError` catches any API error.
+- Invalid arguments detected before calling the API (dates, missing password, etc.) raise `ValueError`.
+- On queries (`get_...` methods), a `no_...` status such as `no_sms` means there are no results. It is returned as is instead of raising, so check it or use `.get()`:
+
+```
+messages = SMS().get_sms(did=5551234567).get("sms", [])
+```
+
 ## Module Capabilities
 
 Currently, the modules of accounts and voice features within the voipms-api package provide basic functionalities for creating, retrieving, and deleting items.

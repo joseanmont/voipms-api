@@ -1,8 +1,6 @@
 """VoIP.ms call hunting (ring group / find-me) management."""
 
-import requests
 from .voipms_client import VoipMsClient
-from .accounts import Accounts
 from typing import Optional, Union
 
 
@@ -47,58 +45,40 @@ class CallHunting(VoipMsClient):
         
         mtd = "setCallHunting"
 
-        # Code to get the Account number to set the Main Account as the default member if no members are provided.
-        accounts = Accounts(self.username, self.password, self.verify, self.timeout)
-        get_accounts = accounts.get_subaccounts()
-        acc_number = get_accounts['accounts'][0]['account']
-        acc_number = acc_number[0:6]
-        default_member = "account:" + acc_number
+        params = {
+            # Required by this package
+            "description": name,
 
-        try:
-            params = {
-                # Required by this package
-                "description": name,
+            # Required by VoIP.ms API but set with default values so it is not required in this package.
+            "music": "default",
+            "recording": "none:",
+            "language": "en",
+            "order": "follow",
+            # The Main Account is the default member; it is only looked up when no members are provided.
+            "members": members or f"account:{self._main_account()}",
+            "ring_time": 25,
+            "press": 0
+        }
 
-                # Required by VoIP.ms API but set with default values so it is not required in this package.
-                "music": "default",
-                "recording": "none:",
-                "language": "en",
-                "order": "follow",
-                "members": default_member,
-                "ring_time": 25,
-                "press": 0
-            }
+        # Optional in this package.
+        if music:
+            params["music"] = music
+        if recording:
+            params["recording"] = recording
+        if language:
+            params["language"] = language
+        if order:
+            params["order"] = order
+        if members:
+            params["members"] = members
+        if ring_time is not None:
+            params["ring_time"] = ring_time
+        if press_one is not None:
+            params["press"] = press_one
 
-            # Optional in this package.
-            if music:
-                params["music"] = music
-            if recording:
-                params["recording"] = recording
-            if language:
-                params["language"] = language
-            if order:
-                params["order"] = order
-            if members:
-                params["members"] = members
-            if ring_time is not None:
-                params["ring_time"] = ring_time
-            if press_one is not None:
-                params["press"] = press_one
-            
-            data = self.get(mtd, params)
-            data["name"] = name
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-        
+        data = self.get(mtd, params)
+        data["name"] = name
+        return data
 
     def delete_call_hunting(self, call_hunting: Union[str, int]) -> dict:
         """
@@ -113,29 +93,17 @@ class CallHunting(VoipMsClient):
         
         mtd = "delCallHunting"
 
-        try:
-            params = {
-                "callhunting": call_hunting,
-            }
+        params = {
+            "callhunting": call_hunting,
+        }
 
-            # Code to get the name of the call hunting that is deleted.
-            ch_info = self.get_call_huntings(call_hunting)
-            ch_name = ch_info["call_hunting"][0]["description"]
+        # Code to get the name of the call hunting that is deleted.
+        ch_info = self.get_call_huntings(call_hunting)
+        ch_name = self._first(ch_info, "call_hunting", "Call hunting")["description"]
 
-            data = self.get(mtd, params)
-            data["call_hunting"] = ch_name
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-        
+        data = self.get(mtd, params)
+        data["call_hunting"] = ch_name
+        return data
 
     def get_call_huntings(self, call_hunting: Optional[Union[str, int]] = None) -> dict:
         """
@@ -150,26 +118,14 @@ class CallHunting(VoipMsClient):
         
         mtd = "getCallHuntings"
 
-        try:
-            params = {}
+        params = {}
 
-            # Optional in this package.
-            if call_hunting:
-                params["callhunting"] = call_hunting
-            
-            data = self.get(mtd, params)
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-        
+        # Optional in this package.
+        if call_hunting:
+            params["callhunting"] = call_hunting
+
+        data = self.get(mtd, params)
+        return data
 
     def update_call_hunting(
         self,
@@ -204,40 +160,29 @@ class CallHunting(VoipMsClient):
         mtd = "setCallHunting"
         # main_account = "account:" + self.acc_number
 
-        try:
-            # Code to get the settings of the call hunting that will be edited.
-            ch_config = self.get_call_huntings(id)
-            # Saving the current settings in the parameters.
-            params = ch_config["call_hunting"][0]
+        # Code to get the settings of the call hunting that will be edited.
+        ch_config = self.get_call_huntings(id)
+        # Saving the current settings in the parameters.
+        params = self._first(ch_config, "call_hunting", "Call hunting")
 
-            # Optional in this package.
-            if name:
-                params["description"] = name
-            if music:
-                params["music"] = music
-            if recording:
-                params["recording"] = recording
-            if language:
-                params["language"] = language
-            if order:
-                params["order"] = order
-            if members:
-                params["members"] = members
-            if ring_time:
-                params["ring_time"] = ring_time
-            if press_one is not None:
-                params["press"] = press_one
-            
-            data = self.get(mtd, params)
-            data["name"] = name
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        # Optional in this package.
+        if name:
+            params["description"] = name
+        if music:
+            params["music"] = music
+        if recording:
+            params["recording"] = recording
+        if language:
+            params["language"] = language
+        if order:
+            params["order"] = order
+        if members:
+            params["members"] = members
+        if ring_time:
+            params["ring_time"] = ring_time
+        if press_one is not None:
+            params["press"] = press_one
+
+        data = self.get(mtd, params)
+        data["name"] = name
+        return data

@@ -1,8 +1,6 @@
 """VoIP.ms IVR (interactive voice response) management."""
 
-import requests
 from .voipms_client import VoipMsClient
-from .accounts import Accounts
 from typing import Optional, Union
 
 
@@ -42,50 +40,32 @@ class IVR(VoipMsClient):
         """
         
         mtd = "setIVR"
-        # Code to get the Account number to set the Main Account as the routing for the options so it is not required.
-        accounts = Accounts(self.username, self.password, self.verify, self.timeout)
-        get_accounts = accounts.get_subaccounts()
-        acc_number = get_accounts['accounts'][0]['account']
-        acc_number = acc_number[0:6]
-        default_opt = "1=account:" + acc_number
+        params = {
+            # Required by this package
+            "name": name,
+            "recording": recording,
 
-        try:
-            params = {
-                # Required by this package
-                "name": name,
-                "recording": recording,
+            # Required by VoIP.ms API but set with default values so it is not required in this package.
+            "timeout": 5,
+            "language": "en",
+            "voicemailsetup": 1,
+            # The Main Account is the default for option 1; it is only looked up when no options are provided.
+            "choices": options or f"1=account:{self._main_account()}"
+        }
 
-                # Required by VoIP.ms API but set with default values so it is not required in this package.
-                "timeout": 5,
-                "language": "en",
-                "voicemailsetup": 1,
-                "choices": default_opt
-            }
+        # Optional in this package.
+        if time_out:
+            params["timeout"] = time_out
+        if language:
+            params["language"] = language
+        if voicemail:
+            params["voicemailsetup"] = voicemail
+        if options:
+            params["choices"] = options
 
-            # Optional in this package.
-            if time_out:
-                params["timeout"] = time_out
-            if language:
-                params["language"] = language
-            if voicemail:
-                params["voicemailsetup"] = voicemail
-            if options:
-                params["choices"] = options
-            
-            data = self.get(mtd, params)
-            data["name"] = name
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-        
+        data = self.get(mtd, params)
+        data["name"] = name
+        return data
 
     def delete_ivr(self, ivr: Union[str, int]) -> dict:
         """
@@ -100,29 +80,17 @@ class IVR(VoipMsClient):
         
         mtd = "delIVR"
 
-        try:
-            params = {
-                "ivr": ivr,
-            }
+        params = {
+            "ivr": ivr,
+        }
 
-            # Code to get the name of the IVR that is deleted.
-            ivr_info = self.get_ivrs(ivr)
-            ivr_name = ivr_info["ivrs"][0]["name"]
+        # Code to get the name of the IVR that is deleted.
+        ivr_info = self.get_ivrs(ivr)
+        ivr_name = self._first(ivr_info, "ivrs", "IVR")["name"]
 
-            data = self.get(mtd, params)
-            data["ivr"] = ivr_name
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-        
+        data = self.get(mtd, params)
+        data["ivr"] = ivr_name
+        return data
 
     def get_ivrs(self, ivr: Optional[Union[str, int]] = None) -> dict:
         """
@@ -137,26 +105,14 @@ class IVR(VoipMsClient):
         
         mtd = "getIVRs"
 
-        try:
-            params = {}
+        params = {}
 
-            # Optional in this package.
-            if ivr:
-                params["ivr"] = ivr
-            
-            data = self.get(mtd, params)
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-        
+        # Optional in this package.
+        if ivr:
+            params["ivr"] = ivr
+
+        data = self.get(mtd, params)
+        return data
 
     def update_ivr(
         self,
@@ -187,34 +143,23 @@ class IVR(VoipMsClient):
         mtd = "setIVR"
 
 
-        try:
-            # Code to get the settings of the IVR that will be edited.
-            ivr_config = self.get_ivrs(id)
-            # Saving the current settings in the parameters.
-            params = ivr_config["ivrs"][0]
+        # Code to get the settings of the IVR that will be edited.
+        ivr_config = self.get_ivrs(id)
+        # Saving the current settings in the parameters.
+        params = self._first(ivr_config, "ivrs", "IVR")
 
-            # Optional in this package.
-            if recording:
-                params["recording"] = recording
-            if time_out:
-                params["timeout"] = time_out
-            if language:
-                params["language"] = language
-            if voicemail:
-                params["voicemailsetup"] = voicemail
-            if options:
-                params["choices"] = options
-            
-            data = self.get(mtd, params)
-            data["name"] = name
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        # Optional in this package.
+        if recording:
+            params["recording"] = recording
+        if time_out:
+            params["timeout"] = time_out
+        if language:
+            params["language"] = language
+        if voicemail:
+            params["voicemailsetup"] = voicemail
+        if options:
+            params["choices"] = options
+
+        data = self.get(mtd, params)
+        data["name"] = name
+        return data

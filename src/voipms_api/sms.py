@@ -1,6 +1,5 @@
 """VoIP.ms SMS/MMS functions."""
 
-import requests
 from .voipms_client import VoipMsClient
 from datetime import datetime
 from typing import Optional, Union
@@ -45,48 +44,37 @@ class SMS(VoipMsClient):
 
         mtd = "getSMS"
 
-        try:    
-            params = {
-                    "sms": id
-                }
-            
-            if (date_from and not date_to) or (date_to and not date_from):
-                raise ValueError("A date is missing")
-            elif date_from and date_to:
-                df = datetime.strptime(date_from, '%Y-%m-%d')
-                dt = datetime.strptime(date_to, '%Y-%m-%d')
+        params = {
+                "sms": id
+            }
 
-                if df > dt:
-                    raise ValueError("The TO date cannot be prior the FROM date")
-                
-                params.update({
-                    'from': date_from,
-                    'to': date_to,
-                })
-            
-            if type is not None:
-                params["type"] =  type
-            if did is not None:
-                params["did"] =  did
-            if contact is not None:
-                params["contact"] =  contact
-            if limit is not None:
-                params["limit"] =  limit
-            if timezone is not None:
-                params["timezone"] =  timezone
+        if (date_from and not date_to) or (date_to and not date_from):
+            raise ValueError("A date is missing")
+        elif date_from and date_to:
+            df = datetime.strptime(date_from, '%Y-%m-%d')
+            dt = datetime.strptime(date_to, '%Y-%m-%d')
 
-            data = self.get(mtd, params)
-            return data
-                    
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+            if df > dt:
+                raise ValueError("The TO date cannot be prior the FROM date")
+
+            params.update({
+                'from': date_from,
+                'to': date_to,
+            })
+
+        if type is not None:
+            params["type"] =  type
+        if did is not None:
+            params["did"] =  did
+        if contact is not None:
+            params["contact"] =  contact
+        if limit is not None:
+            params["limit"] =  limit
+        if timezone is not None:
+            params["timezone"] =  timezone
+
+        data = self.get(mtd, params)
+        return data
 
     def send_sms(
         self,
@@ -108,21 +96,11 @@ class SMS(VoipMsClient):
         
         mtd = "sendSMS"
 
-        try:
-            params = {
-                "did": did,
-                "dst": dst,
-                "message": message
-            }
-            data = self.get(mtd, params)
-            data = dict(data)
-            return data
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        params = {
+            "did": did,
+            "dst": dst,
+            "message": message
+        }
+        data = self.get(mtd, params)
+        data = dict(data)
+        return data
