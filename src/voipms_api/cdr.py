@@ -265,6 +265,7 @@ class CDR(VoipMsClient):
         account: str = "all",
         call_type: Optional[str] = None,
         file_path: Optional[str] = None,
+        include_account: bool = False,
     ) -> dict:
         """
         Get the call transcriptions of all the accounts, or of one account, optionally saving them
@@ -273,12 +274,18 @@ class CDR(VoipMsClient):
         Args:
             date_from: Start date (e.g. '2026-11-01').
             date_to: End date (e.g. '2026-11-09'). Must be >= date_from.
-            account: 'all' (default) for the main account and all the sub accounts, or the main
-                account (e.g. '100000'). Sub accounts (e.g. '100000_VoIP') get an empty response from
-                the API, which raises VoipMsConnectionError; their transcriptions come with 'all'.
+            account: 'all' (default) for the main account and all the sub accounts. The API's filter by
+                account is unreliable: the main account (e.g. '100000') also returns some transcriptions
+                of sub accounts, and a sub account (e.g. '100000_VoIP') gets an empty response, which
+                raises VoipMsConnectionError. Use 'all' with include_account=True to know the account
+                of each transcription.
             call_type: Filter by call type. See get_call_types.
             file_path: Optional path to save the transcriptions as readable text (e.g. 'transcriptions.txt').
                 Nothing is written when there are no transcriptions.
+            include_account: Add the 'account' of each transcription, which the API does not return.
+                It makes one extra request (getCallRecordings) and matches each transcription to the
+                recording with the same date. 'account' is None when no recording, or more than one,
+                has that date.
 
         Returns:
             API response with the transcriptions in 'transcriptions'.
@@ -302,6 +309,16 @@ class CDR(VoipMsClient):
             params["call_type"] = call_type
 
         data = self.get(mtd, params)
+
+        if include_account and data.get("transcriptions"):
+            # Always 'all': the API's account filter on transcriptions also returns some from other accounts.
+            recordings = self.get_call_recordings(date_from, date_to).get("recordings") or []
+            accounts_by_date = {}
+            for recording in recordings:
+                accounts_by_date.setdefault(recording.get("datetime"), set()).add(recording.get("account"))
+            for transcription in data["transcriptions"]:
+                matches = accounts_by_date.get(transcription.get("date"), set())
+                transcription["account"] = next(iter(matches)) if len(matches) == 1 else None
 
         if file_path and data.get("transcriptions"):
             with open(file_path, "w", encoding="utf-8") as file:
@@ -332,6 +349,8 @@ def _format_transcription(transcription: dict) -> str:
         f"{transcription.get('date')} ({transcription.get('duration')}) - "
         f"{transcription.get('locale')}, confidence {transcription.get('confidence')}"
     )
+    if transcription.get("account"):
+        header = f"{transcription['account']} - {header}"
     lines = [header]
     for phrase in transcription.get("recognized_phrases") or []:
         speaker = str(phrase.get("speaker"))

@@ -1,4 +1,5 @@
 import base64
+import copy
 import os
 from datetime import date
 
@@ -132,6 +133,41 @@ def test_get_call_transcriptions_without_results_writes_nothing(mock_requests, t
     data = CDR("u", "p").get_call_transcriptions("2024-10-11", "2024-10-11", "100001", file_path=str(target))
     assert data == {"status": "no_transcriptions"}
     assert not target.exists()
+
+
+def test_get_call_transcriptions_include_account(mock_requests, tmp_path):
+    get, _ = mock_requests
+    transcriptions = {"status": "success", "transcriptions": [
+        {"date": "2026-11-01 10:00:00", "speakers": {"1": "5551"}, "recognized_phrases": []},  # one recording
+        {"date": "2026-11-01 11:00:00", "speakers": {"1": "5552"}, "recognized_phrases": []},  # two accounts
+        {"date": "2026-11-01 12:00:00", "speakers": {"1": "5553"}, "recognized_phrases": []},  # no recording
+    ]}
+    recordings = {"status": "success", "recordings": [
+        {"datetime": "2026-11-01 10:00:00", "account": "100000_VoIP"},
+        {"datetime": "2026-11-01 11:00:00", "account": "100000"},
+        {"datetime": "2026-11-01 11:00:00", "account": "100000_Office"},
+    ]}
+    get.return_value.json.side_effect = [transcriptions, recordings]
+    target = tmp_path / "transcriptions.txt"
+
+    data = CDR("u", "p").get_call_transcriptions(
+        "2026-11-01", "2026-11-01", "100000", file_path=str(target), include_account=True
+    )
+
+    assert [t["account"] for t in data["transcriptions"]] == ["100000_VoIP", None, None]
+    calls = [c.kwargs["params"] for c in get.call_args_list]
+    assert [c["method"] for c in calls] == ["getCallTranscriptions", "getCallRecordings"]
+    assert calls[0]["account"] == "100000"
+    assert calls[1]["account"] == "all"  # the transcriptions of one account may include other accounts
+    assert target.read_text().startswith("100000_VoIP - 2026-11-01 10:00:00")
+
+
+def test_get_call_transcriptions_without_include_account_makes_one_request(mock_requests):
+    get, _ = mock_requests
+    get.return_value.json.return_value = copy.deepcopy(TRANSCRIPTIONS)
+    data = CDR("u", "p").get_call_transcriptions("2024-10-11", "2024-10-11")
+    assert get.call_count == 1
+    assert "account" not in data["transcriptions"][0]
 
 
 @pytest.mark.parametrize("name, method", [
