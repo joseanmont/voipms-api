@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases before 1.2.0 were published as pre-releases (`bNN` suffix).
 
+## [2.0.0] - Unreleased
+
+Errors are now raised as exceptions instead of being printed. On success, every method returns the same as in 1.x.
+
+### Migrating from 1.x
+- Replace `if result is None:` checks with `try` / `except VoipMsError:` (or the specific exceptions below).
+- Replace `make_request(...)` with `get(...)`.
+- Replace `module.vms_client.<attr>` with `module.<attr>` (e.g. `lnp.vms_client.username` → `lnp.username`).
+
+### Added
+- Exceptions `VoipMsError` (base), `VoipMsApiError` (with `method`, `status` and `response`) and `VoipMsConnectionError`.
+
+### Changed
+- **Breaking:** errors raise exceptions instead of printing a message and returning `None` (or an error message string).
+  - The API answering with a status other than `success` raises `VoipMsApiError`. Before, these responses were returned as if they had succeeded.
+  - Network errors, timeouts, HTTP errors and invalid responses raise `VoipMsConnectionError`. Its message does not include the API password.
+  - Invalid arguments raise `ValueError` (`get_conference_recordings` raised `TypeError`).
+  - `send_fax` raises `FileNotFoundError` (or other `OSError`) when the file cannot be read.
+- On queries (`get...` API methods), a `no_...` status (e.g. `no_sms`) means there are no results and is returned without raising.
+- `update_*` and `delete_*` methods raise `ValueError` when the item to change does not exist, instead of a `KeyError`.
+- `create_call_hunting`, `create_ring_group` and `create_ivr` only look up the main account when `members`/`options` are not given. They no longer fail when the account has no sub accounts and members are given.
+- `get` and `post` no longer modify the `params` dict passed to them.
+
+### Removed
+- **Breaking:** `VoipMsClient.make_request` and the `vms_client` attribute, deprecated in 1.2.1.
+
 ## [1.2.1] - 2026-10-23
 
 ### Fixed
