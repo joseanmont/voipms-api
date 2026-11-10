@@ -1,6 +1,5 @@
 """VoIP.ms general/utility API functions."""
 
-import requests
 from .voipms_client import VoipMsClient
 from datetime import datetime
 from typing import Optional, Union
@@ -37,22 +36,12 @@ class General(VoipMsClient):
         """
         mtd = "getBalance"
 
-        try:
-            if advanced:
-                params = {"advanced": True}
-                data = self.get(mtd, params)
-            else:
-                data = self.get(mtd)
-            return data
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        if advanced:
+            params = {"advanced": True}
+            data = self.get(mtd, params)
+        else:
+            data = self.get(mtd)
+        return data
 
     def get_conference(self, id: Optional[Union[str, int]] = None) -> dict:
         """
@@ -66,24 +55,12 @@ class General(VoipMsClient):
         """
         mtd = "getConference"
 
-        try:
-            params = {}
-            if id:
-                params["conference"] = id
+        params = {}
+        if id:
+            params["conference"] = id
 
-            data = self.get(mtd, params)
-            return data
-
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-
+        data = self.get(mtd, params)
+        return data
 
     def get_conference_members(
         self, member: Optional[Union[str, int]] = None
@@ -99,23 +76,12 @@ class General(VoipMsClient):
         """
         mtd = "getConferenceMembers"
 
-        try:
-            params = {}
-            if member:
-                params["member"] = member
+        params = {}
+        if member:
+            params["member"] = member
 
-            data = self.get(mtd, params)
-            return data
-
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        data = self.get(mtd, params)
+        return data
 
     def get_conference_recordings(
         self,
@@ -135,35 +101,24 @@ class General(VoipMsClient):
             API response with conference recordings.
 
         Raises:
-            TypeError: If only one of date_from/date_to is provided, or if date_to is before date_from.
+            ValueError: If only one of date_from/date_to is provided, or if date_to is before date_from.
         """
         mtd = "getConferenceRecordings"
 
-        try:
-            params = {"conference": id}
-            if (date_from and not date_to) or (date_to and not date_from):
-                raise TypeError("Missing parameter. Send conference ID, From date and To date.")
-            if date_from or date_to:
-                df = datetime.strptime(date_from, '%Y-%m-%d')
-                dt = datetime.strptime(date_to, '%Y-%m-%d')
-                if df <= dt:
-                    params["date_from"] = date_from
-                    params["date_to"] = date_to
-                else:
-                    raise TypeError("The TO date cannot be prior the FROM date")
+        params = {"conference": id}
+        if (date_from and not date_to) or (date_to and not date_from):
+            raise ValueError("Missing parameter. Send conference ID, From date and To date.")
+        if date_from or date_to:
+            df = datetime.strptime(date_from, '%Y-%m-%d')
+            dt = datetime.strptime(date_to, '%Y-%m-%d')
+            if df <= dt:
+                params["date_from"] = date_from
+                params["date_to"] = date_to
+            else:
+                raise ValueError("The TO date cannot be prior the FROM date")
 
-            data = self.get(mtd, params)
-            return data
-
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        data = self.get(mtd, params)
+        return data
 
     def get_conference_recording_file(
         self, id: Union[int, str], recording: Union[int, str]
@@ -180,25 +135,13 @@ class General(VoipMsClient):
         """
         mtd = "getConferenceRecordingFile"
 
-        try:
-            params = {
-                "conference": id,
-                "recording": recording,
-            }
+        params = {
+            "conference": id,
+            "recording": recording,
+        }
 
-            data = self.get(mtd, params)
-            return data
-
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-
+        data = self.get(mtd, params)
+        return data
 
     def get_sequences(
         self,
@@ -220,25 +163,14 @@ class General(VoipMsClient):
         """
         mtd = "getSequences"
 
-        try:
-            params = {}
-            if sequence:
-                params["sequence"] = sequence
-            if client:
-                params["client"] = client
+        params = {}
+        if sequence:
+            params["sequence"] = sequence
+        if client:
+            params["client"] = client
 
-            data = self.get(mtd, params)
-            return data
-
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        data = self.get(mtd, params)
+        return data
 
     def get_countries(self, country: Optional[str] = None) -> dict:
         """
@@ -252,23 +184,12 @@ class General(VoipMsClient):
         """
         mtd = "getCountries"
 
-        try:
-            params = {}
-            if country:
-                params["country"] = country
+        params = {}
+        if country:
+            params["country"] = country
 
-            data = self.get(mtd, params)
-            return data
-
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        data = self.get(mtd, params)
+        return data
 
     def get_ip(self) -> dict:
         """
@@ -279,20 +200,9 @@ class General(VoipMsClient):
         """
         mtd = "getIP"
 
-        try:
-            data = self.get(mtd)
-            return data
+        data = self.get(mtd)
+        return data
 
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-                
     def get_languages(self, language: Optional[str] = None) -> dict:
         """
         List languages or get one by code (VoIP.ms getLanguages).
@@ -305,23 +215,12 @@ class General(VoipMsClient):
         """
         mtd = "getLanguages"
 
-        try:
-            params = {}
-            if language:
-                params["language"] = language
+        params = {}
+        if language:
+            params["language"] = language
 
-            data = self.get(mtd, params)
-            return data
-
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        data = self.get(mtd, params)
+        return data
 
     def get_locales(self, locales: Optional[str] = None) -> dict:
         """
@@ -335,23 +234,12 @@ class General(VoipMsClient):
         """
         mtd = "getLocales"
 
-        try:
-            params = {}
-            if locales:
-                params["locale"] = locales
+        params = {}
+        if locales:
+            params["locale"] = locales
 
-            data = self.get(mtd, params)
-            return data
-
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        data = self.get(mtd, params)
+        return data
 
     def get_servers(self, server: Optional[Union[int, str]] = None) -> dict:
         """
@@ -365,23 +253,12 @@ class General(VoipMsClient):
         """
         mtd = "getServersInfo"
 
-        try:
-            params = {}
-            if server:
-                params["server_pop"] = server
+        params = {}
+        if server:
+            params["server_pop"] = server
 
-            data = self.get(mtd, params)
-            return data
-
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        data = self.get(mtd, params)
+        return data
 
     def get_transactions(self, date_from: str, date_to: str) -> dict:
         """
@@ -399,26 +276,15 @@ class General(VoipMsClient):
         """
         mtd = "getTransactionHistory"
 
-        try:
-            df = datetime.strptime(date_from, '%Y-%m-%d')
-            dt = datetime.strptime(date_to, '%Y-%m-%d')
-            if df > dt:
-                raise ValueError("The TO date cannot be prior the FROM date")
+        df = datetime.strptime(date_from, '%Y-%m-%d')
+        dt = datetime.strptime(date_to, '%Y-%m-%d')
+        if df > dt:
+            raise ValueError("The TO date cannot be prior the FROM date")
 
-            params = {
-                "date_from": date_from,
-                "date_to": date_to
-            }
+        params = {
+            "date_from": date_from,
+            "date_to": date_to
+        }
 
-            data = self.get(mtd, params)
-            return data
-
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        data = self.get(mtd, params)
+        return data

@@ -1,6 +1,5 @@
 """VoIP.ms call forwarding management."""
 
-import requests
 from .voipms_client import VoipMsClient
 from typing import Optional, Union
 
@@ -40,35 +39,23 @@ class Forwarding(VoipMsClient):
         
         mtd = "setForwarding"
 
-        try:
-            params = {
-                "phone_number": phone_number,
-            }
+        params = {
+            "phone_number": phone_number,
+        }
 
-            # Optional in this package.
-            if cid_override:
-                params["callerid_override"] = cid_override
-            if description:
-                params["description"] = description
-            if dtmf_digits:
-                params["dtmf_digits"] = dtmf_digits
-            if pause:
-                params["pause"] = pause
-            
-            data = self.get(mtd, params)
-            data["forwarding"] = phone_number
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-        
+        # Optional in this package.
+        if cid_override:
+            params["callerid_override"] = cid_override
+        if description:
+            params["description"] = description
+        if dtmf_digits:
+            params["dtmf_digits"] = dtmf_digits
+        if pause:
+            params["pause"] = pause
+
+        data = self.get(mtd, params)
+        data["forwarding"] = phone_number
+        return data
 
     def delete_forwarding(self, forwarding: Union[str, int]) -> dict:
         """
@@ -83,30 +70,18 @@ class Forwarding(VoipMsClient):
         
         mtd = "delForwarding"
 
-        try:
-            params = {
-                "forwarding": forwarding,
-            }
+        params = {
+            "forwarding": forwarding,
+        }
 
-            # Code to get the phone number of the forwarding that is deleted.
-            fwd_info = self.get_forwardings(forwarding)
-            fwd_pn = fwd_info["forwardings"][0]["phone_number"]
+        # Code to get the phone number of the forwarding that is deleted.
+        fwd_info = self.get_forwardings(forwarding)
+        fwd_pn = self._first(fwd_info, "forwardings", "Forwarding")["phone_number"]
 
-            data = self.get(mtd, params)
-            data["phone_number"] = fwd_pn
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-        
-    
+        data = self.get(mtd, params)
+        data["phone_number"] = fwd_pn
+        return data
+
     def get_forwardings(self, forwarding: Optional[Union[str, int]] = None) -> dict:
         """
         List call forwardings or get one by ID (VoIP.ms getForwardings).
@@ -120,26 +95,14 @@ class Forwarding(VoipMsClient):
         
         mtd = "getForwardings"
 
-        try:
-            params = {}
+        params = {}
 
-            # Optional in this package.
-            if forwarding:
-                params["forwarding"] = forwarding
-            
-            data = self.get(mtd, params)
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-        
+        # Optional in this package.
+        if forwarding:
+            params["forwarding"] = forwarding
+
+        data = self.get(mtd, params)
+        return data
 
     def update_forwarding(
         self,
@@ -168,33 +131,22 @@ class Forwarding(VoipMsClient):
         mtd = "setForwarding"
 
 
-        try:
-            # Code to get the settings of the forwarding that will be edited.
-            fwd_config = self.get_forwardings(id)
-            # Saving the current settings in the parameters.
-            params = fwd_config["forwardings"][0]
+        # Code to get the settings of the forwarding that will be edited.
+        fwd_config = self.get_forwardings(id)
+        # Saving the current settings in the parameters.
+        params = self._first(fwd_config, "forwardings", "Forwarding")
 
-            # Optional in this package.
-            if phone_number:
-                params["phone_number"] = phone_number
-            if cid_override:
-                params["callerid_override"] = cid_override
-            if description:
-                params["description"] = description
-            if dtmf_digits:
-                params["dtmf_digits"] = dtmf_digits
-            if pause is not None:
-                params["pause"] = pause
-            
-            data = self.get(mtd, params)
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        # Optional in this package.
+        if phone_number:
+            params["phone_number"] = phone_number
+        if cid_override:
+            params["callerid_override"] = cid_override
+        if description:
+            params["description"] = description
+        if dtmf_digits:
+            params["dtmf_digits"] = dtmf_digits
+        if pause is not None:
+            params["pause"] = pause
+
+        data = self.get(mtd, params)
+        return data

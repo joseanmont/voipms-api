@@ -2,7 +2,7 @@
 VoIP.ms Virtual Fax functions
 '''
 
-import requests, base64
+import base64
 from .voipms_client import VoipMsClient
 from typing import Optional, Union
 
@@ -47,42 +47,26 @@ class Fax(VoipMsClient):
         mtd = "sendFaxMessage"
 
         # Encode file in base64
-        try:
-            with open(file_path, "rb") as file:
-                encoded_content = base64.b64encode(file.read()).decode("ascii")
-        except FileNotFoundError:
-            return "Error: File not found."
-        except Exception as e:
-            return f"An error occurred: {e}"
+        with open(file_path, "rb") as file:
+            encoded_content = base64.b64encode(file.read()).decode("ascii")
 
-        try:
-            params = {
-                "to_number": to_number,
-                "from_name": from_name,
-                "from_number": from_number,
-                "file": encoded_content,
-            }
+        params = {
+            "to_number": to_number,
+            "from_name": from_name,
+            "from_number": from_number,
+            "file": encoded_content,
+        }
 
-            # Optional in this package.
-            if send_email_enabled:
-                params["send_email_enabled"] = send_email_enabled
-            if send_email:
-                params["send_email"] = send_email
-            if station_id:
-                params["station_id"] = station_id
-            if test:
-                params["test"] = test
+        # Optional in this package.
+        if send_email_enabled:
+            params["send_email_enabled"] = send_email_enabled
+        if send_email:
+            params["send_email"] = send_email
+        if station_id:
+            params["station_id"] = station_id
+        if test:
+            params["test"] = test
 
-            data = self.post(mtd, params)
-            data = dict(data)
-            return data
-
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error ocurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        data = self.post(mtd, params)
+        data = dict(data)
+        return data

@@ -1,8 +1,6 @@
 """VoIP.ms ring groups management."""
 
-import requests
 from .voipms_client import VoipMsClient
-from .accounts import Accounts
 from typing import Optional, Union
 
 
@@ -43,47 +41,29 @@ class RingGroups(VoipMsClient):
         
         mtd = "setRingGroup"
 
-        # Code to get the Account number to set the Main Account as the default member so it is not required.
-        accounts = Accounts(self.username, self.password, self.verify, self.timeout)
-        get_accounts = accounts.get_subaccounts()
-        acc_number = get_accounts['accounts'][0]['account']
-        acc_number = acc_number[0:6]
-        default_member = "account:" + acc_number
+        params = {
+            # Required by this package
+            "name": name,
+            "voicemail": voicemail,
 
-        try:
-            params = {
-                # Required by this package
-                "name": name,
-                "voicemail": voicemail,
+            # Required by VoIP.ms API but set with a default value so it is not required.
+            # The Main Account is the default member; it is only looked up when no members are provided.
+            "members": members or f"account:{self._main_account()}",
+        }
 
-                # Required by VoIP.ms API but set with a default value so it is not required.
-                "members": default_member,
-            }
+        # Optional in this package.
+        if members:
+            params["members"] = members
+        if announcement:
+            params["caller_announcement"] = announcement
+        if music_on_hold:
+            params["music_on_hold"] = music_on_hold
+        if language:
+            params["language"] = language
 
-            # Optional in this package.
-            if members:
-                params["members"] = members
-            if announcement:
-                params["caller_announcement"] = announcement
-            if music_on_hold:
-                params["music_on_hold"] = music_on_hold
-            if language:
-                params["language"] = language
-            
-            data = self.get(mtd, params)
-            data["name"] = name
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-        
+        data = self.get(mtd, params)
+        data["name"] = name
+        return data
 
     def delete_ring_group(self, ring_group: Union[str, int]) -> dict:
         """
@@ -98,29 +78,17 @@ class RingGroups(VoipMsClient):
         
         mtd = "delRingGroup"
 
-        try:
-            params = {
-                "ringgroup": ring_group,
-            }
+        params = {
+            "ringgroup": ring_group,
+        }
 
-            # Code to get the name of the ring group that is deleted.
-            rg_info = self.get_ring_groups(ring_group)
-            rg_name = rg_info["ring_groups"][0]["name"]
+        # Code to get the name of the ring group that is deleted.
+        rg_info = self.get_ring_groups(ring_group)
+        rg_name = self._first(rg_info, "ring_groups", "Ring group")["name"]
 
-            data = self.get(mtd, params)
-            data["ring_group"] = rg_name
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-        
+        data = self.get(mtd, params)
+        data["ring_group"] = rg_name
+        return data
 
     def get_ring_groups(self, ring_group: Optional[Union[str, int]] = None) -> dict:
         """
@@ -135,26 +103,14 @@ class RingGroups(VoipMsClient):
         
         mtd = "getRingGroups"
 
-        try:
-            params = {}
+        params = {}
 
-            # Optional in this package.
-            if ring_group:
-                params["ring_group"] = ring_group
-            
-            data = self.get(mtd, params)
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-        
+        # Optional in this package.
+        if ring_group:
+            params["ring_group"] = ring_group
+
+        data = self.get(mtd, params)
+        return data
 
     def update_ring_group(
         self,
@@ -184,36 +140,25 @@ class RingGroups(VoipMsClient):
         
         mtd = "setRingGroup"
 
-        try:
-            # Code to get the settings of the ring group that will be updated.
-            rg_config = self.get_ring_groups(id)
-            # Saving the current settings in the parameters.
-            params = rg_config["ring_groups"][0]
+        # Code to get the settings of the ring group that will be updated.
+        rg_config = self.get_ring_groups(id)
+        # Saving the current settings in the parameters.
+        params = self._first(rg_config, "ring_groups", "Ring group")
 
-            # Optional in this package.
-            if name:
-                params["name"] = name
-            if voicemail:
-                params["voicemail"] = voicemail
-            if members:
-                params["members"] = members
-            if announcement:
-                params["caller_announcement"] = announcement
-            if music_on_hold:
-                params["music_on_hold"] = music_on_hold
-            if language:
-                params["language"] = language
-            
-            data = self.get(mtd, params)
-            data["name"] = name
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        # Optional in this package.
+        if name:
+            params["name"] = name
+        if voicemail:
+            params["voicemail"] = voicemail
+        if members:
+            params["members"] = members
+        if announcement:
+            params["caller_announcement"] = announcement
+        if music_on_hold:
+            params["music_on_hold"] = music_on_hold
+        if language:
+            params["language"] = language
+
+        data = self.get(mtd, params)
+        data["name"] = name
+        return data

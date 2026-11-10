@@ -1,5 +1,8 @@
-import requests, os, warnings
+import requests, os
 from typing import Optional
+from urllib.parse import quote, quote_plus
+
+from .errors import VoipMsApiError, VoipMsConnectionError
 
 class VoipMsClient:
 
@@ -61,27 +64,15 @@ class VoipMsClient:
             params: Optional query parameters to send with the request. Auth and method are added automatically.
 
         Returns:
-            Parsed JSON response from the API (typically includes 'status' and/or 'data').
+            Parsed JSON response from the API. For query methods ('get...') a 'no_...' status
+            (e.g. 'no_sms') means there are no results and is returned as is.
+
+        Raises:
+            VoipMsApiError: The API returned an error status.
+            VoipMsConnectionError: The API could not be reached or returned an invalid response.
         """
+        return self._request("GET", method, params)
 
-        if params is None:
-            params = {}
-        # Include authentication details in the parameters
-        params.update({
-            'api_username': self.username,
-            'api_password': self.password,
-            'method': method
-        })
-        
-        # print(f"{params}/n") # Uncomment this to see username, password and method
-
-        response = requests.get(self.voipms_url, params=params, verify=self.verify, timeout=self.timeout)
-
-        # print(f"Request URL: {response.request.url}\n") # Uncomment to print the full URL
-        response.raise_for_status()  # Raises an HTTPError for bad responses
-        response = response.json()
-        return response
-    
 
     def post(self, method: str, params: Optional[dict] = None) -> dict:
         """
@@ -94,42 +85,74 @@ class VoipMsClient:
             params: Optional form parameters. Auth and method are added automatically.
 
         Returns:
-            Parsed JSON response from the API (typically includes 'status' and/or 'data').
-        """
+            Parsed JSON response from the API. For query methods ('get...') a 'no_...' status
+            (e.g. 'no_sms') means there are no results and is returned as is.
 
-        if params is None:
-            params = {}
-        # Include authentication details in the parameters
-        params.update({
+        Raises:
+            VoipMsApiError: The API returned an error status.
+            VoipMsConnectionError: The API could not be reached or returned an invalid response.
+        """
+        return self._request("POST", method, params)
+
+
+    def _request(self, http_method: str, method: str, params: Optional[dict]) -> dict:
+        # Copy so the caller's dict is not modified, then include authentication details.
+        params = {
+            **(params or {}),
             'api_username': self.username,
             'api_password': self.password,
-            'method': method
-        })
-        
-        # The API only accepts POST as multipart/form-data (any other encoding returns HTTP 500).
-        fields = {key: (None, str(value)) for key, value in params.items() if value is not None}
-        response = requests.post(self.voipms_url, files=fields, verify=self.verify, timeout=self.timeout)
+            'method': method,
+        }
 
-        response.raise_for_status()  # Raises an HTTPError for bad responses
-        response = response.json()
-        return response
-    
-    
-    def make_request(self, method: str, params: Optional[dict] = None) -> dict:
-        """
-        Deprecated alias of get(), kept for compatibility with 1.1.x.
-        """
-        warnings.warn("make_request() is deprecated, use get() instead.", DeprecationWarning, stacklevel=2)
-        return self.get(method, params)
+        try:
+            if http_method == "POST":
+                # The API only accepts POST as multipart/form-data (any other encoding returns HTTP 500).
+                fields = {key: (None, str(value)) for key, value in params.items() if value is not None}
+                response = requests.post(self.voipms_url, files=fields, verify=self.verify, timeout=self.timeout)
+            else:
+                response = requests.get(self.voipms_url, params=params, verify=self.verify, timeout=self.timeout)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as err:
+            # 'from None' drops the original exception, whose message includes the URL with the password.
+            raise VoipMsConnectionError(f"{method}: {self._redact(str(err))}") from None
+
+        try:
+            data = response.json()
+        except ValueError:
+            raise VoipMsConnectionError(
+                f"{method}: the API returned an invalid response (HTTP {response.status_code})"
+            ) from None
+
+        status = data.get("status") if isinstance(data, dict) else None
+        if status == "success":
+            return data
+        # 'no_...' on a query only means there are no results (e.g. 'no_sms' on getSMS).
+        if method.startswith("get") and str(status).startswith("no_"):
+            return data
+        raise VoipMsApiError(method, status, data)
 
 
-    @property
-    def vms_client(self) -> "VoipMsClient":
-        """
-        Deprecated. In 1.1.x the modules wrapped a client in this attribute; now they are the client.
-        """
-        warnings.warn("vms_client is deprecated, use the object itself instead.", DeprecationWarning, stacklevel=2)
-        return self
+    def _first(self, response: dict, key: str, what: str) -> dict:
+        """Return the first item under 'key' of a query response, or raise ValueError if there is none."""
+        items = response.get(key)
+        if not items:
+            raise ValueError(f"{what} not found.")
+        return items[0]
+
+
+    def _main_account(self) -> str:
+        """Return the main account number (e.g. '100000'), taken from the first sub account."""
+        subaccounts = self.get("getSubAccounts")
+        account = self._first(subaccounts, "accounts", "Sub Account (needed to find the main account number)")
+        return account["account"].split("_")[0]
+
+
+    def _redact(self, text: str) -> str:
+        """Remove the API password (plain and URL-encoded) from a text."""
+        if self.password:
+            for secret in {self.password, quote(self.password), quote_plus(self.password)}:
+                text = text.replace(secret, "***")
+        return text
 
 
     def test_connection(self) -> dict:
@@ -138,5 +161,8 @@ class VoipMsClient:
 
         Returns:
             Parsed JSON response including status and the public IP address seen by the API.
+
+        Raises:
+            VoipMsApiError: The credentials are invalid or the IP is not allowed (e.g. 'ip_not_enabled').
         """
         return self.get("getIP")

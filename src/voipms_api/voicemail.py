@@ -1,6 +1,5 @@
 """VoIP.ms voicemail management."""
 
-import requests
 from .voipms_client import VoipMsClient
 from typing import Optional, Union
 
@@ -50,51 +49,39 @@ class Voicemail(VoipMsClient):
         
         mtd = "createVoicemail"
 
-        try:
-            params = {
-                # Required in this package.
-                "digits": id,
-                "name": name,
-                "password": password,
+        params = {
+            # Required in this package.
+            "digits": id,
+            "name": name,
+            "password": password,
 
-                 # Required by VoIP.ms API but set with default values in this package so they're not required.
-                "say_time": "yes",
-                "say_callerid": "yes",
-                "play_instructions": "u",
-            }
+             # Required by VoIP.ms API but set with default values in this package so they're not required.
+            "say_time": "yes",
+            "say_callerid": "yes",
+            "play_instructions": "u",
+        }
 
-            # Optional in this package.
-            if skip_password:
-                params["skip_password"] = skip_password
-            if email:
-                params["email"] = email
-            if attach_message:
-                params["attach_message"] = attach_message
-            if delete_message:
-                params["delete_message"] = delete_message
-            if timezone:
-                params["timezone"] = timezone
-            if language:
-                params["language"] = language
-            if client:
-                params["client"] = client
-            
-            data = self.get(mtd, params)
-            data["voicemail"] = id
-            data["name"] = name
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-        
-        
+        # Optional in this package.
+        if skip_password:
+            params["skip_password"] = skip_password
+        if email:
+            params["email"] = email
+        if attach_message:
+            params["attach_message"] = attach_message
+        if delete_message:
+            params["delete_message"] = delete_message
+        if timezone:
+            params["timezone"] = timezone
+        if language:
+            params["language"] = language
+        if client:
+            params["client"] = client
+
+        data = self.get(mtd, params)
+        data["voicemail"] = id
+        data["name"] = name
+        return data
+
     def delete_voicemail(self, id: Union[str, int]) -> dict:
         """
         Delete a voicemail by ID (VoIP.ms delVoicemail).
@@ -108,26 +95,14 @@ class Voicemail(VoipMsClient):
         
         mtd = "delVoicemail"
 
-        try:
-            params = {
-                "mailbox": id,
-            }
-            
-            data = self.get(mtd, params)
-            data["result"] = "Voicemail deleted"
-            data["voicemail"] = id
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-        
+        params = {
+            "mailbox": id,
+        }
+
+        data = self.get(mtd, params)
+        data["result"] = "Voicemail deleted"
+        data["voicemail"] = id
+        return data
 
     def get_voicemails(
         self,
@@ -147,27 +122,15 @@ class Voicemail(VoipMsClient):
         
         mtd = "getVoicemails"
 
-        try:
-            params = {}
-            
-            if voicemail:
-                params["mailbox"] = voicemail
-            if client:
-                params["client"] = client
-            
-            data = self.get(mtd, params)
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
-        
+        params = {}
+
+        if voicemail:
+            params["mailbox"] = voicemail
+        if client:
+            params["client"] = client
+
+        data = self.get(mtd, params)
+        return data
 
     def update_voicemail(
         self,
@@ -203,49 +166,38 @@ class Voicemail(VoipMsClient):
         
         mtd = "setVoicemail"
 
-        try:
-            # Code to get the settings of the voicemail that will be updated.
-            vm_config = self.get_voicemails(id)
-            # Saving the current settings in the parameters.
-            params = vm_config["voicemails"][0]
+        # Code to get the settings of the voicemail that will be updated.
+        vm_config = self.get_voicemails(id)
+        # Saving the current settings in the parameters.
+        params = self._first(vm_config, "voicemails", "Voicemail")
 
-            # VoIP.ms Bug - This verification has been added because get_voicemails will return 'Y' or 'N' for 'transcription' but the VoIP.ms API will not accept these when creating or updating a Voicemail.
-            if params["transcription"] == 'N':
-                params["transcription"] = ''
-            if params["transcription"] == 'Y':
-                params["transcription"] = 'yes'
+        # VoIP.ms Bug - This verification has been added because get_voicemails will return 'Y' or 'N' for 'transcription' but the VoIP.ms API will not accept these when creating or updating a Voicemail.
+        if params["transcription"] == 'N':
+            params["transcription"] = ''
+        if params["transcription"] == 'Y':
+            params["transcription"] = 'yes'
 
-            # Optional in this package.
-            if name:
-                params["name"] = name
-            if password is not None:
-                params["password"] = password
-            if skip_password:
-                params["skip_password"] = skip_password
-            if email:
-                params["email"] = email
-            if attach_message:
-                params["attach_message"] = attach_message
-            if delete_message:
-                params["delete_message"] = delete_message
-            if timezone:
-                params["timezone"] = timezone
-            if language:
-                params["language"] = language
-            if client:
-                params["client"] = client
-            
-            data = self.get(mtd, params)
-            data["voicemail"] = id
-            data["name"] = name
-            return data
-        
-        except requests.exceptions.HTTPError as http_err:
-            print(f"HTTP error occurred: {http_err}")
-            return None
-        except KeyError as key_err:
-            print(f"Key error: {key_err}")
-            return None
-        except Exception as err:
-            print(f'An error occurred: {err}')
-            return None
+        # Optional in this package.
+        if name:
+            params["name"] = name
+        if password is not None:
+            params["password"] = password
+        if skip_password:
+            params["skip_password"] = skip_password
+        if email:
+            params["email"] = email
+        if attach_message:
+            params["attach_message"] = attach_message
+        if delete_message:
+            params["delete_message"] = delete_message
+        if timezone:
+            params["timezone"] = timezone
+        if language:
+            params["language"] = language
+        if client:
+            params["client"] = client
+
+        data = self.get(mtd, params)
+        data["voicemail"] = id
+        data["name"] = name
+        return data
