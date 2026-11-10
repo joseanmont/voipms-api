@@ -15,11 +15,11 @@ class CDR(VoipMsClient):
         get_call_accounts(): List the accounts that can be used to filter CDR and recordings.
         get_call_billing(): List the call billing values that can be used to filter CDR.
         get_call_types(): List the call types that can be used to filter CDR and transcriptions.
-        get_call_recordings(account, date_from, date_to, ...): List the call recordings of an account.
+        get_call_recordings(date_from, date_to, account='all', ...): List the call recordings of all the accounts or one.
         get_call_recording(account, call_recording, file_path): Get a call recording, optionally saving the audio.
         delete_call_recording(account, call_recording): Delete a call recording.
         send_call_recording_email(account, call_recording, email): Email a call recording.
-        get_call_transcriptions(account, date_from, date_to, ...): Get call transcriptions, optionally saving them as text.
+        get_call_transcriptions(date_from, date_to, account='all', ...): Get call transcriptions, optionally saving them as text.
     """
 
     def get_cdr(
@@ -122,27 +122,29 @@ class CDR(VoipMsClient):
 
     def get_call_recordings(
         self,
-        account: str,
         date_from: str,
         date_to: str,
+        account: str = "all",
         call_type: Optional[str] = None,
         start: Optional[int] = None,
         length: Optional[int] = None,
     ) -> dict:
         """
-        List the call recordings of an account (VoIP.ms getCallRecordings).
+        List the call recordings of all the accounts, or of one account (VoIP.ms getCallRecordings).
 
         Args:
-            account: Account to get the recordings from (e.g. '100000_VoIP'). See get_call_accounts.
             date_from: Start date (e.g. '2026-11-01').
             date_to: End date (e.g. '2026-11-09'). Must be >= date_from.
+            account: 'all' (default) for the main account and all the sub accounts, or one account
+                (e.g. '100000' or '100000_VoIP'). See get_call_accounts.
             call_type: 'all', 'incoming' or 'outgoing'.
             start: Number of records to skip, for pages (e.g. 50).
             length: Number of records to return (e.g. 25).
 
         Returns:
-            API response with the recordings in 'recordings'. Use their 'callrecording' value with
-            get_call_recording, delete_call_recording and send_call_recording_email.
+            API response with the recordings in 'recordings'. Each one includes its 'account'; use it
+            with its 'callrecording' value on get_call_recording, delete_call_recording and
+            send_call_recording_email.
 
         Raises:
             ValueError: If a date is invalid, date_to is before date_from, or call_type is not accepted.
@@ -258,19 +260,22 @@ class CDR(VoipMsClient):
 
     def get_call_transcriptions(
         self,
-        account: str,
         date_from: str,
         date_to: str,
+        account: str = "all",
         call_type: Optional[str] = None,
         file_path: Optional[str] = None,
     ) -> dict:
         """
-        Get the call transcriptions of an account, optionally saving them as text (VoIP.ms getCallTranscriptions).
+        Get the call transcriptions of all the accounts, or of one account, optionally saving them
+        as text (VoIP.ms getCallTranscriptions).
 
         Args:
-            account: Account to get the transcriptions from (e.g. '100001_VoIP').
             date_from: Start date (e.g. '2026-11-01').
             date_to: End date (e.g. '2026-11-09'). Must be >= date_from.
+            account: 'all' (default) for the main account and all the sub accounts, or the main
+                account (e.g. '100000'). Sub accounts (e.g. '100000_VoIP') get an empty response from
+                the API, which raises VoipMsConnectionError; their transcriptions come with 'all'.
             call_type: Filter by call type. See get_call_types.
             file_path: Optional path to save the transcriptions as readable text (e.g. 'transcriptions.txt').
                 Nothing is written when there are no transcriptions.

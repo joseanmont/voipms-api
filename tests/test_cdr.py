@@ -62,15 +62,22 @@ def test_get_cdr_rejects_timezone_out_of_range(mock_requests):
 
 def test_get_call_recordings(mock_requests):
     get, _ = mock_requests
-    CDR("u", "p").get_call_recordings("100000_VoIP", "2026-11-01", "2026-11-09", call_type="incoming", start=50, length=25)
+    CDR("u", "p").get_call_recordings("2026-11-01", "2026-11-09", "100000_VoIP", call_type="incoming", start=50, length=25)
     params = sent_params(get)
     assert params["method"] == "getCallRecordings"
     assert (params["account"], params["call_type"], params["start"], params["length"]) == ("100000_VoIP", "incoming", 50, 25)
 
 
+@pytest.mark.parametrize("name", ["get_call_recordings", "get_call_transcriptions"])
+def test_recordings_and_transcriptions_default_to_all_accounts(mock_requests, name):
+    get, _ = mock_requests
+    getattr(CDR("u", "p"), name)("2026-11-01", "2026-11-09")
+    assert sent_params(get)["account"] == "all"
+
+
 def test_get_call_recordings_rejects_unknown_call_type(mock_requests):
     with pytest.raises(ValueError):
-        CDR("u", "p").get_call_recordings("100000_VoIP", "2026-11-01", "2026-11-09", call_type="inbound")
+        CDR("u", "p").get_call_recordings("2026-11-01", "2026-11-09", "100000_VoIP", call_type="inbound")
 
 
 def test_get_call_recording_saves_audio(mock_requests, tmp_path):
@@ -108,7 +115,7 @@ def test_get_call_transcriptions_saves_text(mock_requests, tmp_path):
     get.return_value.json.return_value = TRANSCRIPTIONS
     target = tmp_path / "transcriptions.txt"
 
-    data = CDR("u", "p").get_call_transcriptions("100001_VoIP", "2024-10-11", "2024-10-11", file_path=str(target))
+    data = CDR("u", "p").get_call_transcriptions("2024-10-11", "2024-10-11", "100001", file_path=str(target))
 
     assert data == TRANSCRIPTIONS
     assert sent_params(get)["method"] == "getCallTranscriptions"
@@ -122,7 +129,7 @@ def test_get_call_transcriptions_without_results_writes_nothing(mock_requests, t
     get, _ = mock_requests
     get.return_value.json.return_value = {"status": "no_transcriptions"}
     target = tmp_path / "transcriptions.txt"
-    data = CDR("u", "p").get_call_transcriptions("100001_VoIP", "2024-10-11", "2024-10-11", file_path=str(target))
+    data = CDR("u", "p").get_call_transcriptions("2024-10-11", "2024-10-11", "100001", file_path=str(target))
     assert data == {"status": "no_transcriptions"}
     assert not target.exists()
 

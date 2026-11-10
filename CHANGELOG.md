@@ -11,8 +11,8 @@ Releases before 1.2.0 were published as pre-releases (`bNN` suffix).
 ### Added
 - `CDR` module:
   - `get_cdr`: call detail records for a date range.
-  - `get_call_recordings`, `get_call_recording` (with `file_path` to save the audio), `delete_call_recording` and `send_call_recording_email`.
-  - `get_call_transcriptions` (with `file_path` to save them as readable text).
+  - `get_call_recordings` (all the accounts by default), `get_call_recording` (with `file_path` to save the audio), `delete_call_recording` and `send_call_recording_email`.
+  - `get_call_transcriptions` (all the accounts by default, with `file_path` to save them as readable text).
   - `get_call_accounts`, `get_call_types` and `get_call_billing`, the values accepted by the filters.
 
 ## [2.0.0] - 2026-11-10
